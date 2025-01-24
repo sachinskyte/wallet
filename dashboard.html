@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WealthPro | Dashboard</title>
+  <link rel="stylesheet" href="assets/css/index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .dashboard {
+      padding-top: 120px;
+      min-height: 100vh;
+      background-color: var(--gray-100);
+    }
+    
+    .dashboard-header {
+      background-color: var(--primary-white);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+    
+    .account-balance {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .balance-icon {
+      width: 60px;
+      height: 60px;
+      background-color: var(--primary-black);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-white);
+      font-size: 1.5rem;
+    }
+    
+    .balance-details h3 {
+      font-size: 1.2rem;
+      color: var(--gray-600);
+      margin-bottom: 5px;
+    }
+    
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary-black);
+    }
+    
+    .dashboard-welcome {
+      margin-bottom: 30px;
+    }
+    
+    .dashboard-welcome h2 {
+      margin-bottom: 10px;
+    }
+    
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Add button styles */
+    .add-transaction-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: var(--primary-black);
+      color: var(--primary-white);
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: transform var(--transition-standard), background-color var(--transition-standard);
+      z-index: 100;
+    }
+
+    .add-transaction-btn:hover {
+      transform: scale(1.1);
+      background-color: var(--gray-800);
+    }
+
+    /* Transaction modal styles */
+    .transaction-type-selector {
+      display: flex;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--gray-300);
+    }
+
+    .transaction-type-btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      background-color: var(--gray-200);
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-standard);
+    }
+
+    .transaction-type-btn.active {
+      background-color: var(--primary-black);
+      color: var(--primary-white);
+    }
+
+    .income-type {
+      color: var(--success);
+    }
+
+    .expense-type {
+      color: var(--error);
+    }
+
+    /* Transactions list */
+    .transactions-section {
+      background-color: var(--primary-white);
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .transactions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .transactions-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .transaction-details {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-white);
+      font-size: 1rem;
+    }
+
+    .income-icon {
+      background-color: var(--success);
+    }
+
+    .expense-icon {
+      background-color: var(--error);
+    }
+
+    .transaction-info h4 {
+      font-size: 1rem;
+      margin-bottom: 3px;
+    }
+
+    .transaction-date {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+    }
+
+    .transaction-amount {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .income-amount {
+      color: var(--success);
+    }
+
+    .expense-amount {
+      color: var(--error);
+    }
+
+    .no-transactions {
+      text-align: center;
+      padding: 30px;
+      color: var(--gray-500);
+    }
+    
+    /* Clear button style */
+    .clear-btn {
+      background-color: transparent;
+      color: var(--gray-600);
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all var(--transition-standard);
+    }
+    
+    .clear-btn:hover {
+      background-color: var(--gray-200);
+      color: var(--gray-800);
+    }
+    
+    /* Delete transaction button */
+    .delete-transaction {
+      color: var(--gray-500);
+      margin-left: 10px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+    
+    .transaction-item:hover .delete-transaction {
+      opacity: 1;
+    }
+    
+    .delete-transaction:hover {
+      color: var(--error);
+    }
+
+    /* Statistics Cards */
+    .statistics-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .stat-card {
+      background-color: var(--primary-white);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+    
+    .stat-card-title {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      margin-bottom: 10px;
+    }
+    
+    .stat-card-amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .income-stat {
+      color: var(--success);
+    }
+    
+    .expense-stat {
+      color: var(--error);
+    }
+    
+    .savings-stat {
+      color: var(--primary-black);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar scrolled">
+    <div class="logo">
+      <a href="index.html">WealthPro</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="index.html#pricing">Premium</a></li>
+      <li><a href="#" class="login-btn">Log Out</a></li>
+    </ul>
+    <div class="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </nav>
+
+  <!-- Dashboard Section -->
+  <section class="dashboard">
+    <div class="dashboard-container">
+      <div class="dashboard-welcome">
+        <h2>Welcome to your WealthPro Dashboard, <span id="welcomeName">Investor</span></h2>
+        <p>Track, manage, and grow your wealth with our premium tools.</p>
+      </div>
+      
+      <div class="dashboard-header">
+        <div class="account-balance">
+          <div class="balance-icon">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="balance-details">
+            <h3>Total Balance</h3>
+            <div class="balance-amount" id="accountBalance">₹0.00</div>
+          </div>
+        </div>
+        
+        <div class="statistics-cards">
+          <div class="stat-card">
+            <div class="stat-card-title">Total Income</div>
+            <div class="stat-card-amount income-stat" id="totalIncome">₹0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-title">Total Expenses</div>
+            <div class="stat-card-amount expense-stat" id="totalExpenses">₹0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-title">Net Savings</div>
+            <div class="stat-card-amount savings-stat" id="netSavings">₹0.00</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Transactions Section -->
+      <div class="transactions-section">
+        <div class="transactions-header">
+          <h3>Recent Transactions</h3>
+          <button class="clear-btn" id="clearTransactionsBtn">Clear All</button>
+        </div>
+        <div class="transactions-list" id="transactionsList">
+          <div class="no-transactions" id="noTransactions">
+            <p>No transactions recorded yet. Add your first transaction using the + button.</p>
+          </div>
+          <!-- Transaction items will be dynamically added here -->
+        </div>
+      </div>
+      
+      <!-- Add Transaction Button -->
+      <div class="add-transaction-btn" id="addTransactionBtn">
+        <i class="fas fa-plus"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transaction Modal -->
+  <div class="modal-overlay" id="transactionModal">
+    <div class="modal">
+      <button class="modal-close" id="transactionModalClose"><i class="fas fa-times"></i></button>
+      <div class="modal-header">
+        <h3>Add Transaction</h3>
+        <p>Record your income or expense</p>
+      </div>
+      <div class="modal-body">
+        <form id="transactionForm">
+          <!-- Transaction Type Selector -->
+          <div class="transaction-type-selector">
+            <button type="button" class="transaction-type-btn active" id="incomeBtn">
+              <i class="fas fa-arrow-down income-type"></i> Income
+            </button>
+            <button type="button" class="transaction-type-btn" id="expenseBtn">
+              <i class="fas fa-arrow-up expense-type"></i> Expense
+            </button>
+          </div>
+          
+          <div class="form-group">
+            <label for="transactionName">Description</label>
+            <input 
+              type="text" 
+              id="transactionName" 
+              name="transactionName" 
+              placeholder="What is this transaction for?"
+              required
+            >
+            <div class="error-message" id="nameError">Please enter a description</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="transactionAmount">Amount</label>
+            <input 
+              type="text" 
+              id="transactionAmount" 
+              name="transactionAmount" 
+              placeholder="Enter amount in ₹"
+              required
+            >
+            <div class="error-message" id="amountError">Please enter a valid amount</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-submit" id="submitTransaction">Add Transaction</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <div class="footer-logo">WealthPro</div>
+        <p>Premium wealth management for discerning investors.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Webinars</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Compliance</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 WealthPro. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Get the account data from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      const userName = localStorage.getItem('userName');
+      let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+      let initialBalance = parseFloat(localStorage.getItem('initialBalance'));
+      
+      // Set initial balance if not already set
+      if (!localStorage.getItem('initialBalance')) {
+        initialBalance = parseFloat(localStorage.getItem('accountBalance'));
+        localStorage.setItem('initialBalance', initialBalance);
+      }
+      
+      // If there's no account balance, redirect back to the homepage
+      if (!initialBalance && initialBalance !== 0) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Calculate and update current balance including all transactions
+      calculateTotalBalance();
+      
+      // Display the user's name
+      if (userName) {
+        document.getElementById('welcomeName').textContent = userName;
+      }
+      
+      // Display existing transactions
+      renderTransactions();
+      
+      // Transaction modal functionality
+      const addTransactionBtn = document.getElementById('addTransactionBtn');
+      const transactionModal = document.getElementById('transactionModal');
+      const transactionModalClose = document.getElementById('transactionModalClose');
+      const transactionForm = document.getElementById('transactionForm');
+      const transactionAmount = document.getElementById('transactionAmount');
+      const transactionName = document.getElementById('transactionName');
+      const submitTransaction = document.getElementById('submitTransaction');
+      const incomeBtn = document.getElementById('incomeBtn');
+      const expenseBtn = document.getElementById('expenseBtn');
+      
+      let transactionType = 'income'; // Default transaction type
+      
+      // Open modal when clicking add button
+      addTransactionBtn.addEventListener('click', function() {
+        transactionModal.classList.add('active');
+        setTimeout(() => {
+          transactionName.focus();
+        }, 300);
+      });
+      
+      // Close modal when clicking the X
+      transactionModalClose.addEventListener('click', function() {
+        transactionModal.classList.remove('active');
+      });
+      
+      // Close modal when clicking outside
+      transactionModal.addEventListener('click', function(e) {
+        if (e.target === transactionModal) {
+          transactionModal.classList.remove('active');
+        }
+      });
+      
+      // Transaction type toggle
+      incomeBtn.addEventListener('click', function() {
+        transactionType = 'income';
+        incomeBtn.classList.add('active');
+        expenseBtn.classList.remove('active');
+      });
+      
+      expenseBtn.addEventListener('click', function() {
+        transactionType = 'expense';
+        expenseBtn.classList.add('active');
+        incomeBtn.classList.remove('active');
+      });
+      
+      // Input validation - only allow numbers and decimals
+      transactionAmount.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+      });
+      
+      // Form submission
+      submitTransaction.addEventListener('click', addTransaction);
+      transactionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        addTransaction();
+      });
+      
+      function addTransaction() {
+        const name = transactionName.value.trim();
+        const amount = transactionAmount.value.trim();
+        
+        // Validate inputs
+        let isValid = true;
+        
+        if (!name) {
+          document.getElementById('nameError').classList.add('active');
+          transactionName.focus();
+          isValid = false;
+        } else {
+          document.getElementById('nameError').classList.remove('active');
+        }
+        
+        if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+          document.getElementById('amountError').classList.add('active');
+          if (isValid) {
+            transactionAmount.focus();
+          }
+          isValid = false;
+        } else {
+          document.getElementById('amountError').classList.remove('active');
+        }
+        
+        if (!isValid) {
+          return;
+        }
+        
+        // Create new transaction
+        const newTransaction = {
+          id: Date.now(),
+          name: name,
+          amount: parseFloat(amount),
+          type: transactionType,
+          date: new Date().toISOString()
+        };
+        
+        // Add to transactions array
+        transactions.unshift(newTransaction); // Add to beginning of array
+        
+        // Save to localStorage
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        
+        // Calculate new total balance
+        calculateTotalBalance();
+        
+        // Render transactions
+        renderTransactions();
+        
+        // Reset form
+        transactionForm.reset();
+        
+        // Close modal
+        transactionModal.classList.remove('active');
+      }
+      
+      function calculateTotalBalance() {
+        let totalBalance = initialBalance;
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        
+        // Add income and subtract expenses
+        transactions.forEach(transaction => {
+          if (transaction.type === 'income') {
+            totalBalance += transaction.amount;
+            totalIncome += transaction.amount;
+          } else {
+            totalBalance -= transaction.amount;
+            totalExpenses += transaction.amount;
+          }
+        });
+        
+        // Calculate net savings (difference between income and expenses)
+        const netSavings = totalIncome - totalExpenses;
+        
+        // Update localStorage and display
+        localStorage.setItem('accountBalance', totalBalance);
+        updateBalanceDisplay();
+        updateStatistics(totalIncome, totalExpenses, netSavings);
+      }
+      
+      function updateBalanceDisplay() {
+        const balance = parseFloat(localStorage.getItem('accountBalance'));
+        const formattedBalance = formatCurrency(balance);
+        document.getElementById('accountBalance').textContent = formattedBalance;
+      }
+      
+      function updateStatistics(income, expenses, savings) {
+        document.getElementById('totalIncome').textContent = formatCurrency(income);
+        document.getElementById('totalExpenses').textContent = formatCurrency(expenses);
+        document.getElementById('netSavings').textContent = formatCurrency(savings);
+      }
+      
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 2
+        }).format(amount);
+      }
+      
+      function renderTransactions() {
+        const transactionsList = document.getElementById('transactionsList');
+        const noTransactions = document.getElementById('noTransactions');
+        
+        // Clear previous transactions
+        transactionsList.innerHTML = '';
+        
+        if (transactions.length === 0) {
+          noTransactions.style.display = 'block';
+          return;
+        }
+        
+        noTransactions.style.display = 'none';
+        
+        // Add each transaction to the list
+        transactions.forEach(transaction => {
+          const transactionItem = document.createElement('div');
+          transactionItem.className = 'transaction-item';
+          
+          const date = new Date(transaction.date);
+          const formattedDate = `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+          
+          const formattedAmount = formatCurrency(transaction.amount);
+          
+          transactionItem.innerHTML = `
+            <div class="transaction-details">
+              <div class="transaction-icon ${transaction.type === 'income' ? 'income-icon' : 'expense-icon'}">
+                <i class="fas ${transaction.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+              </div>
+              <div class="transaction-info">
+                <h4>${transaction.name}</h4>
+                <div class="transaction-date">${formattedDate}</div>
+              </div>
+            </div>
+            <div class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
+              ${transaction.type === 'income' ? '+' : '-'} ${formattedAmount}
+              <span class="delete-transaction" data-id="${transaction.id}">
+                <i class="fas fa-times"></i>
+              </span>
+            </div>
+          `;
+          
+          transactionsList.appendChild(transactionItem);
+          
+          // Add event listener to delete button
+          const deleteBtn = transactionItem.querySelector('.delete-transaction');
+          deleteBtn.addEventListener('click', function() {
+            deleteTransaction(Number(this.getAttribute('data-id')));
+          });
+        });
+      }
+      
+      // Function to delete individual transaction
+      function deleteTransaction(id) {
+        // Find transaction index
+        const index = transactions.findIndex(t => t.id === id);
+        
+        if (index !== -1) {
+          // Remove transaction
+          transactions.splice(index, 1);
+          
+          // Update localStorage
+          localStorage.setItem('transactions', JSON.stringify(transactions));
+          
+          // Recalculate balance
+          calculateTotalBalance();
+          
+          // Update UI
+          renderTransactions();
+        }
+      }
+      
+      // Clear all transactions
+      const clearTransactionsBtn = document.getElementById('clearTransactionsBtn');
+      clearTransactionsBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete all transactions? This cannot be undone.')) {
+          // Reset to initial balance
+          localStorage.setItem('accountBalance', initialBalance);
+          
+          // Clear transactions
+          transactions = [];
+          localStorage.setItem('transactions', JSON.stringify(transactions));
+          
+          // Update UI
+          renderTransactions();
+          updateBalanceDisplay();
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

@@ -142,4 +142,105 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Account modal functionality
+    const startJourneyBtn = document.getElementById('startJourneyBtn');
+    const startJourneyBtnBottom = document.getElementById('startJourneyBtnBottom');
+    const accountModal = document.getElementById('accountModal');
+    const modalClose = document.getElementById('modalClose');
+    const accountForm = document.getElementById('accountForm');
+    const accountAmount = document.getElementById('accountAmount');
+    const submitAmount = document.getElementById('submitAmount');
+    const amountError = document.getElementById('amountError');
+
+    // Function to open the modal
+    function openAccountModal() {
+        accountModal.classList.add('active');
+        // Focus on the input field
+        setTimeout(() => {
+            accountAmount.focus();
+        }, 300);
+    }
+
+    // Only add event listeners if we're on the homepage
+    if (startJourneyBtn) {
+        // Open modal when clicking "Start Your Journey" buttons
+        startJourneyBtn.addEventListener('click', openAccountModal);
+        
+        if (startJourneyBtnBottom) {
+            startJourneyBtnBottom.addEventListener('click', openAccountModal);
+        }
+
+        // Close modal when clicking the X
+        modalClose.addEventListener('click', function() {
+            accountModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        accountModal.addEventListener('click', function(e) {
+            if (e.target === accountModal) {
+                accountModal.classList.remove('active');
+            }
+        });
+
+        // Input validation - only allow numbers and decimals
+        accountAmount.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+        });
+
+        // Form submission
+        submitAmount.addEventListener('click', submitAccountAmount);
+        accountForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitAccountAmount();
+        });
+
+        function submitAccountAmount() {
+            const amount = accountAmount.value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            // Validate the inputs
+            let isValid = true;
+            
+            if (!name) {
+                document.getElementById('nameError').classList.add('active');
+                document.getElementById('userName').focus();
+                isValid = false;
+            } else {
+                document.getElementById('nameError').classList.remove('active');
+            }
+            
+            if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) < 0) {
+                amountError.classList.add('active');
+                if (isValid) {
+                    accountAmount.focus();
+                }
+                isValid = false;
+            } else {
+                amountError.classList.remove('active');
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // Store the data in localStorage
+            const balance = parseFloat(amount);
+            localStorage.setItem('accountBalance', balance);
+            localStorage.setItem('initialBalance', balance);
+            localStorage.setItem('userName', name);
+            localStorage.setItem('transactions', JSON.stringify([]));
+            
+            // Redirect to dashboard
+            window.location.href = 'dashboard.html';
+        }
+
+        // Handle Enter key in the input field
+        accountAmount.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitAccountAmount();
+            }
+        });
+    }
 });

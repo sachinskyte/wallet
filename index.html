@@ -42,7 +42,7 @@
       <h1>Elevate Your Wealth Management Experience</h1>
       <p>AI-powered insights, premium investment strategies, and sophisticated tracking—designed for the elite.</p>
       <div class="cta-buttons">
-        <button class="cta-btn primary">Start Your Journey</button>
+        <button class="cta-btn primary" id="startJourneyBtn">Start Your Journey</button>
         <button class="cta-btn secondary">Watch Demo</button>
       </div>
     </div>
@@ -251,7 +251,7 @@
     <div class="cta-content">
       <h2>Begin Your Premium Wealth Management Journey Today</h2>
       <p>Join thousands of elite investors who trust WealthPro to optimize their financial future.</p>
-      <button class="cta-btn primary">Get Started Now</button>
+      <button class="cta-btn primary" id="startJourneyBtnBottom">Get Started Now</button>
     </div>
     <div class="cta-pattern"></div>
   </section>
@@ -355,6 +355,46 @@
       <p>&copy; 2025 WealthPro. All rights reserved.</p>
     </div>
   </footer>
+
+  <!-- Account Amount Modal -->
+  <div class="modal-overlay" id="accountModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+      <div class="modal-header">
+        <h3>Welcome to WealthPro</h3>
+        <p>Let's get started with your wealth management journey.</p>
+      </div>
+      <div class="modal-body">
+        <form id="accountForm">
+          <div class="form-group">
+            <label for="userName">Your Name</label>
+            <input 
+              type="text" 
+              id="userName" 
+              name="userName" 
+              placeholder="Enter your name"
+              required
+            >
+            <div class="error-message" id="nameError">Please enter your name</div>
+          </div>
+          <div class="form-group">
+            <label for="accountAmount">What is your current account balance?</label>
+            <input 
+              type="text" 
+              id="accountAmount" 
+              name="accountAmount" 
+              placeholder="Enter amount in ₹"
+              required
+            >
+            <div class="error-message" id="amountError">Please enter a valid amount</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-submit" id="submitAmount">Continue to Dashboard</button>
+      </div>
+    </div>
+  </div>
 
   <script src="assets/javascript/index.js"></script>
 </body>

@@ -1063,4 +1063,147 @@
     .footer-content {
         flex-direction: column;
     }
+    
+    .modal {
+        width: 95%;
+        padding: var(--space-lg);
+    }
+    
+    .modal-header h3 {
+        font-size: 1.5rem;
+    }
+    
+    .form-group input {
+        font-size: 1rem;
+        padding: 10px;
+    }
+    
+    .btn-submit {
+        width: 100%;
+    }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-standard);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background-color: var(--primary-white);
+  border-radius: 10px;
+  padding: var(--space-xl);
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-20px);
+  transition: all var(--transition-standard);
+  position: relative;
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.modal-close:hover {
+  color: var(--primary-black);
+}
+
+.modal-header {
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+.modal-header h3 {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-sm);
+}
+
+.modal-body {
+  margin-bottom: var(--space-xl);
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.form-group input {
+  width: 100%;
+  padding: var(--space-md);
+  font-size: 1.1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus {
+  border-color: var(--primary-black);
+  outline: none;
+}
+
+.modal-footer {
+  text-align: center;
+}
+
+.btn-submit {
+  background-color: var(--primary-black);
+  color: var(--primary-white);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: var(--space-md) var(--space-xl);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+}
+
+.btn-submit:hover {
+  background-color: var(--gray-800);
+  transform: translateY(-2px);
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 0.9rem;
+  margin-top: var(--space-xs);
+  display: none;
+}
+
+.error-message.active {
+  display: block;
 }
