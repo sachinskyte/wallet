@@ -225,17 +225,28 @@
       color: var(--gray-800);
     }
     
-    /* Delete transaction button */
-    .delete-transaction {
-      color: var(--gray-500);
+    /* Transaction edit and delete buttons */
+    .transaction-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-left: 10px;
+    }
+    
+    .edit-transaction, .delete-transaction {
+      color: var(--gray-500);
       cursor: pointer;
       opacity: 0;
       transition: opacity var(--transition-fast);
     }
     
+    .transaction-item:hover .edit-transaction,
     .transaction-item:hover .delete-transaction {
       opacity: 1;
+    }
+    
+    .edit-transaction:hover {
+      color: var(--primary-black);
     }
     
     .delete-transaction:hover {
@@ -305,19 +316,20 @@
       color: var(--primary-black);
     }
     
+    /* More centered calculator panel */
     .calculator-panel {
       display: none;
-      position: absolute;
       background-color: var(--gray-100);
-      border-radius: 10px;
+      border-radius: 8px;
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-      margin-top: 5px;
+      padding: 10px;
       border: 1px solid var(--gray-300);
       width: 100%;
-      z-index: 100;
+      max-width: 280px;
+      margin: 0 auto 15px;
+      position: relative;
+      top: 0;
       left: 0;
-      top: 100%;
     }
     
     .calculator-panel.active {
@@ -326,35 +338,36 @@
     
     .calculator-display {
       background-color: var(--primary-white);
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     
     .calculator-input {
       width: 100%;
       border: none;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--primary-black);
       text-align: right;
       background: transparent;
+      outline: none;
     }
     
     .calculator-buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 5px;
     }
     
     .calc-btn {
       background-color: var(--primary-white);
       border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
       font-weight: 500;
-      padding: 12px 0;
+      padding: 8px 0;
       cursor: pointer;
       transition: all var(--transition-fast);
     }
@@ -390,13 +403,13 @@
     
     .use-result-btn {
       width: 100%;
-      margin-top: 12px;
-      padding: 10px;
+      margin-top: 8px;
+      padding: 8px;
       background-color: var(--success);
       color: var(--primary-white);
       border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       transition: all var(--transition-fast);
@@ -554,6 +567,72 @@
     .calculator-input {
       outline: none;
     }
+
+    /* Position calculator for small screens */
+    @media screen and (max-width: 350px) {
+      .calculator-panel {
+        width: 100%;
+        max-width: 280px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .calc-btn {
+        padding: 6px 0;
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Fix for small phone screens */
+    @media screen and (max-height: 640px) {
+      .modal {
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      
+      .calculator-buttons {
+        gap: 4px;
+      }
+      
+      .calc-btn {
+        padding: 6px 0;
+      }
+    }
+
+    /* Ensure modal fits better on small screens */
+    .modal {
+      background-color: var(--primary-white);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      width: 90%;
+      max-width: 450px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      transform: translateY(-20px);
+      transition: all var(--transition-standard);
+      position: relative;
+    }
+    
+    @media screen and (max-width: 480px) {
+      .modal {
+        padding: 20px 15px;
+        width: 95%;
+      }
+      
+      .modal-header h3 {
+        font-size: 1.4rem;
+      }
+      
+      .form-group label {
+        font-size: 0.9rem;
+      }
+      
+      .transaction-type-btn {
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -707,12 +786,15 @@
                 placeholder="Enter amount in ₹"
                 required
               >
+              <button type="button" id="calculatorToggle" class="calculator-toggle">
+                <i class="fas fa-calculator"></i>
+              </button>
             </div>
             <div class="error-message" id="amountError">Please enter a valid amount</div>
           </div>
         </form>
         
-        <!-- Calculator Panel moved outside the form group but still in modal-body -->
+        <!-- Calculator Panel - positioned at the center -->
         <div id="calculatorPanel" class="calculator-panel">
           <div class="calculator-display">
             <input type="text" id="calculatorInput" class="calculator-input" readonly>
@@ -841,13 +923,14 @@
       const calculatorPanel = document.getElementById('calculatorPanel');
       const calculatorInput = document.getElementById('calculatorInput');
       const useCalculatorResult = document.getElementById('useCalculatorResult');
+      const calculatorToggle = document.getElementById('calculatorToggle');
       
       // Calculator functionality
       let currentCalculation = '';
       
-      // Show calculator when the amount field is focused
-      transactionAmount.addEventListener('focus', function() {
-        calculatorPanel.classList.add('active');
+      // Toggle calculator panel with button
+      calculatorToggle.addEventListener('click', function() {
+        calculatorPanel.classList.toggle('active');
         if(transactionAmount.value) {
           currentCalculation = transactionAmount.value;
           calculatorInput.value = currentCalculation;
@@ -908,56 +991,47 @@
         });
       });
       
-      // Close calculator when clicking outside, but maintain better behavior
-      document.addEventListener('click', function(e) {
-        if (calculatorPanel.classList.contains('active') && 
-            !calculatorPanel.contains(e.target) && 
-            e.target !== transactionAmount) {
-          // Only close if we're clicking outside both the calculator and amount field
-          calculatorPanel.classList.remove('active');
-        }
-      });
-      
-      // Keep calculator open if clicking in the transaction form
-      transactionForm.addEventListener('click', function(e) {
-        // Don't propagate clicks in the form to prevent calculator from closing
-        e.stopPropagation();
-      });
-      
-      // Update transaction amount on keyup in calculator input
-      calculatorInput.addEventListener('keyup', function() {
-        currentCalculation = calculatorInput.value;
-        // Don't update transaction amount field while typing in calculator
-      });
-      
-      // Use calculator result in transaction amount field
-      useCalculatorResult.addEventListener('click', function() {
-        if (currentCalculation && calculatorInput.value !== 'Error') {
-          transactionAmount.value = currentCalculation;
-          calculatorPanel.classList.remove('active');
-        }
-      });
-      
-      let transactionType = 'income'; // Default transaction type
-      
-      // Open modal when clicking add button
-      addTransactionBtn.addEventListener('click', function() {
-        transactionModal.classList.add('active');
-        setTimeout(() => {
-          transactionName.focus();
-        }, 300);
-      });
-      
-      // Close modal when clicking the X
+      // Close modal when clicking the X - also reset calculator and edit state
       transactionModalClose.addEventListener('click', function() {
         transactionModal.classList.remove('active');
+        calculatorPanel.classList.remove('active');
+        
+        // Reset edit state
+        if (submitTransaction.dataset.editId) {
+          delete submitTransaction.dataset.editId;
+          submitTransaction.textContent = 'Add Transaction';
+        }
       });
       
       // Close modal when clicking outside
       transactionModal.addEventListener('click', function(e) {
         if (e.target === transactionModal) {
           transactionModal.classList.remove('active');
+          calculatorPanel.classList.remove('active');
+          
+          // Reset edit state
+          if (submitTransaction.dataset.editId) {
+            delete submitTransaction.dataset.editId;
+            submitTransaction.textContent = 'Add Transaction';
+          }
         }
+      });
+      
+      let transactionType = 'income'; // Default transaction type
+      
+      // Open modal when clicking add button - no auto display of calculator
+      addTransactionBtn.addEventListener('click', function() {
+        transactionModal.classList.add('active');
+        
+        // Reset form and calculator state
+        transactionForm.reset();
+        currentCalculation = '';
+        calculatorInput.value = '';
+        calculatorPanel.classList.remove('active');
+        
+        setTimeout(() => {
+          transactionName.focus();
+        }, 300);
       });
       
       // Transaction type toggle
@@ -1014,17 +1088,36 @@
           return;
         }
         
-        // Create new transaction
-        const newTransaction = {
-          id: Date.now(),
-          name: name,
-          amount: parseFloat(amount),
-          type: transactionType,
-          date: new Date().toISOString()
-        };
+        // Check if we're editing or adding
+        const editId = submitTransaction.dataset.editId;
         
-        // Add to transactions array
-        transactions.unshift(newTransaction); // Add to beginning of array
+        if (editId) {
+          // Edit existing transaction
+          const index = transactions.findIndex(t => t.id === Number(editId));
+          
+          if (index !== -1) {
+            // Update transaction data but keep the original date and id
+            transactions[index].name = name;
+            transactions[index].amount = parseFloat(amount);
+            transactions[index].type = transactionType;
+          }
+          
+          // Reset the edit ID
+          delete submitTransaction.dataset.editId;
+          submitTransaction.textContent = 'Add Transaction';
+        } else {
+          // Create new transaction
+          const newTransaction = {
+            id: Date.now(),
+            name: name,
+            amount: parseFloat(amount),
+            type: transactionType,
+            date: new Date().toISOString()
+          };
+          
+          // Add to transactions array
+          transactions.unshift(newTransaction); // Add to beginning of array
+        }
         
         // Save to localStorage
         localStorage.setItem('transactions', JSON.stringify(transactions));
@@ -1125,16 +1218,25 @@
             </div>
             <div class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
               ${transaction.type === 'income' ? '+' : '-'} ${formatCurrency(transaction.amount)}
-              <span class="delete-transaction" data-id="${transaction.id}">
-                <i class="fas fa-times"></i>
-              </span>
+              <div class="transaction-actions">
+                <span class="edit-transaction" data-id="${transaction.id}">
+                  <i class="fas fa-edit"></i>
+                </span>
+                <span class="delete-transaction" data-id="${transaction.id}">
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
             </div>
           `;
           
           transactionsList.appendChild(transactionItem);
           
-          // Add event listener to delete button
+          // Add event listeners to edit and delete buttons
+          const editBtn = transactionItem.querySelector('.edit-transaction');
           const deleteBtn = transactionItem.querySelector('.delete-transaction');
+          editBtn.addEventListener('click', function() {
+            editTransaction(Number(this.getAttribute('data-id')));
+          });
           deleteBtn.addEventListener('click', function() {
             deleteTransaction(Number(this.getAttribute('data-id')));
           });
@@ -1257,6 +1359,50 @@
           expenseBar.style.width = '0%';
         }
       }
+
+      // Function to edit a transaction
+      function editTransaction(id) {
+        // Find transaction
+        const transaction = transactions.find(t => t.id === id);
+        
+        if (transaction) {
+          // Pre-fill the modal with transaction data
+          transactionName.value = transaction.name;
+          transactionAmount.value = transaction.amount;
+          
+          // Set the transaction type
+          transactionType = transaction.type;
+          if (transaction.type === 'income') {
+            incomeBtn.classList.add('active');
+            expenseBtn.classList.remove('active');
+          } else {
+            expenseBtn.classList.add('active');
+            incomeBtn.classList.remove('active');
+          }
+          
+          // Show the modal
+          transactionModal.classList.add('active');
+          
+          // Change the submit button text
+          submitTransaction.textContent = 'Update Transaction';
+          
+          // Store the id of the transaction being edited
+          submitTransaction.dataset.editId = id;
+          
+          // Focus on the name field
+          setTimeout(() => {
+            transactionName.focus();
+          }, 300);
+        }
+      }
+
+      // Use calculator result in transaction amount field
+      useCalculatorResult.addEventListener('click', function() {
+        if (currentCalculation && calculatorInput.value !== 'Error') {
+          transactionAmount.value = currentCalculation;
+          calculatorPanel.classList.remove('active');
+        }
+      });
     });
   </script>
 </body>
