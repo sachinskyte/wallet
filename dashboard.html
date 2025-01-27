@@ -189,6 +189,21 @@
       color: var(--gray-500);
     }
 
+    .transaction-category {
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      background-color: var(--gray-200);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+    
+    .transaction-category i {
+      font-size: 0.7rem;
+      margin-right: 3px;
+    }
+    
     .transaction-amount {
       font-weight: 600;
       font-size: 1.1rem;
@@ -633,6 +648,121 @@
         font-size: 0.9rem;
       }
     }
+
+    /* Savings Goal Styles */
+    .goal-section {
+      background-color: var(--primary-white);
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+    
+    .goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .goal-btn {
+      background-color: transparent;
+      color: var(--gray-600);
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all var(--transition-standard);
+    }
+    
+    .goal-btn:hover {
+      background-color: var(--gray-200);
+      color: var(--gray-800);
+    }
+    
+    .goal-btn.primary {
+      background-color: var(--primary-black);
+      color: var(--primary-white);
+      border: none;
+    }
+    
+    .goal-btn.primary:hover {
+      background-color: var(--gray-800);
+    }
+    
+    .goal-details {
+      margin-bottom: 15px;
+    }
+    
+    .goal-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-black);
+      margin-bottom: 5px;
+    }
+    
+    .goal-name {
+      font-size: 1.2rem;
+      color: var(--gray-700);
+      margin-bottom: 10px;
+    }
+    
+    .goal-progress-info {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      margin-bottom: 10px;
+    }
+    
+    .goal-progress-bar {
+      height: 10px;
+      background-color: var(--gray-200);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    
+    .goal-progress {
+      height: 100%;
+      background-color: var(--success);
+      border-radius: 5px;
+      transition: width 1s ease-in-out;
+    }
+    
+    .goal-eta {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      font-style: italic;
+    }
+
+    /* Budget Link Card */
+    .budget-link-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .budget-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 15px;
+      background-color: var(--gray-100);
+      color: var(--primary-black);
+      border-radius: 5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all var(--transition-standard);
+    }
+    
+    .budget-link:hover {
+      background-color: var(--primary-black);
+      color: var(--primary-white);
+      transform: translateY(-2px);
+    }
+    
+    .budget-link i {
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -686,6 +816,14 @@
             <div class="stat-card-title">Net Savings</div>
             <div class="stat-card-amount savings-stat" id="netSavings">₹0.00</div>
           </div>
+          
+          <!-- Budget Management Link -->
+          <div class="stat-card budget-link-card">
+            <div class="stat-card-title">Budget Management</div>
+            <a href="budget.html" class="budget-link">
+              <i class="fas fa-chart-pie"></i> Manage Budget
+            </a>
+          </div>
         </div>
       </div>
       
@@ -720,6 +858,32 @@
               <div class="bar expense-bar" id="expenseBar" style="width: 100%"></div>
             </div>
           </div>
+        </div>
+      </div>
+      
+      <!-- Budget Goal Tracker Section -->
+      <div class="goal-section">
+        <div class="goal-header">
+          <h3>Savings Goal</h3>
+          <button class="goal-btn" id="editGoalBtn">Edit Goal</button>
+        </div>
+        <div id="noGoalMessage" style="display: none;">
+          <p>Set a savings goal to track your progress</p>
+          <button class="goal-btn primary" id="setGoalBtn">Set Goal</button>
+        </div>
+        <div id="goalDisplay" style="display: none;">
+          <div class="goal-details">
+            <div class="goal-amount" id="goalAmount">₹50,000</div>
+            <div class="goal-name" id="goalName">New Laptop</div>
+            <div class="goal-progress-info">
+              <span id="goalSaved">₹0</span> saved of <span id="goalTotal">₹50,000</span>
+              (<span id="goalPercentage">0%</span>)
+            </div>
+          </div>
+          <div class="goal-progress-bar">
+            <div class="goal-progress" id="goalProgressBar" style="width: 0%"></div>
+          </div>
+          <div class="goal-eta">Estimated completion: <span id="goalEta">--</span></div>
         </div>
       </div>
       
@@ -792,6 +956,14 @@
             </div>
             <div class="error-message" id="amountError">Please enter a valid amount</div>
           </div>
+          
+          <div class="form-group">
+            <label for="transactionCategory">Category</label>
+            <select id="transactionCategory" class="form-select">
+              <option value="">None (Optional)</option>
+              <!-- Categories will be populated by JavaScript -->
+            </select>
+          </div>
         </form>
         
         <!-- Calculator Panel - positioned at the center -->
@@ -826,6 +998,50 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-submit" id="submitTransaction">Add Transaction</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goal Setting Modal -->
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal">
+      <button class="modal-close" id="goalModalClose"><i class="fas fa-times"></i></button>
+      <div class="modal-header">
+        <h3>Set Savings Goal</h3>
+        <p>Track your progress towards a financial target</p>
+      </div>
+      <div class="modal-body">
+        <form id="goalForm">
+          <div class="form-group">
+            <label for="goalNameInput">Goal Name</label>
+            <input 
+              type="text" 
+              id="goalNameInput" 
+              name="goalNameInput" 
+              placeholder="e.g. New Laptop, Vacation, Emergency Fund"
+              required
+            >
+            <div class="error-message" id="goalNameError">Please enter a goal name</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="goalAmountInput">Target Amount</label>
+            <div class="amount-input-wrapper">
+              <input 
+                type="text" 
+                id="goalAmountInput" 
+                name="goalAmountInput" 
+                placeholder="Enter amount in ₹"
+                required
+              >
+            </div>
+            <div class="error-message" id="goalAmountError">Please enter a valid amount</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-submit" id="submitGoal">Save Goal</button>
+        <button type="button" class="btn-delete" id="deleteGoal" style="display: none;">Delete Goal</button>
       </div>
     </div>
   </div>
@@ -915,6 +1131,7 @@
       const transactionForm = document.getElementById('transactionForm');
       const transactionAmount = document.getElementById('transactionAmount');
       const transactionName = document.getElementById('transactionName');
+      const transactionCategory = document.getElementById('transactionCategory');
       const submitTransaction = document.getElementById('submitTransaction');
       const incomeBtn = document.getElementById('incomeBtn');
       const expenseBtn = document.getElementById('expenseBtn');
@@ -1062,6 +1279,7 @@
       function addTransaction() {
         const name = transactionName.value.trim();
         const amount = transactionAmount.value.trim();
+        const category = transactionCategory.value;
         
         // Validate inputs
         let isValid = true;
@@ -1100,6 +1318,7 @@
             transactions[index].name = name;
             transactions[index].amount = parseFloat(amount);
             transactions[index].type = transactionType;
+            transactions[index].category = category;
           }
           
           // Reset the edit ID
@@ -1112,11 +1331,17 @@
             name: name,
             amount: parseFloat(amount),
             type: transactionType,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            category: category
           };
           
           // Add to transactions array
           transactions.unshift(newTransaction); // Add to beginning of array
+          
+          // If this is an expense with a category, update the budget category
+          if (transactionType === 'expense' && category) {
+            updateBudgetCategories(name, amount, category);
+          }
         }
         
         // Save to localStorage
@@ -1160,8 +1385,9 @@
         updateBalanceDisplay();
         updateStatistics(totalIncome, totalExpenses, netSavings);
         
-        // Additional function calls for cash flow
+        // Additional function calls for cash flow and goal progress
         updateCashFlowDisplay();
+        loadGoalData(); // Update goal progress when transactions change
       }
       
       function updateBalanceDisplay() {
@@ -1188,57 +1414,76 @@
         const transactionsList = document.getElementById('transactionsList');
         const noTransactions = document.getElementById('noTransactions');
         
-        // Clear previous transactions
+        // Clear the list
         transactionsList.innerHTML = '';
         
         if (transactions.length === 0) {
-          noTransactions.style.display = 'block';
+          // Show empty state
+          transactionsList.innerHTML = `
+            <div class="no-transactions">
+              <i class="fas fa-receipt"></i>
+              <p>No transactions yet</p>
+            </div>
+          `;
           return;
         }
         
-        noTransactions.style.display = 'none';
-        
-        // Add each transaction to the list
+        // Add transactions to the list
         transactions.forEach(transaction => {
           const transactionItem = document.createElement('div');
           transactionItem.className = 'transaction-item';
           
-          const date = new Date(transaction.date);
-          const formattedDate = `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+          const transactionDate = new Date(transaction.date);
+          const formattedDate = transactionDate.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
           
-          transactionItem.innerHTML = `
+          let transactionHTML = `
             <div class="transaction-details">
               <div class="transaction-icon ${transaction.type === 'income' ? 'income-icon' : 'expense-icon'}">
-                <i class="fas ${transaction.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                <i class="fas ${transaction.type === 'income' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
               </div>
               <div class="transaction-info">
                 <h4>${transaction.name}</h4>
-                <div class="transaction-date">${formattedDate}</div>
+                <div class="transaction-date">${formattedDate}</div>`;
+          
+          // Add category if it exists
+          if (transaction.category) {
+            transactionHTML += `
+                <div class="transaction-category">
+                  <i class="fas fa-tag"></i> ${transaction.category}
+                </div>`;
+          }
+          
+          transactionHTML += `
               </div>
             </div>
             <div class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
-              ${transaction.type === 'income' ? '+' : '-'} ${formatCurrency(transaction.amount)}
+              ${formatCurrency(transaction.amount)}
               <div class="transaction-actions">
-                <span class="edit-transaction" data-id="${transaction.id}">
-                  <i class="fas fa-edit"></i>
-                </span>
-                <span class="delete-transaction" data-id="${transaction.id}">
-                  <i class="fas fa-times"></i>
-                </span>
+                <div class="edit-transaction" data-id="${transaction.id}"><i class="fas fa-edit"></i></div>
+                <div class="delete-transaction" data-id="${transaction.id}"><i class="fas fa-trash"></i></div>
               </div>
             </div>
           `;
           
+          transactionItem.innerHTML = transactionHTML;
           transactionsList.appendChild(transactionItem);
           
-          // Add event listeners to edit and delete buttons
+          // Add event listeners for edit and delete
           const editBtn = transactionItem.querySelector('.edit-transaction');
           const deleteBtn = transactionItem.querySelector('.delete-transaction');
+          
           editBtn.addEventListener('click', function() {
-            editTransaction(Number(this.getAttribute('data-id')));
+            const id = this.dataset.id;
+            editTransaction(Number(id));
           });
+          
           deleteBtn.addEventListener('click', function() {
-            deleteTransaction(Number(this.getAttribute('data-id')));
+            const id = this.dataset.id;
+            deleteTransaction(Number(id));
           });
         });
       }
@@ -1362,38 +1607,42 @@
 
       // Function to edit a transaction
       function editTransaction(id) {
-        // Find transaction
+        // Find the transaction
         const transaction = transactions.find(t => t.id === id);
+        if (!transaction) return;
         
-        if (transaction) {
-          // Pre-fill the modal with transaction data
-          transactionName.value = transaction.name;
-          transactionAmount.value = transaction.amount;
-          
-          // Set the transaction type
-          transactionType = transaction.type;
-          if (transaction.type === 'income') {
-            incomeBtn.classList.add('active');
-            expenseBtn.classList.remove('active');
-          } else {
-            expenseBtn.classList.add('active');
-            incomeBtn.classList.remove('active');
-          }
-          
-          // Show the modal
-          transactionModal.classList.add('active');
-          
-          // Change the submit button text
-          submitTransaction.textContent = 'Update Transaction';
-          
-          // Store the id of the transaction being edited
-          submitTransaction.dataset.editId = id;
-          
-          // Focus on the name field
-          setTimeout(() => {
-            transactionName.focus();
-          }, 300);
+        // Set form values
+        transactionName.value = transaction.name;
+        transactionAmount.value = transaction.amount;
+        
+        // Set transaction type
+        transactionType = transaction.type;
+        if (transaction.type === 'income') {
+          incomeBtn.classList.add('active');
+          expenseBtn.classList.remove('active');
+        } else {
+          expenseBtn.classList.add('active');
+          incomeBtn.classList.remove('active');
         }
+        
+        // Set category if it exists
+        if (transaction.category) {
+          transactionCategory.value = transaction.category;
+        } else {
+          transactionCategory.value = '';
+        }
+        
+        // Set edit ID
+        submitTransaction.dataset.editId = id;
+        submitTransaction.textContent = 'Update Transaction';
+        
+        // Open modal
+        transactionModal.classList.add('active');
+        
+        // Focus on name input
+        setTimeout(() => {
+          transactionName.focus();
+        }, 300);
       }
 
       // Use calculator result in transaction amount field
@@ -1403,6 +1652,271 @@
           calculatorPanel.classList.remove('active');
         }
       });
+      
+      // Goal tracking functionality
+      const setGoalBtn = document.getElementById('setGoalBtn');
+      const editGoalBtn = document.getElementById('editGoalBtn');
+      const goalModal = document.getElementById('goalModal');
+      const goalModalClose = document.getElementById('goalModalClose');
+      const goalNameInput = document.getElementById('goalNameInput');
+      const goalAmountInput = document.getElementById('goalAmountInput');
+      const submitGoal = document.getElementById('submitGoal');
+      const deleteGoal = document.getElementById('deleteGoal');
+      const goalForm = document.getElementById('goalForm');
+      
+      // Load and display goal data
+      loadGoalData();
+      
+      function loadGoalData() {
+        const goalData = JSON.parse(localStorage.getItem('savingsGoal'));
+        
+        if (goalData) {
+          // Show goal display
+          document.getElementById('noGoalMessage').style.display = 'none';
+          document.getElementById('goalDisplay').style.display = 'block';
+          
+          // Update goal details
+          document.getElementById('goalAmount').textContent = formatCurrency(goalData.amount);
+          document.getElementById('goalName').textContent = goalData.name;
+          document.getElementById('goalTotal').textContent = formatCurrency(goalData.amount);
+          
+          // Calculate current savings based on income transactions
+          let currentSavings = calculateCurrentSavings();
+          let percentComplete = Math.min(Math.round((currentSavings / goalData.amount) * 100), 100);
+          
+          document.getElementById('goalSaved').textContent = formatCurrency(currentSavings);
+          document.getElementById('goalPercentage').textContent = percentComplete + '%';
+          document.getElementById('goalProgressBar').style.width = percentComplete + '%';
+          
+          // Calculate ETA based on average savings rate
+          updateGoalEta(currentSavings, goalData.amount);
+        } else {
+          // Show no goal message
+          document.getElementById('noGoalMessage').style.display = 'block';
+          document.getElementById('goalDisplay').style.display = 'none';
+        }
+      }
+      
+      function calculateCurrentSavings() {
+        // Get total income and expenses
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        
+        transactions.forEach(transaction => {
+          if (transaction.type === 'income') {
+            totalIncome += transaction.amount;
+          } else {
+            totalExpenses += transaction.amount;
+          }
+        });
+        
+        // Return net savings (can be negative)
+        return Math.max(0, totalIncome - totalExpenses);
+      }
+      
+      function updateGoalEta(currentSavings, goalAmount) {
+        const etaElement = document.getElementById('goalEta');
+        
+        if (currentSavings >= goalAmount) {
+          etaElement.textContent = 'Goal reached!';
+          return;
+        }
+        
+        // Calculate average daily savings rate based on last 30 days
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const recentTransactions = transactions.filter(t => new Date(t.date) > thirtyDaysAgo);
+        
+        let recentIncome = 0;
+        let recentExpenses = 0;
+        
+        recentTransactions.forEach(transaction => {
+          if (transaction.type === 'income') {
+            recentIncome += transaction.amount;
+          } else {
+            recentExpenses += transaction.amount;
+          }
+        });
+        
+        const recentSavings = recentIncome - recentExpenses;
+        
+        if (recentSavings <= 0) {
+          etaElement.textContent = 'Not saving enough yet';
+          return;
+        }
+        
+        // Calculate daily savings rate
+        const dailySavingsRate = recentSavings / 30;
+        
+        // Calculate days needed to reach goal
+        const remainingAmount = goalAmount - currentSavings;
+        const daysNeeded = Math.ceil(remainingAmount / dailySavingsRate);
+        
+        // Get future date
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + daysNeeded);
+        
+        // Format date
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        etaElement.textContent = targetDate.toLocaleDateString(undefined, options);
+      }
+      
+      // Goal form submission
+      submitGoal.addEventListener('click', saveGoal);
+      goalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveGoal();
+      });
+      
+      function saveGoal() {
+        const name = goalNameInput.value.trim();
+        const amount = goalAmountInput.value.trim();
+        
+        // Validate inputs
+        let isValid = true;
+        
+        if (!name) {
+          document.getElementById('goalNameError').classList.add('active');
+          goalNameInput.focus();
+          isValid = false;
+        } else {
+          document.getElementById('goalNameError').classList.remove('active');
+        }
+        
+        if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+          document.getElementById('goalAmountError').classList.add('active');
+          if (isValid) {
+            goalAmountInput.focus();
+          }
+          isValid = false;
+        } else {
+          document.getElementById('goalAmountError').classList.remove('active');
+        }
+        
+        if (!isValid) {
+          return;
+        }
+        
+        // Save goal data
+        const goalData = {
+          name: name,
+          amount: parseFloat(amount),
+          dateCreated: new Date().toISOString()
+        };
+        
+        localStorage.setItem('savingsGoal', JSON.stringify(goalData));
+        
+        // Update goal display
+        loadGoalData();
+        
+        // Close modal
+        goalModal.classList.remove('active');
+      }
+      
+      // Open goal modal
+      setGoalBtn.addEventListener('click', function() {
+        // Show add mode
+        goalNameInput.value = '';
+        goalAmountInput.value = '';
+        submitGoal.textContent = 'Save Goal';
+        deleteGoal.style.display = 'none';
+        
+        goalModal.classList.add('active');
+        setTimeout(() => {
+          goalNameInput.focus();
+        }, 300);
+      });
+      
+      // Edit goal
+      editGoalBtn.addEventListener('click', function() {
+        const goalData = JSON.parse(localStorage.getItem('savingsGoal'));
+        
+        if (goalData) {
+          // Show edit mode with pre-filled data
+          goalNameInput.value = goalData.name;
+          goalAmountInput.value = goalData.amount;
+          submitGoal.textContent = 'Update Goal';
+          deleteGoal.style.display = 'inline-block';
+          
+          goalModal.classList.add('active');
+          setTimeout(() => {
+            goalNameInput.focus();
+          }, 300);
+        }
+      });
+      
+      // Delete goal
+      deleteGoal.addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete this savings goal?')) {
+          localStorage.removeItem('savingsGoal');
+          loadGoalData();
+          goalModal.classList.remove('active');
+        }
+      });
+      
+      // Close goal modal
+      goalModalClose.addEventListener('click', function() {
+        goalModal.classList.remove('active');
+      });
+      
+      // Close goal modal when clicking outside
+      goalModal.addEventListener('click', function(e) {
+        if (e.target === goalModal) {
+          goalModal.classList.remove('active');
+        }
+      });
+      
+      // Input validation for goal amount - only allow numbers and decimals
+      goalAmountInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+      });
+
+      // Load budget categories for transaction form
+      function loadCategories() {
+        const savedCategories = localStorage.getItem('budgetCategories');
+        if (savedCategories) {
+          const categories = JSON.parse(savedCategories);
+          
+          // Clear existing options except the default
+          while (transactionCategory.options.length > 1) {
+            transactionCategory.remove(1);
+          }
+          
+          // Add categories as options
+          categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.name;
+            option.textContent = category.name;
+            transactionCategory.appendChild(option);
+          });
+        }
+      }
+      
+      // Update budgets when adding expense transactions
+      function updateBudgetCategories(transactionName, transactionAmount, categoryName) {
+        if (!categoryName) return;
+        
+        const savedCategories = localStorage.getItem('budgetCategories');
+        if (savedCategories) {
+          const categories = JSON.parse(savedCategories);
+          
+          // Find the category
+          const categoryIndex = categories.findIndex(c => c.name === categoryName);
+          if (categoryIndex !== -1) {
+            // Update spent amount
+            categories[categoryIndex].spent = (parseFloat(categories[categoryIndex].spent) || 0) + parseFloat(transactionAmount);
+            
+            // Save updated categories
+            localStorage.setItem('budgetCategories', JSON.stringify(categories));
+          }
+        }
+      }
+
+      // Initialize function calls
+      loadTransactions();
+      loadCategories();
+      calculateTotalBalance();
     });
   </script>
 </body>
