@@ -1,94 +1,45 @@
-// DOM Elements
-const addCategoryBtn = document.getElementById('addCategoryBtn');
-const emptyStateAddBtn = document.getElementById('emptyStateAddBtn');
-const categoryModal = document.getElementById('categoryModal');
-const categoryModalClose = document.getElementById('categoryModalClose');
-const categoryForm = document.getElementById('categoryForm');
-const categoryName = document.getElementById('categoryName');
-const categoryAmount = document.getElementById('categoryAmount');
-const submitCategory = document.getElementById('submitCategory');
-const categoriesList = document.getElementById('categoriesList');
-const emptyState = document.getElementById('emptyState');
-const categoryModalTitle = document.getElementById('categoryModalTitle');
-const iconSelector = document.getElementById('iconSelector');
+// DOM elements
+const addCategoryBtn = document.querySelector('.add-category-btn');
+const categoryModal = document.querySelector('#categoryModal');
+const modalOverlay = document.querySelector('.modal-overlay');
+const modalClose = document.querySelector('.modal-close');
+const categoryForm = document.querySelector('#categoryForm');
+const categoriesContainer = document.querySelector('.categories-container');
+const addExpenseBtn = document.querySelector('.add-expense-btn');
+const expenseModal = document.querySelector('#expenseModal');
+const expenseForm = document.querySelector('#expenseForm');
+const budgetTotalAmount = document.querySelector('.total-budget-card .overview-card-amount');
+const spentAmount = document.querySelector('.spent-card .overview-card-amount');
+const remainingAmount = document.querySelector('.remaining-card .overview-card-amount');
+const progressFill = document.querySelector('.progress-fill');
+const progressPercentage = document.querySelector('.progress-percentage');
+const periodOptions = document.querySelectorAll('.period-option');
+const emptyState = document.querySelector('.empty-state');
+const spendingChartContainer = document.querySelector('.spending-chart-container');
 
-// Add expense related elements
-const addExpenseBtn = document.getElementById('addExpenseBtn');
-const expenseModal = document.getElementById('expenseModal');
-const expenseModalClose = document.getElementById('expenseModalClose');
-const expenseForm = document.getElementById('expenseForm');
-const expenseName = document.getElementById('expenseName');
-const expenseAmount = document.getElementById('expenseAmount');
-const expenseCategory = document.getElementById('expenseCategory');
-const expenseDate = document.getElementById('expenseDate');
-const submitExpense = document.getElementById('submitExpense');
-const expenseCalculatorToggle = document.getElementById('expenseCalculatorToggle');
-const expenseCalculatorPanel = document.getElementById('expenseCalculatorPanel');
-const calculatorInput = document.getElementById('calculatorInput');
-const useCalculatorResult = document.getElementById('useCalculatorResult');
-
-// Monthly spending elements
-const prevMonth = document.getElementById('prevMonth');
-const nextMonth = document.getElementById('nextMonth');
-const currentMonthDisplay = document.getElementById('currentMonth');
-const monthlyTransactionsList = document.getElementById('monthlyTransactionsList');
-const emptyTransactionsState = document.getElementById('emptyTransactionsState');
-const spendingChartCanvas = document.getElementById('spendingChart');
-
-// Budget Categories Management
+// App state
 let categories = [];
-let selectedIcon = 'fa-home';
-let editingCategoryId = null;
-
-// Calculator variables
-let currentCalculation = '';
-
-// Chart instance
+let expenses = [];
+let selectedPeriod = 'month';
 let spendingChart = null;
 
-// Current month for viewing (0-based: 0 = January)
-let viewMonth = new Date().getMonth();
-let viewYear = new Date().getFullYear();
-
-// Month names for display
-const monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
-// Navigation functionality
-function initNavigation() {
-  const hamburger = document.querySelector('.hamburger');
-  const navLinks = document.querySelector('.nav-links');
-  
-  if (hamburger && navLinks) {
-    hamburger.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-      hamburger.classList.toggle('active');
-    });
-  }
-  
-  document.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (navbar && window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else if (navbar) {
-      navbar.classList.remove('scrolled');
-    }
-  });
+// Initialize the app
+function init() {
+  loadCategories();
+  loadExpenses();
+  renderCategories();
+  updateBudgetOverview();
+  renderSpendingChart();
+  setupEventListeners();
 }
 
-// Format currency function
+// Format currency
 function formatCurrency(amount) {
-  return '₹' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-}
-
-// Format date to YYYY-MM-DD for input value
-function formatDateForInput(date) {
-  const d = new Date(date);
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  const day = d.getDate().toString().padStart(2, '0');
-  return `${d.getFullYear()}-${month}-${day}`;
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2
+  }).format(amount);
 }
 
 // Load categories from localStorage
@@ -96,8 +47,6 @@ function loadCategories() {
   const savedCategories = localStorage.getItem('budgetCategories');
   if (savedCategories) {
     categories = JSON.parse(savedCategories);
-    renderCategories();
-    updateBudgetOverview();
   }
 }
 
@@ -106,804 +55,534 @@ function saveCategories() {
   localStorage.setItem('budgetCategories', JSON.stringify(categories));
 }
 
-// Render categories
+// Load expenses from localStorage
+function loadExpenses() {
+  const savedExpenses = localStorage.getItem('budgetExpenses');
+  if (savedExpenses) {
+    expenses = JSON.parse(savedExpenses);
+  }
+}
+
+// Save expenses to localStorage
+function saveExpenses() {
+  localStorage.setItem('budgetExpenses', JSON.stringify(expenses));
+}
+
+// Render budget categories
 function renderCategories() {
-  if (!categoriesList) return;
+  categoriesContainer.innerHTML = '';
+  
+  // Add the "add category" button first
+  const addButtonDiv = document.createElement('div');
+  addButtonDiv.classList.add('add-category-btn');
+  addButtonDiv.innerHTML = `
+    <i class="fas fa-plus"></i>
+    <p>Add New Category</p>
+  `;
+  addButtonDiv.addEventListener('click', () => openCategoryModal());
+  categoriesContainer.appendChild(addButtonDiv);
   
   if (categories.length === 0) {
-    if (emptyState) emptyState.style.display = 'block';
-  } else {
-    if (emptyState) emptyState.style.display = 'none';
-    
-    // Clear existing categories (except empty state)
-    const existingCategoryItems = document.querySelectorAll('.category-item');
-    existingCategoryItems.forEach(item => {
-      categoriesList.removeChild(item);
-    });
-    
-    // Add category items
-    categories.forEach(category => {
-      const categoryItem = document.createElement('div');
-      categoryItem.className = 'category-item';
-      categoryItem.id = `category-${category.id}`;
-      
-      // Calculate percentage spent
-      const spent = category.spent || 0;
-      const percentSpent = category.budget > 0 ? (spent / category.budget) * 100 : 0;
-      let progressClass = 'progress-healthy';
-      
-      if (percentSpent > 85) {
-        progressClass = 'progress-danger';
-      } else if (percentSpent > 70) {
-        progressClass = 'progress-warning';
-      }
-      
-      categoryItem.innerHTML = `
-        <div class="category-header">
-          <div class="category-title">
-            <div class="category-icon"><i class="fas ${category.icon}"></i></div>
-            ${category.name}
-          </div>
-          <div class="category-actions">
-            <div class="edit-category" data-id="${category.id}"><i class="fas fa-edit"></i></div>
-            <div class="delete-category" data-id="${category.id}"><i class="fas fa-trash"></i></div>
-          </div>
-        </div>
-        <div class="category-budget">${formatCurrency(category.budget)}</div>
-        <div class="progress-container">
-          <div class="progress-bar ${progressClass}" style="width: ${percentSpent > 100 ? 100 : percentSpent}%"></div>
-        </div>
-        <div class="category-spent">
-          <span>Spent: ${formatCurrency(spent)}</span>
-          <span>${percentSpent.toFixed(1)}%</span>
-        </div>
-      `;
-      
-      categoriesList.insertBefore(categoryItem, emptyState);
-      
-      // Add event listeners to edit and delete buttons
-      const editBtn = categoryItem.querySelector('.edit-category');
-      const deleteBtn = categoryItem.querySelector('.delete-category');
-      
-      editBtn.addEventListener('click', () => {
-        openEditCategoryModal(category.id);
-      });
-      
-      deleteBtn.addEventListener('click', () => {
-        deleteCategory(category.id);
-      });
-    });
-  }
-}
-
-// Update budget overview
-function updateBudgetOverview() {
-  const totalBudgetElement = document.querySelector('.total-budget');
-  const totalSpentElement = document.querySelector('.total-spent');
-  const remainingBudgetElement = document.querySelector('.remaining-budget');
-  
-  if (!totalBudgetElement || !totalSpentElement || !remainingBudgetElement) return;
-  
-  let totalBudget = 0;
-  let totalSpent = 0;
-  
-  categories.forEach(category => {
-    totalBudget += parseFloat(category.budget);
-    totalSpent += parseFloat(category.spent || 0);
-  });
-  
-  const remainingBudget = totalBudget - totalSpent;
-  
-  totalBudgetElement.textContent = formatCurrency(totalBudget);
-  totalSpentElement.textContent = formatCurrency(totalSpent);
-  remainingBudgetElement.textContent = formatCurrency(remainingBudget);
-}
-
-// Category management functions
-function openAddCategoryModal() {
-  if (!categoryModal) return;
-  
-  categoryModalTitle.textContent = 'Add Budget Category';
-  submitCategory.textContent = 'Add Category';
-  editingCategoryId = null;
-  
-  // Reset form
-  categoryForm.reset();
-  
-  // Reset icon selection
-  document.querySelectorAll('.icon-option').forEach(option => {
-    option.classList.remove('selected');
-  });
-  document.querySelector('.icon-option[data-icon="fa-home"]').classList.add('selected');
-  selectedIcon = 'fa-home';
-  
-  // Show modal
-  categoryModal.classList.add('active');
-  
-  // Focus on name input
-  setTimeout(() => {
-    categoryName.focus();
-  }, 300);
-}
-
-function openEditCategoryModal(categoryId) {
-  if (!categoryModal) return;
-  
-  const category = categories.find(c => c.id === categoryId);
-  if (!category) return;
-  
-  categoryModalTitle.textContent = 'Edit Budget Category';
-  submitCategory.textContent = 'Update Category';
-  editingCategoryId = categoryId;
-  
-  // Populate form fields
-  categoryName.value = category.name;
-  categoryAmount.value = category.budget;
-  
-  // Set icon selection
-  document.querySelectorAll('.icon-option').forEach(option => {
-    option.classList.remove('selected');
-  });
-  const iconOption = document.querySelector(`.icon-option[data-icon="${category.icon}"]`);
-  if (iconOption) {
-    iconOption.classList.add('selected');
-    selectedIcon = category.icon;
-  } else {
-    document.querySelector('.icon-option[data-icon="fa-home"]').classList.add('selected');
-    selectedIcon = 'fa-home';
-  }
-  
-  // Show modal
-  categoryModal.classList.add('active');
-  
-  // Focus on name input
-  setTimeout(() => {
-    categoryName.focus();
-  }, 300);
-}
-
-function addCategory() {
-  const name = categoryName.value.trim();
-  const budget = categoryAmount.value.trim();
-  
-  // Validate inputs
-  let isValid = true;
-  
-  if (!name) {
-    document.getElementById('nameError').classList.add('active');
-    categoryName.focus();
-    isValid = false;
-  } else {
-    document.getElementById('nameError').classList.remove('active');
-  }
-  
-  if (!budget || isNaN(parseFloat(budget)) || parseFloat(budget) <= 0) {
-    document.getElementById('amountError').classList.add('active');
-    if (isValid) {
-      categoryAmount.focus();
+    // Show empty state if needed
+    if (emptyState) {
+      emptyState.style.display = 'flex';
     }
-    isValid = false;
-  } else {
-    document.getElementById('amountError').classList.remove('active');
-  }
-  
-  if (!isValid) {
     return;
   }
   
-  if (editingCategoryId !== null) {
-    // Update existing category
-    const index = categories.findIndex(c => c.id === editingCategoryId);
+  // Hide empty state
+  if (emptyState) {
+    emptyState.style.display = 'none';
+  }
+  
+  // Sort categories alphabetically
+  const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  
+  sortedCategories.forEach(category => {
+    // Calculate spent amount for this category
+    const spent = getCategorySpent(category.id);
+    const budget = parseFloat(category.budget);
+    const percentage = budget > 0 ? (spent / budget) * 100 : 0;
     
-    if (index !== -1) {
-      // Preserve the spent amount
-      const spent = categories[index].spent || 0;
+    // Create category card
+    const categoryCard = document.createElement('div');
+    categoryCard.classList.add('category-card');
+    categoryCard.setAttribute('data-id', category.id);
+    
+    categoryCard.innerHTML = `
+      <div class="category-header">
+        <div class="category-title">
+          <i class="fas ${category.icon}" style="color: ${category.color}"></i>
+          ${category.name}
+        </div>
+        <div class="category-actions">
+          <button class="category-action edit" data-id="${category.id}">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="category-action delete" data-id="${category.id}">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="category-budget">${formatCurrency(budget)}</div>
+      <div class="category-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${Math.min(percentage, 100)}%; background-color: ${getProgressColor(percentage)};"></div>
+        </div>
+        <div class="category-stats">
+          <div class="category-spent">Spent: ${formatCurrency(spent)}</div>
+          <div class="category-percentage">${Math.round(percentage)}%</div>
+        </div>
+      </div>
+    `;
+    
+    categoriesContainer.appendChild(categoryCard);
+    
+    // Add event listeners for edit and delete buttons
+    const editBtn = categoryCard.querySelector('.edit');
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      editCategory(category.id);
+    });
+    
+    const deleteBtn = categoryCard.querySelector('.delete');
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteCategory(category.id);
+    });
+    
+    // Add click event to the entire card to open expense modal
+    categoryCard.addEventListener('click', () => {
+      openExpenseModal(category.id);
+    });
+  });
+}
+
+// Get color based on percentage for progress bar
+function getProgressColor(percentage) {
+  if (percentage < 70) {
+    return '#4caf50'; // Green for good
+  } else if (percentage < 90) {
+    return '#ff9800'; // Orange for warning
+  } else {
+    return '#f44336'; // Red for danger
+  }
+}
+
+// Calculate total spent for a specific category
+function getCategorySpent(categoryId) {
+  // Filter expenses by category and sum amounts
+  return expenses
+    .filter(expense => expense.categoryId === categoryId)
+    .reduce((total, expense) => total + parseFloat(expense.amount), 0);
+}
+
+// Get total budget across all categories
+function getTotalBudget() {
+  return categories.reduce((total, category) => total + parseFloat(category.budget), 0);
+}
+
+// Get total spent across all categories
+function getTotalSpent() {
+  return expenses.reduce((total, expense) => total + parseFloat(expense.amount), 0);
+}
+
+// Update budget overview cards and progress bar
+function updateBudgetOverview() {
+  const totalBudget = getTotalBudget();
+  const totalSpent = getTotalSpent();
+  const remaining = totalBudget - totalSpent;
+  const percentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  
+  // Update overview cards
+  budgetTotalAmount.textContent = formatCurrency(totalBudget);
+  spentAmount.textContent = formatCurrency(totalSpent);
+  remainingAmount.textContent = formatCurrency(remaining);
+  
+  // Update progress bar
+  progressFill.style.width = `${Math.min(percentage, 100)}%`;
+  progressFill.style.backgroundColor = getProgressColor(percentage);
+  progressPercentage.textContent = `${Math.round(percentage)}%`;
+}
+
+// Open category modal for adding a new category
+function openCategoryModal(categoryId = null) {
+  const modal = document.querySelector('#categoryModal');
+  const modalTitle = modal.querySelector('.modal-header h3');
+  const modalForm = modal.querySelector('#categoryForm');
+  const iconOptions = modal.querySelectorAll('.icon-option');
+  const colorOptions = modal.querySelectorAll('.color-option');
+  const submitBtn = modal.querySelector('.btn-submit');
+  
+  // Reset form
+  modalForm.reset();
+  
+  // Deselect all icon and color options
+  iconOptions.forEach(option => option.classList.remove('selected'));
+  colorOptions.forEach(option => option.classList.remove('selected'));
+  
+  if (categoryId) {
+    // Edit mode
+    const category = categories.find(c => c.id === categoryId);
+    if (category) {
+      modalTitle.textContent = 'Edit Budget Category';
+      submitBtn.textContent = 'Update Category';
       
+      // Set form values
+      document.querySelector('#categoryName').value = category.name;
+      document.querySelector('#categoryBudget').value = category.budget;
+      
+      // Select the icon
+      const iconOption = Array.from(iconOptions).find(opt => opt.querySelector('i').classList.contains(category.icon.split(' ')[1]));
+      if (iconOption) {
+        iconOption.classList.add('selected');
+      }
+      
+      // Select the color
+      const colorOption = Array.from(colorOptions).find(opt => opt.style.backgroundColor === category.color);
+      if (colorOption) {
+        colorOption.classList.add('selected');
+      }
+      
+      // Store category ID in form data attribute
+      modalForm.setAttribute('data-category-id', categoryId);
+    }
+  } else {
+    // Add mode
+    modalTitle.textContent = 'Add Budget Category';
+    submitBtn.textContent = 'Add Category';
+    modalForm.removeAttribute('data-category-id');
+    
+    // Select first options as default
+    if (iconOptions.length > 0) iconOptions[0].classList.add('selected');
+    if (colorOptions.length > 0) colorOptions[0].classList.add('selected');
+  }
+  
+  // Show modal
+  modalOverlay.classList.add('active');
+}
+
+// Open expense modal for adding a new expense
+function openExpenseModal(categoryId = null) {
+  const modal = document.querySelector('#expenseModal');
+  const modalTitle = modal.querySelector('.modal-header h3');
+  const modalForm = modal.querySelector('#expenseForm');
+  const categorySelect = document.querySelector('#expenseCategory');
+  const submitBtn = modal.querySelector('.btn-submit');
+  
+  // Reset form
+  modalForm.reset();
+  
+  // Populate category dropdown
+  categorySelect.innerHTML = '';
+  
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category.id;
+    option.textContent = category.name;
+    categorySelect.appendChild(option);
+  });
+  
+  // Set default date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.querySelector('#expenseDate').value = today;
+  
+  // If category is specified, select it
+  if (categoryId) {
+    categorySelect.value = categoryId;
+  }
+  
+  // Set modal title and button text
+  modalTitle.textContent = 'Add Expense';
+  submitBtn.textContent = 'Add Expense';
+  
+  // Show modal
+  modalOverlay.classList.add('active');
+}
+
+// Add or update a category
+function handleCategorySubmit(event) {
+  event.preventDefault();
+  
+  // Get form values
+  const name = document.querySelector('#categoryName').value.trim();
+  const budget = parseFloat(document.querySelector('#categoryBudget').value);
+  const iconOption = document.querySelector('.icon-option.selected');
+  const colorOption = document.querySelector('.color-option.selected');
+  
+  // Validate inputs
+  if (!name || isNaN(budget) || budget <= 0 || !iconOption || !colorOption) {
+    alert('Please fill in all fields correctly');
+    return;
+  }
+  
+  // Get icon and color values
+  const iconElement = iconOption.querySelector('i');
+  const icon = iconElement ? iconElement.className : 'fa-folder';
+  const color = colorOption.style.backgroundColor;
+  
+  // Check if we're editing or adding
+  const categoryId = categoryForm.getAttribute('data-category-id');
+  
+  if (categoryId) {
+    // Update existing category
+    const index = categories.findIndex(c => c.id === categoryId);
+    if (index !== -1) {
       categories[index] = {
-        id: editingCategoryId,
-        name: name,
-        budget: parseFloat(budget),
-        icon: selectedIcon,
-        spent: spent
+        ...categories[index],
+        name,
+        budget,
+        icon,
+        color
       };
     }
-    
-    editingCategoryId = null;
   } else {
-    // Create new category
+    // Add new category
     const newCategory = {
-      id: Date.now(),
-      name: name,
-      budget: parseFloat(budget),
-      icon: selectedIcon,
-      spent: 0
+      id: Date.now().toString(),
+      name,
+      budget,
+      icon,
+      color
     };
     
     categories.push(newCategory);
   }
   
-  // Save to localStorage
+  // Save and update UI
   saveCategories();
-  
-  // Update UI
   renderCategories();
   updateBudgetOverview();
+  renderSpendingChart();
   
   // Close modal
-  categoryModal.classList.remove('active');
+  closeModal();
 }
 
+// Add an expense
+function handleExpenseSubmit(event) {
+  event.preventDefault();
+  
+  // Get form values
+  const description = document.querySelector('#expenseDescription').value.trim();
+  const amount = parseFloat(document.querySelector('#expenseAmount').value);
+  const date = document.querySelector('#expenseDate').value;
+  const categoryId = document.querySelector('#expenseCategory').value;
+  
+  // Validate inputs
+  if (!description || isNaN(amount) || amount <= 0 || !date || !categoryId) {
+    alert('Please fill in all fields correctly');
+    return;
+  }
+  
+  // Create new expense
+  const newExpense = {
+    id: Date.now().toString(),
+    description,
+    amount,
+    date,
+    categoryId
+  };
+  
+  // Add to expenses array
+  expenses.push(newExpense);
+  
+  // Save and update UI
+  saveExpenses();
+  renderCategories();
+  updateBudgetOverview();
+  renderSpendingChart();
+  
+  // Close modal
+  closeModal();
+}
+
+// Edit a category
+function editCategory(categoryId) {
+  openCategoryModal(categoryId);
+}
+
+// Delete a category
 function deleteCategory(categoryId) {
-  if (confirm('Are you sure you want to delete this category?')) {
+  if (confirm('Are you sure you want to delete this category? All associated expenses will also be deleted.')) {
+    // Remove category
     categories = categories.filter(c => c.id !== categoryId);
-    
-    // Save to localStorage
     saveCategories();
+    
+    // Remove associated expenses
+    expenses = expenses.filter(e => e.categoryId !== categoryId);
+    saveExpenses();
     
     // Update UI
     renderCategories();
     updateBudgetOverview();
+    renderSpendingChart();
   }
 }
 
-// Expense management functions
-function populateCategoryDropdown() {
-  if (!expenseCategory) return;
-  
-  // Clear existing options except the placeholder
-  while (expenseCategory.options.length > 1) {
-    expenseCategory.remove(1);
-  }
-  
-  // Add categories as options
-  categories.forEach(category => {
-    const option = document.createElement('option');
-    option.value = category.id;
-    option.textContent = category.name;
-    expenseCategory.appendChild(option);
-  });
+// Close any open modal
+function closeModal() {
+  modalOverlay.classList.remove('active');
 }
 
-function openAddExpenseModal() {
-  if (!expenseModal) return;
-  
-  // Reset form
-  expenseForm.reset();
-  
-  // Set today's date as default
-  expenseDate.value = formatDateForInput(new Date());
-  
-  // Populate category dropdown
-  populateCategoryDropdown();
-  
-  // Reset calculator
-  currentCalculation = '';
-  calculatorInput.value = '';
-  expenseCalculatorPanel.classList.remove('active');
-  
-  // Show modal
-  expenseModal.classList.add('active');
-  
-  // Focus on name input
-  setTimeout(() => {
-    expenseName.focus();
-  }, 300);
-}
-
-function recordExpense() {
-  const name = expenseName.value.trim();
-  const amount = expenseAmount.value.trim();
-  const categoryId = expenseCategory.value;
-  const date = expenseDate.value;
-  
-  // Validate inputs
-  let isValid = true;
-  
-  if (!name) {
-    document.getElementById('expenseNameError').classList.add('active');
-    expenseName.focus();
-    isValid = false;
-  } else {
-    document.getElementById('expenseNameError').classList.remove('active');
-  }
-  
-  if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-    document.getElementById('expenseAmountError').classList.add('active');
-    if (isValid) {
-      expenseAmount.focus();
-    }
-    isValid = false;
-  } else {
-    document.getElementById('expenseAmountError').classList.remove('active');
-  }
-  
-  if (!categoryId) {
-    document.getElementById('expenseCategoryError').classList.add('active');
-    if (isValid) {
-      expenseCategory.focus();
-    }
-    isValid = false;
-  } else {
-    document.getElementById('expenseCategoryError').classList.remove('active');
-  }
-  
-  if (!date) {
-    document.getElementById('expenseDateError').classList.add('active');
-    if (isValid) {
-      expenseDate.focus();
-    }
-    isValid = false;
-  } else {
-    document.getElementById('expenseDateError').classList.remove('active');
-  }
-  
-  if (!isValid) {
-    return;
-  }
-  
-  // Find category
-  const categoryIndex = categories.findIndex(c => c.id === parseInt(categoryId));
-  if (categoryIndex === -1) return;
-  
-  // Update category's spent amount
-  const parsedAmount = parseFloat(amount);
-  categories[categoryIndex].spent = (parseFloat(categories[categoryIndex].spent) || 0) + parsedAmount;
-  
-  // Save updated categories
-  saveCategories();
-  
-  // Record transaction in the dashboard
-  const newTransaction = {
-    id: Date.now(),
-    name: name,
-    amount: parsedAmount,
-    type: 'expense',
-    date: new Date(date).toISOString(),
-    category: categories[categoryIndex].name
-  };
-  
-  // Get existing transactions from localStorage
-  let transactions = [];
-  const savedTransactions = localStorage.getItem('transactions');
-  if (savedTransactions) {
-    transactions = JSON.parse(savedTransactions);
-  }
-  
-  // Add new transaction
-  transactions.unshift(newTransaction); // Add to beginning of array
-  
-  // Save to localStorage
-  localStorage.setItem('transactions', JSON.stringify(transactions));
-  
-  // Update UI
-  renderCategories();
-  updateBudgetOverview();
-  updateMonthlySpending();
-  
-  // Show success message
-  alert(`Expense of ${formatCurrency(parsedAmount)} added to ${categories[categoryIndex].name}`);
-  
-  // Close modal
-  expenseModal.classList.remove('active');
-}
-
-// Monthly spending functions
-function updateMonthDisplay() {
-  if (!currentMonthDisplay) return;
-  currentMonthDisplay.textContent = `${monthNames[viewMonth]} ${viewYear}`;
-}
-
-function goToPrevMonth() {
-  viewMonth--;
-  if (viewMonth < 0) {
-    viewMonth = 11;
-    viewYear--;
-  }
-  updateMonthDisplay();
-  updateMonthlySpending();
-}
-
-function goToNextMonth() {
-  viewMonth++;
-  if (viewMonth > 11) {
-    viewMonth = 0;
-    viewYear++;
-  }
-  updateMonthDisplay();
-  updateMonthlySpending();
-}
-
-function getMonthTransactions() {
-  const startDate = new Date(viewYear, viewMonth, 1);
-  const endDate = new Date(viewYear, viewMonth + 1, 0); // Last day of the month
-  
-  // Get transactions from localStorage
-  let transactions = [];
-  const savedTransactions = localStorage.getItem('transactions');
-  if (savedTransactions) {
-    transactions = JSON.parse(savedTransactions);
-  }
-  
-  // Filter for expenses in the current month
-  return transactions.filter(transaction => {
-    const transactionDate = new Date(transaction.date);
-    return transaction.type === 'expense' && 
-          transactionDate >= startDate && 
-          transactionDate <= endDate;
-  });
-}
-
-function getMonthSpendingByCategory() {
-  const monthTransactions = getMonthTransactions();
-  const spendingByCategory = {};
-  
-  // Group by category and sum amounts
-  monthTransactions.forEach(transaction => {
-    const category = transaction.category || 'Uncategorized';
-    if (!spendingByCategory[category]) {
-      spendingByCategory[category] = 0;
-    }
-    spendingByCategory[category] += parseFloat(transaction.amount);
-  });
-  
-  return spendingByCategory;
-}
-
+// Render spending chart
 function renderSpendingChart() {
-  if (!spendingChartCanvas) return;
-  
-  const spendingByCategory = getMonthSpendingByCategory();
-  
-  // Prepare data for chart
-  const categories = Object.keys(spendingByCategory);
-  const amounts = Object.values(spendingByCategory);
-  
-  // Generate colors for each category
-  const backgroundColors = categories.map((_, index) => {
-    // Generate a color based on the index
-    const hue = (index * 137) % 360; // Golden ratio to spread colors nicely
-    return `hsl(${hue}, 70%, 60%)`;
-  });
+  if (!spendingChartContainer) return;
   
   // Destroy existing chart if it exists
   if (spendingChart) {
     spendingChart.destroy();
   }
   
-  // Create new chart
-  if (categories.length > 0) {
-    spendingChart = new Chart(spendingChartCanvas, {
-      type: 'doughnut',
-      data: {
-        labels: categories,
-        datasets: [{
-          data: amounts,
-          backgroundColor: backgroundColors,
-          borderColor: 'rgba(255, 255, 255, 0.8)',
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              font: {
-                family: 'Inter, sans-serif'
-              },
-              color: '#333'
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.raw || 0;
-                return `${label}: ${formatCurrency(value)}`;
-              }
-            }
-          }
-        },
-        cutout: '70%'
-      }
-    });
-  }
-}
-
-function renderMonthlyTransactions() {
-  if (!monthlyTransactionsList || !emptyTransactionsState) return;
+  // Get data by category
+  const categoryData = [];
+  const categoryColors = [];
+  const categoryLabels = [];
   
-  const monthTransactions = getMonthTransactions();
-  
-  // Clear existing transactions
-  while (monthlyTransactionsList.firstChild) {
-    if (monthlyTransactionsList.firstChild === emptyTransactionsState) break;
-    monthlyTransactionsList.removeChild(monthlyTransactionsList.firstChild);
-  }
-  
-  // Show or hide empty state
-  if (monthTransactions.length === 0) {
-    emptyTransactionsState.style.display = 'block';
-  } else {
-    emptyTransactionsState.style.display = 'none';
-    
-    // Add transactions to the list
-    monthTransactions.forEach(transaction => {
-      const transactionItem = document.createElement('div');
-      transactionItem.className = 'transaction-item';
-      
-      const transactionDate = new Date(transaction.date);
-      const formattedDate = transactionDate.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-      
-      transactionItem.innerHTML = `
-        <div class="transaction-details">
-          <div class="transaction-icon expense-icon">
-            <i class="fas fa-arrow-down"></i>
-          </div>
-          <div class="transaction-info">
-            <h4>${transaction.name}</h4>
-            <div class="transaction-date">${formattedDate}</div>
-          </div>
-        </div>
-        <div class="transaction-amount">${formatCurrency(transaction.amount)}</div>
-      `;
-      
-      monthlyTransactionsList.insertBefore(transactionItem, emptyTransactionsState);
-    });
-  }
-}
-
-function updateMonthlySpending() {
-  renderSpendingChart();
-  renderMonthlyTransactions();
-}
-
-// Calculator functionality
-function initializeCalculator() {
-  if (!expenseCalculatorToggle || !expenseCalculatorPanel) return;
-  
-  // Toggle calculator panel
-  expenseCalculatorToggle.addEventListener('click', function() {
-    expenseCalculatorPanel.classList.toggle('active');
-    if (expenseCalculatorPanel.classList.contains('active')) {
-      calculatorInput.focus();
+  categories.forEach(category => {
+    const spent = getCategorySpent(category.id);
+    if (spent > 0) {
+      categoryData.push(spent);
+      categoryColors.push(category.color);
+      categoryLabels.push(category.name);
     }
   });
   
-  // Use calculator result
-  if (useCalculatorResult) {
-    useCalculatorResult.addEventListener('click', function() {
-      if (calculatorInput.value && calculatorInput.value !== 'Error') {
-        expenseAmount.value = calculatorInput.value;
-        expenseCalculatorPanel.classList.remove('active');
-      }
-    });
+  // Check if there's data to display
+  if (categoryData.length === 0) {
+    spendingChartContainer.innerHTML = '<div class="empty-chart">No expense data to display</div>';
+    return;
   }
   
-  // Calculator button click handlers
-  document.querySelectorAll('.calc-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const value = this.textContent;
-      
-      // Handle different button types
-      if (this.classList.contains('number') || this.classList.contains('operator')) {
-        // Replace operator symbols for calculation
-        let calcValue = value;
-        
-        if (value === '×') {
-          calcValue = '*';
-        } else if (value === '÷') {
-          calcValue = '/';
-        }
-        
-        currentCalculation += calcValue;
-        calculatorInput.value = currentCalculation;
-      } 
-      else if (this.classList.contains('clear')) {
-        // Clear the input
-        currentCalculation = '';
-        calculatorInput.value = '';
-      } 
-      else if (this.classList.contains('delete')) {
-        // Delete the last character
-        currentCalculation = currentCalculation.slice(0, -1);
-        calculatorInput.value = currentCalculation;
-      } 
-      else if (this.classList.contains('equals')) {
-        // Calculate the result
-        try {
-          const result = eval(currentCalculation);
-          
-          if (isNaN(result) || !isFinite(result)) {
-            calculatorInput.value = 'Error';
-            currentCalculation = '';
-          } else {
-            const roundedResult = parseFloat(result.toFixed(2));
-            calculatorInput.value = roundedResult;
-            currentCalculation = roundedResult.toString();
+  // Create the chart
+  const ctx = document.createElement('canvas');
+  spendingChartContainer.innerHTML = '';
+  spendingChartContainer.appendChild(ctx);
+  
+  spendingChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: categoryLabels,
+      datasets: [{
+        data: categoryData,
+        backgroundColor: categoryColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            boxWidth: 15,
+            padding: 15
           }
-        } catch (error) {
-          calculatorInput.value = 'Error';
-          currentCalculation = '';
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+            }
+          }
         }
       }
-    });
+    }
   });
 }
 
-// Event listeners setup
+// Filter expenses by period
+function filterExpensesByPeriod(period) {
+  const now = new Date();
+  let startDate;
+  
+  switch (period) {
+    case 'week':
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 7);
+      break;
+    case 'month':
+      startDate = new Date(now);
+      startDate.setMonth(now.getMonth() - 1);
+      break;
+    case 'year':
+      startDate = new Date(now);
+      startDate.setFullYear(now.getFullYear() - 1);
+      break;
+    default:
+      startDate = new Date(0); // All time
+  }
+  
+  return expenses.filter(expense => new Date(expense.date) >= startDate);
+}
+
+// Set up event listeners
 function setupEventListeners() {
-  // Category modal
+  // Add category button
   if (addCategoryBtn) {
-    addCategoryBtn.addEventListener('click', openAddCategoryModal);
+    addCategoryBtn.addEventListener('click', () => openCategoryModal());
   }
   
-  if (emptyStateAddBtn) {
-    emptyStateAddBtn.addEventListener('click', openAddCategoryModal);
+  // Add expense button
+  if (addExpenseBtn) {
+    addExpenseBtn.addEventListener('click', () => openExpenseModal());
   }
   
-  if (categoryModalClose) {
-    categoryModalClose.addEventListener('click', function() {
-      categoryModal.classList.remove('active');
-    });
+  // Close modal
+  if (modalClose) {
+    modalClose.addEventListener('click', closeModal);
   }
   
-  if (categoryModal) {
-    categoryModal.addEventListener('click', function(e) {
-      if (e.target === categoryModal) {
-        categoryModal.classList.remove('active');
-      }
-    });
-  }
+  // Click outside modal to close
+  window.addEventListener('click', (event) => {
+    if (event.target === modalOverlay) {
+      closeModal();
+    }
+  });
   
-  if (submitCategory) {
-    submitCategory.addEventListener('click', addCategory);
-  }
-  
+  // Category form submit
   if (categoryForm) {
-    categoryForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      addCategory();
-    });
+    categoryForm.addEventListener('submit', handleCategorySubmit);
+  }
+  
+  // Expense form submit
+  if (expenseForm) {
+    expenseForm.addEventListener('submit', handleExpenseSubmit);
   }
   
   // Icon selection
-  if (iconSelector) {
-    iconSelector.addEventListener('click', function(e) {
-      const iconOption = e.target.closest('.icon-option');
-      if (!iconOption) return;
-      
-      document.querySelectorAll('.icon-option').forEach(option => {
-        option.classList.remove('selected');
+  document.querySelectorAll('.icon-option').forEach(option => {
+    option.addEventListener('click', () => {
+      document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    });
+  });
+  
+  // Color selection
+  document.querySelectorAll('.color-option').forEach(option => {
+    option.addEventListener('click', () => {
+      document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    });
+  });
+  
+  // Period selection for chart
+  if (periodOptions.length > 0) {
+    periodOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        periodOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        selectedPeriod = option.getAttribute('data-period');
+        renderSpendingChart();
       });
-      
-      iconOption.classList.add('selected');
-      selectedIcon = iconOption.dataset.icon;
     });
-  }
-  
-  // Input validation
-  if (categoryAmount) {
-    categoryAmount.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9.]/g, '');
-    });
-  }
-  
-  // Expense modal
-  if (addExpenseBtn) {
-    addExpenseBtn.addEventListener('click', openAddExpenseModal);
-  }
-  
-  if (expenseModalClose) {
-    expenseModalClose.addEventListener('click', function() {
-      expenseModal.classList.remove('active');
-      expenseCalculatorPanel.classList.remove('active');
-    });
-  }
-  
-  if (expenseModal) {
-    expenseModal.addEventListener('click', function(e) {
-      if (e.target === expenseModal) {
-        expenseModal.classList.remove('active');
-        expenseCalculatorPanel.classList.remove('active');
-      }
-    });
-  }
-  
-  if (submitExpense) {
-    submitExpense.addEventListener('click', recordExpense);
-  }
-  
-  if (expenseForm) {
-    expenseForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      recordExpense();
-    });
-  }
-  
-  if (expenseAmount) {
-    expenseAmount.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9.]/g, '');
-    });
-  }
-  
-  // Monthly navigation
-  if (prevMonth) {
-    prevMonth.addEventListener('click', goToPrevMonth);
-  }
-  
-  if (nextMonth) {
-    nextMonth.addEventListener('click', goToNextMonth);
   }
 }
 
-// Initialize the budget page
-document.addEventListener('DOMContentLoaded', function() {
-  // Load sample data for demo
-  function loadSampleData() {
-    if (!localStorage.getItem('budgetCategories')) {
-      categories = [
-        {
-          id: 1,
-          name: 'Housing',
-          budget: 15000,
-          icon: 'fa-home',
-          spent: 12500
-        },
-        {
-          id: 2,
-          name: 'Groceries',
-          budget: 8000,
-          icon: 'fa-shopping-cart',
-          spent: 5600
-        },
-        {
-          id: 3,
-          name: 'Transportation',
-          budget: 5000,
-          icon: 'fa-car',
-          spent: 4800
-        },
-        {
-          id: 4,
-          name: 'Entertainment',
-          budget: 3000,
-          icon: 'fa-film',
-          spent: 1500
-        },
-        {
-          id: 5,
-          name: 'Dining Out',
-          budget: 4000,
-          icon: 'fa-utensils',
-          spent: 3500
-        }
-      ];
-      
-      // Save to localStorage
-      saveCategories();
-    }
-  }
-  
-  initNavigation();
-  loadSampleData();
-  loadCategories();
-  setupEventListeners();
-  initializeCalculator();
-  
-  // Set default date for expense modal
-  if (expenseDate) {
-    const today = new Date();
-    expenseDate.value = formatDateForInput(today);
-  }
-  
-  // Initialize monthly view
-  updateMonthDisplay();
-  updateMonthlySpending();
-}); 
+// Initialize the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', init); 

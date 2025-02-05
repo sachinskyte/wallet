@@ -1,130 +1,109 @@
-// DOM Elements
+// DOM elements
 const navbar = document.querySelector('.navbar');
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
 
-// Function to handle scroll behavior for navbar
+// Initialize the app
+function init() {
+  setupEventListeners();
+  setupAnimations();
+}
+
+// Set up event listeners
+function setupEventListeners() {
+  // Navbar scroll behavior
+  window.addEventListener('scroll', handleScroll);
+  
+  // Mobile menu toggle
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', toggleMobileMenu);
+  }
+  
+  // Smooth scrolling for navigation links
+  document.querySelectorAll('.nav-links a, .hero-buttons a, .cta-content a').forEach(link => {
+    if (link.getAttribute('href').startsWith('#')) {
+      link.addEventListener('click', smoothScroll);
+    }
+  });
+}
+
+// Handle scroll event for navbar
 function handleScroll() {
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
+  if (window.scrollY > 50) {
+    navbar.classList.add('scrolled');
+  } else {
+    navbar.classList.remove('scrolled');
+  }
 }
 
-// Function to handle smooth scrolling for navigation links
+// Toggle mobile menu
+function toggleMobileMenu() {
+  hamburger.classList.toggle('active');
+  navLinks.classList.toggle('active');
+}
+
+// Smooth scroll to element
 function smoothScroll(e) {
-    if (e.target.hasAttribute('href') && e.target.getAttribute('href').startsWith('#')) {
-        e.preventDefault();
-        const id = e.target.getAttribute('href');
-        if (id === '#') return;
-
-        const element = document.querySelector(id);
-        if (element) {
-            // If mobile menu is open, close it first
-            if (navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                hamburger.classList.remove('active');
-            }
-            
-            const offsetTop = element.offsetTop;
-            window.scrollTo({
-                top: offsetTop - 80,
-                behavior: 'smooth'
-            });
-        }
+  e.preventDefault();
+  
+  const targetId = this.getAttribute('href');
+  const targetElement = document.querySelector(targetId);
+  
+  if (targetElement) {
+    // Close mobile menu if open
+    if (hamburger.classList.contains('active')) {
+      hamburger.classList.remove('active');
+      navLinks.classList.remove('active');
     }
+    
+    // Scroll to element
+    window.scrollTo({
+      top: targetElement.offsetTop - 80, // Offset for navbar
+      behavior: 'smooth'
+    });
+  }
 }
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle mobile menu toggle
-    hamburger.addEventListener('click', function() {
-        navLinks.classList.toggle('active');
-        hamburger.classList.toggle('active');
-    });
-    
-    // Handle scroll events
-    window.addEventListener('scroll', handleScroll);
-    
-    // Handle navigation link clicks for smooth scrolling
-    document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
-        link.addEventListener('click', smoothScroll);
-    });
-    
-    // Add active class to nav links based on scroll position
-    const sections = document.querySelectorAll('section[id]');
-    window.addEventListener('scroll', function() {
-        let current = '';
+// Set up animations with Intersection Observer
+function setupAnimations() {
+  // Feature cards animation
+  const featureCards = document.querySelectorAll('.feature-card');
+  animateOnScroll(featureCards, 'show', 100);
+  
+  // Testimonial cards animation
+  const testimonialCards = document.querySelectorAll('.testimonial-card');
+  animateOnScroll(testimonialCards, 'show', 100);
+  
+  // Pricing cards animation
+  const pricingCards = document.querySelectorAll('.pricing-card');
+  animateOnScroll(pricingCards, 'show', 100);
+}
+
+// Helper function to animate elements when they enter the viewport
+function animateOnScroll(elements, className, delay = 0) {
+  if (!elements.length) return;
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        // Add delay based on element index for staggered animation
+        setTimeout(() => {
+          entry.target.classList.add(className);
+        }, delay * index);
         
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            
-            if (window.scrollY >= (sectionTop - 100)) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
+        // Unobserve after animation is triggered
+        observer.unobserve(entry.target);
+      }
     });
-    
-    // Feature animation on scroll
-    const featureCards = document.querySelectorAll('.feature-card');
-    
-    const featureObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('show');
-            }
-        });
-    }, {
-        threshold: 0.1
-    });
-    
-    featureCards.forEach((card) => {
-        featureObserver.observe(card);
-    });
-    
-    // Testimonial animation on scroll
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
-    
-    const testimonialObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('show');
-            }
-        });
-    }, {
-        threshold: 0.1
-    });
-    
-    testimonialCards.forEach((card) => {
-        testimonialObserver.observe(card);
-    });
-    
-    // Pricing card animation on scroll
-    const pricingCards = document.querySelectorAll('.pricing-card');
-    
-    const pricingObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                // Add a slight delay for each card
-                setTimeout(() => {
-                    entry.target.classList.add('show');
-                }, index * 150);
-            }
-        });
-    }, {
-        threshold: 0.1
-    });
-    
-    pricingCards.forEach((card) => {
-        pricingObserver.observe(card);
-    });
-});
+  }, {
+    threshold: 0.1, // Trigger when at least 10% of the element is visible
+    rootMargin: '0px 0px -50px 0px' // Offset from the bottom
+  });
+  
+  elements.forEach(element => {
+    observer.observe(element);
+  });
+}
+
+// Initialize the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', init);
