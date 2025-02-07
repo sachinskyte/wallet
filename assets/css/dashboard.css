@@ -240,35 +240,79 @@
 
 /* Budget Link Card */
 .budget-link-card {
-  background-color: rgba(33, 150, 243, 0.08);
-  border: 1px dashed rgba(33, 150, 243, 0.3);
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.06) 0%, rgba(33, 150, 243, 0.12) 100%);
+  border: 1px dashed rgba(33, 150, 243, 0.4);
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .budget-link-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
   background-color: #2196f3;
+}
+
+.budget-link-card::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  right: -15px;
+  width: 80px;
+  height: 80px;
+  background-color: rgba(33, 150, 243, 0.1);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.budget-link-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
+  border-color: rgba(33, 150, 243, 0.6);
 }
 
 .budget-link {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: #2196f3;
   font-weight: 600;
   font-size: 0.95rem;
   margin-top: auto;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .budget-link:hover {
-  color: #1976d2;
-  transform: translateX(3px);
+  color: #0d6efd;
+  transform: translateX(5px);
 }
 
 .budget-link i {
   font-size: 1.1rem;
-  padding: 8px;
-  border-radius: 50%;
-  background-color: rgba(33, 150, 243, 0.1);
+  padding: 10px;
+  border-radius: 12px;
+  background-color: rgba(33, 150, 243, 0.15);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.budget-link:hover i {
+  background-color: rgba(33, 150, 243, 0.25);
+  transform: rotate(15deg) scale(1.1);
+}
+
+.budget-description {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.4;
 }
 
 /* Cashflow Section */
@@ -409,18 +453,29 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .goal-section:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.goal-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary-black), #555);
 }
 
 .goal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   padding-bottom: 15px;
   border-bottom: 1px solid var(--gray-100);
 }
@@ -432,6 +487,24 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-header h3::before {
+  content: '\f140';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--primary-black);
+  background-color: rgba(0, 0, 0, 0.05);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .goal-btn {
@@ -440,66 +513,150 @@
   color: var(--primary-black);
   font-weight: 500;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 8px 14px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .goal-btn:hover {
   background-color: var(--gray-100);
 }
 
+.goal-btn::before {
+  content: '\f044';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  font-size: 0.9rem;
+}
+
 .goal-btn.primary {
   background-color: var(--primary-black);
   color: white;
-  padding: 8px 15px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .goal-btn.primary:hover {
   background-color: #444;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.goal-btn.primary::before {
+  content: '\f067';
 }
 
 .goal-details {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-100);
 }
 
 .goal-amount {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   color: var(--primary-black);
 }
 
 .goal-name {
   font-size: 1.1rem;
   color: var(--gray-700);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  border-bottom: 1px dashed var(--gray-200);
+  padding-bottom: 10px;
 }
 
 .goal-progress-info {
   font-size: 0.9rem;
   color: var(--gray-600);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .goal-progress-bar {
-  height: 10px;
+  height: 12px;
   background-color: var(--gray-200);
-  border-radius: 5px;
+  border-radius: 8px;
   overflow: hidden;
   margin-bottom: 15px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .goal-progress {
   height: 100%;
   background: linear-gradient(90deg, var(--primary-black), #555);
-  border-radius: 5px;
-  transition: width 1s ease-out;
+  border-radius: 8px;
+  transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+  position: relative;
+}
+
+.goal-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  width: 75%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(125%);
+  }
 }
 
 .goal-eta {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--gray-100);
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.goal-eta::before {
+  content: '\f017';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  color: var(--gray-700);
+}
+
+#noGoalMessage {
+  text-align: center;
+  padding: 30px 20px;
+  border: 2px dashed var(--gray-200);
+  border-radius: 12px;
+  background-color: var(--gray-50);
+}
+
+#noGoalMessage p {
+  margin-bottom: 20px;
+  color: var(--gray-600);
+  font-size: 1.1rem;
 }
 
 /* Transactions Section */
