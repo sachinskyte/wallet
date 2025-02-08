@@ -34,6 +34,9 @@ const deleteGoal = document.querySelector('#deleteGoal');
 const goalDisplay = document.querySelector('#goalDisplay');
 const noGoalMessage = document.querySelector('#noGoalMessage');
 const setGoalBtn = document.querySelector('#setGoalBtn');
+const categoryChart = document.querySelector('#categoryChart');
+const categoryList = document.querySelector('#categoryList');
+const categoryPills = document.querySelectorAll('.category-pill');
 
 // App state
 let transactions = [];
@@ -41,6 +44,26 @@ let currentEditId = null;
 let selectedType = 'income';
 let userName = localStorage.getItem('userName') || 'Investor';
 let savingsGoal = null;
+let chart = null;
+
+// Category data
+const categoryIcons = {
+  'food': { icon: 'fas fa-utensils', color: '#ff9800' },
+  'shopping': { icon: 'fas fa-shopping-bag', color: '#9c27b0' },
+  'housing': { icon: 'fas fa-home', color: '#03a9f4' },
+  'transportation': { icon: 'fas fa-bus', color: '#2196f3' },
+  'vehicle': { icon: 'fas fa-car', color: '#009688' },
+  'entertainment': { icon: 'fas fa-film', color: '#e91e63' },
+  'communication': { icon: 'fas fa-mobile-alt', color: '#673ab7' },
+  'technology': { icon: 'fas fa-laptop', color: '#4caf50' },
+  'healthcare': { icon: 'fas fa-heartbeat', color: '#f44336' },
+  'education': { icon: 'fas fa-graduation-cap', color: '#2196f3' },
+  'travel': { icon: 'fas fa-plane', color: '#ffc107' },
+  'gifts': { icon: 'fas fa-gift', color: '#8bc34a' },
+  'salary': { icon: 'fas fa-wallet', color: '#4caf50' },
+  'investments': { icon: 'fas fa-chart-line', color: '#00bcd4' },
+  'others': { icon: 'fas fa-ellipsis-h', color: '#9e9e9e' }
+};
 
 // Initialize the app
 function init() {
@@ -56,6 +79,10 @@ function init() {
   renderTransactions();
   updateCashFlowBars();
   updateSavingsGoal();
+  
+  // Create category chart
+  createCategoryChart();
+  updateCategoryList();
   
   // Setup event listeners
   setupEventListeners();
@@ -304,7 +331,7 @@ function renderTransactions() {
   if (transactions.length === 0) {
     // Show empty state
     if (noTransactions) {
-      noTransactions.style.display = 'block';
+      noTransactions.style.display = 'flex';
     }
     return;
   }
@@ -323,7 +350,9 @@ function renderTransactions() {
   sortedTransactions.slice(0, 10).forEach((transaction, index) => {
     const transactionItem = document.createElement('div');
     transactionItem.classList.add('transaction-item');
+    transactionItem.classList.add(transaction.type); // Add class based on type
     transactionItem.setAttribute('data-id', transaction.id);
+    transactionItem.setAttribute('data-category', transaction.category || 'others');
     
     // Format date
     const dateObj = new Date(transaction.date || transaction.timestamp);
@@ -333,6 +362,10 @@ function renderTransactions() {
       day: 'numeric'
     });
     
+    // Get category icon info
+    const category = transaction.category || 'others';
+    const { icon, color } = categoryIcons[category] || categoryIcons.others;
+    
     transactionItem.innerHTML = `
       <div class="transaction-left">
         <div class="transaction-icon ${transaction.type}-icon">
@@ -341,6 +374,10 @@ function renderTransactions() {
         <div class="transaction-details">
           <h3>${transaction.description || transaction.name}</h3>
           <div class="transaction-date">${formattedDate}</div>
+          <div class="transaction-category">
+            <i class="${icon}" style="color: ${color}"></i>
+            ${capitalizeFirstLetter(category)}
+          </div>
         </div>
       </div>
       <div class="transaction-amount ${transaction.type}-amount">${formatCurrency(transaction.amount)}</div>
@@ -355,7 +392,7 @@ function renderTransactions() {
     `;
     
     // Add animation delay
-    transactionItem.style.animation = `fadeIn 0.3s ease forwards ${index * 0.05}s`;
+    transactionItem.style.animation = `fadeIn 0.4s ease forwards ${index * 0.05}s`;
     transactionItem.style.opacity = '0';
     
     transactionsList.appendChild(transactionItem);
@@ -380,6 +417,11 @@ function editTransaction(event) {
     // Set form values
     document.querySelector('#transactionName').value = transaction.description || transaction.name;
     document.querySelector('#transactionAmount').value = transaction.amount;
+    
+    // Set transaction category if it exists
+    if (transaction.category) {
+      document.querySelector('#transactionCategory').value = transaction.category;
+    }
     
     // Set transaction type
     selectedType = transaction.type;
@@ -430,6 +472,7 @@ function handleTransactionSubmit() {
   // Get form values
   const description = document.querySelector('#transactionName').value.trim();
   const amount = parseFloat(document.querySelector('#transactionAmount').value);
+  const category = document.querySelector('#transactionCategory').value;
   
   // Validate form
   let valid = true;
@@ -448,11 +491,17 @@ function handleTransactionSubmit() {
     document.querySelector('#amountError').style.display = 'none';
   }
   
+  if (!category) {
+    document.querySelector('#categoryError').style.display = 'block';
+    valid = false;
+  } else {
+    document.querySelector('#categoryError').style.display = 'none';
+  }
+  
   if (!valid) return;
   
   // Create transaction object
   const now = new Date();
-  const category = document.querySelector('#transactionCategory').value;
   
   if (currentEditId) {
     // Update existing transaction
@@ -491,6 +540,8 @@ function handleTransactionSubmit() {
   renderTransactions();
   updateCashFlowBars();
   updateSavingsGoal();
+  createCategoryChart();
+  updateCategoryList();
   
   // Close modal and reset form
   closeModal();
@@ -686,6 +737,7 @@ function closeModal() {
   // Reset form and errors
   document.querySelector('#nameError').style.display = 'none';
   document.querySelector('#amountError').style.display = 'none';
+  document.querySelector('#categoryError').style.display = 'none';
   
   // Reset current edit ID
   currentEditId = null;
@@ -815,6 +867,17 @@ function setupEventListeners() {
       }
     }
   });
+  
+  // Category filter pills
+  categoryPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      categoryPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      
+      const filter = pill.getAttribute('data-filter');
+      filterTransactionsByCategory(filter);
+    });
+  });
 }
 
 // Animate dashboard elements on load
@@ -894,6 +957,144 @@ function addToastStyles() {
       }
     `;
     document.head.appendChild(style);
+  }
+}
+
+// Add these new functions to handle categories
+function createCategoryChart() {
+  if (!categoryChart) return;
+  
+  const categoryData = calculateCategoryData();
+  const labels = categoryData.map(item => item.name);
+  const data = categoryData.map(item => item.amount);
+  const backgroundColor = categoryData.map(item => item.color);
+  
+  if (chart) {
+    chart.destroy();
+  }
+  
+  chart = new Chart(categoryChart, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: backgroundColor,
+        borderWidth: 0,
+        hoverOffset: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.chart.getDatasetMeta(0).total;
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function calculateCategoryData() {
+  // Create a map to store totals for each category
+  const categoryTotals = new Map();
+  
+  // Calculate totals for each category (only expenses)
+  transactions
+    .filter(t => t.type === 'expense')
+    .forEach(transaction => {
+      const category = transaction.category || 'others';
+      const currentTotal = categoryTotals.get(category) || 0;
+      categoryTotals.set(category, currentTotal + transaction.amount);
+    });
+  
+  // Convert the map to an array of objects with name, amount, and color
+  const categoryData = Array.from(categoryTotals.entries())
+    .map(([category, amount]) => {
+      const { color } = categoryIcons[category] || categoryIcons.others;
+      return {
+        name: capitalizeFirstLetter(category),
+        category: category,
+        amount: amount,
+        color: color
+      };
+    })
+    .sort((a, b) => b.amount - a.amount);
+  
+  return categoryData;
+}
+
+function updateCategoryList() {
+  if (!categoryList) return;
+  
+  categoryList.innerHTML = '';
+  
+  const categoryData = calculateCategoryData();
+  const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0);
+  
+  // Only show top 5 categories
+  categoryData.slice(0, 5).forEach(item => {
+    const percentage = totalAmount > 0 ? Math.round((item.amount / totalAmount) * 100) : 0;
+    const { icon } = categoryIcons[item.category] || categoryIcons.others;
+    
+    const categoryItem = document.createElement('div');
+    categoryItem.classList.add('category-item');
+    categoryItem.innerHTML = `
+      <div class="category-label">
+        <div class="category-icon-small category-${item.category}">
+          <i class="${icon}"></i>
+        </div>
+        ${item.name}
+      </div>
+      <div class="category-percentage">${percentage}%</div>
+    `;
+    
+    categoryList.appendChild(categoryItem);
+  });
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function filterTransactionsByCategory(category) {
+  // This is just a placeholder for now
+  // In a real implementation, you would filter the transactions based on category
+  if (category === 'all') {
+    // Show all transactions
+    renderTransactions();
+  } else if (category === 'more') {
+    // Show category selection modal
+    // This could be implemented later
+  } else {
+    // Filter by specific category
+    const filteredTransactions = transactions.filter(t => 
+      t.category === category || (!t.category && category === 'others')
+    );
+    
+    // Update the UI with filtered transactions
+    // This is a simplified version, you would need to adapt renderTransactions()
+    showToast(`Filtered by ${capitalizeFirstLetter(category)}`, 'info');
   }
 }
 

@@ -107,6 +107,49 @@
         </div>
       </div>
       
+      <!-- Add this new section after the cashflow section -->
+      <div class="category-analysis-section">
+        <div class="cashflow-section">
+          <div class="cashflow-header">
+            <h3>Spending By Category</h3>
+            <div class="cashflow-options">
+              <span class="active">This Month</span>
+              <span>Last Month</span>
+              <span>Custom</span>
+            </div>
+          </div>
+          
+          <div class="category-filter">
+            <div class="category-pill active" data-filter="all">
+              <i class="fas fa-filter"></i> All
+            </div>
+            <div class="category-pill" data-filter="food">
+              <i class="fas fa-utensils"></i> Food
+            </div>
+            <div class="category-pill" data-filter="shopping">
+              <i class="fas fa-shopping-bag"></i> Shopping
+            </div>
+            <div class="category-pill" data-filter="housing">
+              <i class="fas fa-home"></i> Housing
+            </div>
+            <div class="category-pill" data-filter="more">
+              <i class="fas fa-ellipsis-h"></i> More
+            </div>
+          </div>
+          
+          <div class="category-chart-container">
+            <canvas id="categoryChart" height="250"></canvas>
+          </div>
+          
+          <div class="category-distribution">
+            <h4>Top Categories</h4>
+            <div class="category-list" id="categoryList">
+              <!-- Will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- Budget Goal Tracker Section -->
       <div class="goal-section">
         <div class="goal-header">
@@ -136,14 +179,70 @@
       <!-- Transactions Section (renamed to Last Records) -->
       <div class="transactions-section">
         <div class="transactions-header">
-          <h3>Last Records</h3>
-          <button class="clear-btn" id="clearTransactionsBtn">Clear All</button>
+          <h3>Recent Transactions</h3>
+          <button id="clearTransactionsBtn" class="clear-btn">
+            <i class="fas fa-trash-alt"></i> Clear All
+          </button>
         </div>
+        
+        <div id="noTransactions" class="no-transactions">
+          <i class="fas fa-receipt"></i>
+          <h3>No transactions yet</h3>
+          <p>Start tracking your income and expenses by adding your first transaction.</p>
+          <button class="btn-primary" onclick="openModal()">Add Transaction</button>
+        </div>
+        
         <div class="transactions-list" id="transactionsList">
-          <div class="no-transactions" id="noTransactions">
-            <p>No records yet. Add your first transaction using the + button.</p>
+          <!-- Sample transaction for reference (will be replaced by JavaScript) -->
+          <div class="transaction-item sample-item">
+            <div class="transaction-left">
+              <div class="transaction-icon income-icon">
+                <i class="fas fa-arrow-down"></i>
+              </div>
+              <div class="transaction-details">
+                <h3>Sample Income</h3>
+                <div class="transaction-date">Jan 15, 2023</div>
+                <div class="transaction-category">
+                  <i class="fas fa-wallet" style="color: #4caf50"></i>
+                  Salary
+                </div>
+              </div>
+            </div>
+            <div class="transaction-amount income-amount">₹25,000.00</div>
+            <div class="transaction-actions">
+              <button class="transaction-edit" data-id="sample">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="transaction-delete" data-id="sample">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </div>
-          <!-- Transaction items will be dynamically added here -->
+          
+          <div class="transaction-item sample-item">
+            <div class="transaction-left">
+              <div class="transaction-icon expense-icon">
+                <i class="fas fa-arrow-up"></i>
+              </div>
+              <div class="transaction-details">
+                <h3>Sample Expense</h3>
+                <div class="transaction-date">Jan 20, 2023</div>
+                <div class="transaction-category">
+                  <i class="fas fa-shopping-bag" style="color: #9c27b0"></i>
+                  Shopping
+                </div>
+              </div>
+            </div>
+            <div class="transaction-amount expense-amount">₹5,000.00</div>
+            <div class="transaction-actions">
+              <button class="transaction-edit" data-id="sample">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="transaction-delete" data-id="sample">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -205,10 +304,30 @@
           
           <div class="form-group">
             <label for="transactionCategory">Category</label>
-            <select id="transactionCategory" class="form-select">
-              <option value="">None (Optional)</option>
-              <!-- Categories will be populated by JavaScript -->
-            </select>
+            <div class="category-select-wrapper">
+              <select id="transactionCategory" class="custom-select">
+                <option value="" disabled selected>Select a category</option>
+                <option value="food">Food & Dining</option>
+                <option value="shopping">Shopping</option>
+                <option value="housing">Housing & Rent</option>
+                <option value="transportation">Transportation</option>
+                <option value="vehicle">Vehicle & Maintenance</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="communication">Communication</option>
+                <option value="technology">Technology & Software</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="education">Education</option>
+                <option value="travel">Travel</option>
+                <option value="gifts">Gifts & Donations</option>
+                <option value="salary">Salary & Income</option>
+                <option value="investments">Investments</option>
+                <option value="others">Others</option>
+              </select>
+              <div class="select-icon">
+                <i class="fas fa-chevron-down"></i>
+              </div>
+            </div>
+            <span id="categoryError" class="error-message">Please select a category</span>
           </div>
         </form>
         
@@ -337,6 +456,7 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="assets/javascript/dashboard.js"></script>
 </body>
 </html> 
