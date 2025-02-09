@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="assets/css/index.css">
   <link rel="stylesheet" href="assets/css/dashboard.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Add Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -107,7 +107,7 @@
         </div>
       </div>
       
-      <!-- Add this new section after the cashflow section -->
+      <!-- Replace the Category Analysis Section with this improved version -->
       <div class="category-analysis-section">
         <div class="cashflow-section">
           <div class="cashflow-header">
@@ -115,16 +115,18 @@
             <div class="cashflow-options">
               <span class="active">This Month</span>
               <span>Last Month</span>
-              <span>Custom</span>
+              <span>Year</span>
             </div>
           </div>
           
+          <p class="section-description">View how your expenses are distributed across different categories to identify spending patterns and optimize your budget.</p>
+          
           <div class="category-filter">
             <div class="category-pill active" data-filter="all">
-              <i class="fas fa-filter"></i> All
+              <i class="fas fa-filter"></i> All Categories
             </div>
             <div class="category-pill" data-filter="food">
-              <i class="fas fa-utensils"></i> Food
+              <i class="fas fa-utensils"></i> Food & Dining
             </div>
             <div class="category-pill" data-filter="shopping">
               <i class="fas fa-shopping-bag"></i> Shopping
@@ -137,14 +139,35 @@
             </div>
           </div>
           
-          <div class="category-chart-container">
-            <canvas id="categoryChart" height="250"></canvas>
+          <div class="chart-wrapper">
+            <div class="category-chart-container">
+              <canvas id="categoryChart"></canvas>
+            </div>
           </div>
           
           <div class="category-distribution">
-            <h4>Top Categories</h4>
+            <h4>Top Spending Categories</h4>
             <div class="category-list" id="categoryList">
-              <!-- Will be populated by JavaScript -->
+              <!-- Sample category items for reference -->
+              <div class="category-item">
+                <div class="category-label">
+                  <div class="category-icon-small category-food">
+                    <i class="fas fa-utensils"></i>
+                  </div>
+                  Food & Dining
+                </div>
+                <div class="category-percentage">35%</div>
+              </div>
+              
+              <div class="category-item">
+                <div class="category-label">
+                  <div class="category-icon-small category-shopping">
+                    <i class="fas fa-shopping-bag"></i>
+                  </div>
+                  Shopping
+                </div>
+                <div class="category-percentage">28%</div>
+              </div>
             </div>
           </div>
         </div>
@@ -456,7 +479,7 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="assets/javascript/dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 </body>
 </html> 
