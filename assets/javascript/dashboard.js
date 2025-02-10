@@ -48,6 +48,15 @@ let chart = null;
 
 // Category data
 const categoryIcons = {
+  // Income categories
+  'salary': { icon: 'fas fa-wallet', color: '#4caf50' },
+  'investments': { icon: 'fas fa-chart-line', color: '#00bcd4' },
+  'freelance': { icon: 'fas fa-laptop-code', color: '#3f51b5' },
+  'gifts_received': { icon: 'fas fa-gift', color: '#9c27b0' },
+  'refunds': { icon: 'fas fa-undo', color: '#8bc34a' },
+  'other_income': { icon: 'fas fa-coins', color: '#ffc107' },
+  
+  // Expense categories
   'food': { icon: 'fas fa-utensils', color: '#ff9800' },
   'shopping': { icon: 'fas fa-shopping-bag', color: '#9c27b0' },
   'housing': { icon: 'fas fa-home', color: '#03a9f4' },
@@ -60,8 +69,6 @@ const categoryIcons = {
   'education': { icon: 'fas fa-graduation-cap', color: '#2196f3' },
   'travel': { icon: 'fas fa-plane', color: '#ffc107' },
   'gifts': { icon: 'fas fa-gift', color: '#8bc34a' },
-  'salary': { icon: 'fas fa-wallet', color: '#4caf50' },
-  'investments': { icon: 'fas fa-chart-line', color: '#00bcd4' },
   'others': { icon: 'fas fa-ellipsis-h', color: '#9e9e9e' }
 };
 
@@ -724,8 +731,17 @@ function openModal() {
       button.classList.toggle('active', button.id === 'incomeBtn');
     });
     
+    // Update category selector for income type
+    updateCategorySelector('income');
+    
     // Set submit button text
     submitTransaction.textContent = 'Add Transaction';
+  } else {
+    // Set category selector based on the transaction being edited
+    const transaction = transactions.find(t => t.id === currentEditId);
+    if (transaction) {
+      updateCategorySelector(transaction.type);
+    }
   }
 }
 
@@ -786,6 +802,9 @@ function setupEventListeners() {
       });
       button.classList.add('active');
       selectedType = button.id === 'incomeBtn' ? 'income' : 'expense';
+      
+      // Update category selector based on transaction type
+      updateCategorySelector(selectedType);
     });
   });
   
@@ -1176,29 +1195,68 @@ function calculateCategoryData() {
   // Create a map to store totals for each category
   const categoryTotals = new Map();
   
-  // Calculate totals for each category (only expenses)
-  transactions
-    .filter(t => t.type === 'expense')
-    .forEach(transaction => {
-      const category = transaction.category || 'others';
-      const currentTotal = categoryTotals.get(category) || 0;
-      categoryTotals.set(category, currentTotal + transaction.amount);
-    });
+  // Get the active filter from the category pills
+  const activeFilter = document.querySelector('.category-pill.active');
+  const filter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
+  
+  // Filter transactions based on type and potentially category
+  let filteredTransactions = transactions.filter(t => t.type === 'expense');
+  
+  // Apply additional category filter if needed
+  if (filter !== 'all' && filter !== 'more') {
+    filteredTransactions = filteredTransactions.filter(t => t.category === filter);
+  }
+  
+  // Calculate totals for each category
+  filteredTransactions.forEach(transaction => {
+    const category = transaction.category || 'others';
+    const currentTotal = categoryTotals.get(category) || 0;
+    categoryTotals.set(category, currentTotal + transaction.amount);
+  });
   
   // Convert the map to an array of objects with name, amount, and color
   const categoryData = Array.from(categoryTotals.entries())
     .map(([category, amount]) => {
-      const { color } = categoryIcons[category] || categoryIcons.others;
+      const { icon, color } = categoryIcons[category] || categoryIcons.others;
+      const displayName = getCategoryDisplayName(category);
       return {
-        name: capitalizeFirstLetter(category),
+        name: displayName,
         category: category,
         amount: amount,
-        color: color
+        color: color,
+        icon: icon
       };
     })
     .sort((a, b) => b.amount - a.amount);
   
   return categoryData;
+}
+
+// Get a user-friendly display name for a category
+function getCategoryDisplayName(category) {
+  const displayNames = {
+    'food': 'Food & Dining',
+    'shopping': 'Shopping',
+    'housing': 'Housing & Rent',
+    'transportation': 'Transportation',
+    'vehicle': 'Vehicle & Maintenance',
+    'entertainment': 'Entertainment',
+    'communication': 'Communication',
+    'technology': 'Technology & Software',
+    'healthcare': 'Healthcare',
+    'education': 'Education',
+    'travel': 'Travel',
+    'gifts': 'Gifts & Donations',
+    'salary': 'Salary & Wages',
+    'investments': 'Investments',
+    'freelance': 'Freelance Work',
+    'gifts_received': 'Gifts Received',
+    'refunds': 'Refunds',
+    'other_income': 'Other Income',
+    'others': 'Others'
+  };
+  
+  return displayNames[category] || capitalizeFirstLetter(category.replace('_', ' '));
 }
 
 function updateCategoryList() {
@@ -1209,17 +1267,28 @@ function updateCategoryList() {
   const categoryData = calculateCategoryData();
   const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0);
   
+  if (categoryData.length === 0) {
+    // Show empty state
+    const emptyState = document.createElement('div');
+    emptyState.className = 'category-empty-state';
+    emptyState.innerHTML = `
+      <i class="fas fa-filter"></i>
+      <p>No transactions in this category</p>
+    `;
+    categoryList.appendChild(emptyState);
+    return;
+  }
+  
   // Only show top 5 categories
   categoryData.slice(0, 5).forEach(item => {
     const percentage = totalAmount > 0 ? Math.round((item.amount / totalAmount) * 100) : 0;
-    const { icon } = categoryIcons[item.category] || categoryIcons.others;
     
     const categoryItem = document.createElement('div');
     categoryItem.classList.add('category-item');
     categoryItem.innerHTML = `
       <div class="category-label">
         <div class="category-icon-small category-${item.category}">
-          <i class="${icon}"></i>
+          <i class="${item.icon}"></i>
         </div>
         ${item.name}
       </div>
@@ -1235,23 +1304,64 @@ function capitalizeFirstLetter(string) {
 }
 
 function filterTransactionsByCategory(category) {
-  // This is just a placeholder for now
-  // In a real implementation, you would filter the transactions based on category
-  if (category === 'all') {
-    // Show all transactions
-    renderTransactions();
-  } else if (category === 'more') {
-    // Show category selection modal
-    // This could be implemented later
-  } else {
-    // Filter by specific category
-    const filteredTransactions = transactions.filter(t => 
-      t.category === category || (!t.category && category === 'others')
-    );
+  // Update the filter text
+  const categoryDisplayName = category === 'all' ? 'All Categories' : 
+    getCategoryDisplayName(category);
+  
+  // Create or refresh the chart with the filtered data
+  createCategoryChart();
+  updateCategoryList();
+  
+  // Show notification
+  if (category !== 'all') {
+    const { color } = categoryIcons[category] || categoryIcons.others;
+    showToast(`Filtered by ${categoryDisplayName}`, 'info');
+  }
+}
+
+// Function to update category selector based on transaction type
+function updateCategorySelector(type) {
+  const categorySelect = document.querySelector('#transactionCategory');
+  if (!categorySelect) return;
+  
+  const incomeOptgroup = categorySelect.querySelector('optgroup.income-categories');
+  const expenseOptgroup = categorySelect.querySelector('optgroup.expense-categories');
+  
+  if (!incomeOptgroup || !expenseOptgroup) return;
+  
+  // Reset selection and show correct optgroup
+  categorySelect.selectedIndex = 0;
+  
+  if (type === 'income') {
+    incomeOptgroup.style.display = '';
+    expenseOptgroup.style.display = 'none';
     
-    // Update the UI with filtered transactions
-    // This is a simplified version, you would need to adapt renderTransactions()
-    showToast(`Filtered by ${capitalizeFirstLetter(category)}`, 'info');
+    // Make only income options selectable
+    for (let i = 0; i < categorySelect.options.length; i++) {
+      const option = categorySelect.options[i];
+      const parent = option.parentNode;
+      
+      if (parent === incomeOptgroup) {
+        option.disabled = false;
+      } else if (parent === expenseOptgroup) {
+        option.disabled = true;
+      }
+    }
+  } else {
+    incomeOptgroup.style.display = 'none';
+    expenseOptgroup.style.display = '';
+    
+    // Make only expense options selectable
+    for (let i = 0; i < categorySelect.options.length; i++) {
+      const option = categorySelect.options[i];
+      const parent = option.parentNode;
+      
+      if (parent === expenseOptgroup) {
+        option.disabled = false;
+      } else if (parent === incomeOptgroup) {
+        option.disabled = true;
+      }
+    }
   }
 }
 

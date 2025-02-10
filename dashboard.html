@@ -134,6 +134,9 @@
             <div class="category-pill" data-filter="housing">
               <i class="fas fa-home"></i> Housing
             </div>
+            <div class="category-pill" data-filter="entertainment">
+              <i class="fas fa-film"></i> Entertainment
+            </div>
             <div class="category-pill" data-filter="more">
               <i class="fas fa-ellipsis-h"></i> More
             </div>
@@ -330,21 +333,31 @@
             <div class="category-select-wrapper">
               <select id="transactionCategory" class="custom-select">
                 <option value="" disabled selected>Select a category</option>
-                <option value="food">Food & Dining</option>
-                <option value="shopping">Shopping</option>
-                <option value="housing">Housing & Rent</option>
-                <option value="transportation">Transportation</option>
-                <option value="vehicle">Vehicle & Maintenance</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="communication">Communication</option>
-                <option value="technology">Technology & Software</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="education">Education</option>
-                <option value="travel">Travel</option>
-                <option value="gifts">Gifts & Donations</option>
-                <option value="salary">Salary & Income</option>
-                <option value="investments">Investments</option>
-                <option value="others">Others</option>
+                <!-- Income Categories -->
+                <optgroup label="Income" class="income-categories">
+                  <option value="salary">Salary & Wages</option>
+                  <option value="investments">Investments</option>
+                  <option value="freelance">Freelance & Side Jobs</option>
+                  <option value="gifts_received">Gifts Received</option>
+                  <option value="refunds">Refunds & Reimbursements</option>
+                  <option value="other_income">Other Income</option>
+                </optgroup>
+                <!-- Expense Categories -->
+                <optgroup label="Expenses" class="expense-categories">
+                  <option value="food">Food & Dining</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="housing">Housing & Rent</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="vehicle">Vehicle & Maintenance</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="communication">Communication</option>
+                  <option value="technology">Technology & Software</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="education">Education</option>
+                  <option value="travel">Travel</option>
+                  <option value="gifts">Gifts & Donations</option>
+                  <option value="others">Others</option>
+                </optgroup>
               </select>
               <div class="select-icon">
                 <i class="fas fa-chevron-down"></i>
