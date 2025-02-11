@@ -87,10 +87,6 @@ function init() {
   updateCashFlowBars();
   updateSavingsGoal();
   
-  // Create category chart
-  createCategoryChart();
-  updateCategoryList();
-  
   // Setup event listeners
   setupEventListeners();
   
@@ -340,6 +336,10 @@ function renderTransactions() {
     if (noTransactions) {
       noTransactions.style.display = 'flex';
     }
+    
+    // Update chart with empty data
+    createCategoryChart();
+    updateCategoryList();
     return;
   }
   
@@ -372,6 +372,7 @@ function renderTransactions() {
     // Get category icon info
     const category = transaction.category || 'others';
     const { icon, color } = categoryIcons[category] || categoryIcons.others;
+    const displayName = getCategoryDisplayName(category);
     
     transactionItem.innerHTML = `
       <div class="transaction-left">
@@ -383,7 +384,7 @@ function renderTransactions() {
           <div class="transaction-date">${formattedDate}</div>
           <div class="transaction-category">
             <i class="${icon}" style="color: ${color}"></i>
-            ${capitalizeFirstLetter(category)}
+            ${displayName}
           </div>
         </div>
       </div>
@@ -413,6 +414,10 @@ function renderTransactions() {
   document.querySelectorAll('.transaction-delete').forEach(button => {
     button.addEventListener('click', deleteTransaction);
   });
+  
+  // Update category chart and list after rendering transactions
+  createCategoryChart();
+  updateCategoryList();
 }
 
 // Edit transaction
@@ -470,6 +475,13 @@ function deleteTransaction(event) {
       renderTransactions();
       updateCashFlowBars();
       updateSavingsGoal();
+      
+      // Ensure category visualizations are updated
+      createCategoryChart();
+      updateCategoryList();
+      
+      // Show toast notification
+      showToast('Transaction deleted successfully');
     }, 300);
   }
 }
@@ -627,6 +639,10 @@ function handleClearTransactions() {
     renderTransactions();
     updateCashFlowBars();
     updateSavingsGoal();
+    
+    // Ensure category visualizations are updated
+    createCategoryChart();
+    updateCategoryList();
     
     // Show success toast notification
     showToast('All transactions cleared successfully!');
@@ -897,6 +913,9 @@ function setupEventListeners() {
       filterTransactionsByCategory(filter);
     });
   });
+  
+  // Function to handle the "More" category pill click
+  handleMoreCategoriesClick();
 }
 
 // Animate dashboard elements on load
@@ -1304,9 +1323,14 @@ function capitalizeFirstLetter(string) {
 }
 
 function filterTransactionsByCategory(category) {
-  // Update the filter text
-  const categoryDisplayName = category === 'all' ? 'All Categories' : 
+  // Get the display name for the category
+  let categoryDisplayName = category === 'all' ? 'All Categories' : 
     getCategoryDisplayName(category);
+  
+  if (category === 'more') {
+    // Don't actually filter for the "more" option
+    return;
+  }
   
   // Create or refresh the chart with the filtered data
   createCategoryChart();
@@ -1363,6 +1387,80 @@ function updateCategorySelector(type) {
       }
     }
   }
+}
+
+// Function to handle the "More" category pill click
+function handleMoreCategoriesClick() {
+  const morePill = document.querySelector('.category-pill[data-filter="more"]');
+  if (!morePill) return;
+  
+  morePill.addEventListener('click', (event) => {
+    event.stopPropagation(); // Prevent immediate filtering
+    
+    // Check if dropdown already exists
+    let dropdown = document.querySelector('.category-more-dropdown');
+    if (dropdown) {
+      dropdown.remove();
+      return;
+    }
+    
+    // Create dropdown
+    dropdown = document.createElement('div');
+    dropdown.className = 'category-more-dropdown';
+    
+    // Get all expense categories that aren't already shown as pills
+    const visibleCategories = Array.from(document.querySelectorAll('.category-pill:not([data-filter="more"])')).map(pill => 
+      pill.getAttribute('data-filter')
+    );
+    
+    const expenseCategories = Object.keys(categoryIcons).filter(category => 
+      !visibleCategories.includes(category) && 
+      !['salary', 'investments', 'freelance', 'gifts_received', 'refunds', 'other_income'].includes(category)
+    );
+    
+    // Add dropdown items
+    expenseCategories.forEach(category => {
+      const { icon, color } = categoryIcons[category];
+      const displayName = getCategoryDisplayName(category);
+      
+      const item = document.createElement('div');
+      item.className = 'category-dropdown-item';
+      item.setAttribute('data-filter', category);
+      item.innerHTML = `
+        <i class="${icon}" style="color: ${color}"></i>
+        ${displayName}
+      `;
+      
+      item.addEventListener('click', () => {
+        // Filter by this category
+        categoryPills.forEach(p => p.classList.remove('active'));
+        morePill.classList.add('active');
+        
+        filterTransactionsByCategory(category);
+        dropdown.remove();
+      });
+      
+      dropdown.appendChild(item);
+    });
+    
+    // Position dropdown below the More pill
+    const rect = morePill.getBoundingClientRect();
+    dropdown.style.top = rect.bottom + 'px';
+    dropdown.style.left = rect.left + 'px';
+    
+    // Add to document
+    document.body.appendChild(dropdown);
+    
+    // Close dropdown when clicking outside
+    const closeDropdown = (e) => {
+      if (!dropdown.contains(e.target) && e.target !== morePill) {
+        dropdown.remove();
+        document.removeEventListener('click', closeDropdown);
+      }
+    };
+    
+    document.addEventListener('click', closeDropdown);
+  });
 }
 
 // Initialize the app when the DOM is fully loaded
