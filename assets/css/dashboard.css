@@ -1547,4 +1547,231 @@
   align-items: center;
   justify-content: center;
   width: 20px;
+}
+
+/* Spending Analysis Layout */
+.spending-analysis-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.category-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Make chart wrapper take full height */
+.spending-analysis-container .chart-wrapper {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.spending-analysis-container .category-chart-container {
+  flex: 1;
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Improved Category Filter */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.category-pill {
+  background-color: var(--gray-100);
+  border-radius: 30px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  border: 1px solid transparent;
+}
+
+.category-pill:hover {
+  background-color: var(--gray-200);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.category-pill.active {
+  background-color: var(--primary-black);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Category Distribution */
+.category-distribution {
+  background-color: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  flex: 1;
+}
+
+.category-distribution h4 {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: var(--gray-800);
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  margin-bottom: 10px;
+  border-left: 4px solid transparent;
+}
+
+.category-item:hover {
+  background-color: var(--gray-50);
+  transform: translateX(5px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.category-item:nth-child(1) {
+  border-left-color: var(--success);
+}
+
+.category-item:nth-child(2) {
+  border-left-color: var(--error);
+}
+
+.category-item:nth-child(3) {
+  border-left-color: #ff9800;
+}
+
+.category-item:nth-child(4) {
+  border-left-color: #2196f3;
+}
+
+.category-item:nth-child(5) {
+  border-left-color: #9c27b0;
+}
+
+.category-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.category-percentage {
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 50px;
+  text-align: right;
+  color: var(--gray-800);
+}
+
+.category-icon-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .spending-analysis-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .category-insights {
+    order: -1;
+  }
+}
+
+/* Active category highlighting */
+.category-item.active-category {
+  background-color: var(--gray-50);
+  border-left-width: 5px;
+  transform: translateX(5px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Category item hover effect */
+.category-item {
+  cursor: pointer;
+  position: relative;
+}
+
+.category-item::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-color: transparent transparent transparent var(--gray-300);
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.category-item:hover::after {
+  opacity: 1;
+  right: 10px;
+}
+
+/* View All Categories button */
+.category-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: 12px;
+  background-color: var(--gray-100);
+  color: var(--gray-700);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.category-view-all:hover {
+  background-color: var(--gray-200);
+  transform: translateY(-2px);
+}
+
+.category-view-all i {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.category-view-all:hover i {
+  transform: translateX(3px);
 } 

@@ -121,55 +121,59 @@
           
           <p class="section-description">View how your expenses are distributed across different categories to identify spending patterns and optimize your budget.</p>
           
-          <div class="category-filter">
-            <div class="category-pill active" data-filter="all">
-              <i class="fas fa-filter"></i> All Categories
+          <div class="spending-analysis-container">
+            <div class="chart-wrapper">
+              <div class="category-chart-container">
+                <canvas id="categoryChart"></canvas>
+              </div>
             </div>
-            <div class="category-pill" data-filter="food">
-              <i class="fas fa-utensils"></i> Food & Dining
-            </div>
-            <div class="category-pill" data-filter="shopping">
-              <i class="fas fa-shopping-bag"></i> Shopping
-            </div>
-            <div class="category-pill" data-filter="housing">
-              <i class="fas fa-home"></i> Housing
-            </div>
-            <div class="category-pill" data-filter="entertainment">
-              <i class="fas fa-film"></i> Entertainment
-            </div>
-            <div class="category-pill" data-filter="more">
-              <i class="fas fa-ellipsis-h"></i> More
-            </div>
-          </div>
-          
-          <div class="chart-wrapper">
-            <div class="category-chart-container">
-              <canvas id="categoryChart"></canvas>
-            </div>
-          </div>
-          
-          <div class="category-distribution">
-            <h4>Top Spending Categories</h4>
-            <div class="category-list" id="categoryList">
-              <!-- Sample category items for reference -->
-              <div class="category-item">
-                <div class="category-label">
-                  <div class="category-icon-small category-food">
-                    <i class="fas fa-utensils"></i>
-                  </div>
-                  Food & Dining
+            
+            <div class="category-insights">
+              <div class="category-filter">
+                <div class="category-pill active" data-filter="all">
+                  <i class="fas fa-filter"></i> All Categories
                 </div>
-                <div class="category-percentage">35%</div>
+                <div class="category-pill" data-filter="food">
+                  <i class="fas fa-utensils"></i> Food & Dining
+                </div>
+                <div class="category-pill" data-filter="shopping">
+                  <i class="fas fa-shopping-bag"></i> Shopping
+                </div>
+                <div class="category-pill" data-filter="housing">
+                  <i class="fas fa-home"></i> Housing
+                </div>
+                <div class="category-pill" data-filter="entertainment">
+                  <i class="fas fa-film"></i> Entertainment
+                </div>
+                <div class="category-pill" data-filter="more">
+                  <i class="fas fa-ellipsis-h"></i> More
+                </div>
               </div>
               
-              <div class="category-item">
-                <div class="category-label">
-                  <div class="category-icon-small category-shopping">
-                    <i class="fas fa-shopping-bag"></i>
+              <div class="category-distribution">
+                <h4>Top Spending Categories</h4>
+                <div class="category-list" id="categoryList">
+                  <!-- Sample category items for reference -->
+                  <div class="category-item">
+                    <div class="category-label">
+                      <div class="category-icon-small category-food">
+                        <i class="fas fa-utensils"></i>
+                      </div>
+                      Food & Dining
+                    </div>
+                    <div class="category-percentage">35%</div>
                   </div>
-                  Shopping
+                  
+                  <div class="category-item">
+                    <div class="category-label">
+                      <div class="category-icon-small category-shopping">
+                        <i class="fas fa-shopping-bag"></i>
+                      </div>
+                      Shopping
+                    </div>
+                    <div class="category-percentage">28%</div>
+                  </div>
                 </div>
-                <div class="category-percentage">28%</div>
               </div>
             </div>
           </div>

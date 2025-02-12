@@ -1056,10 +1056,11 @@ function createCategoryChart() {
         backgroundColor: backgroundColor,
         borderColor: borderColor,
         borderWidth: 2,
-        hoverOffset: 10,
-        borderRadius: 3,
-        spacing: 2,
-        hoverBorderColor: '#ffffff'
+        hoverOffset: 15,
+        borderRadius: 4,
+        spacing: 3,
+        hoverBorderColor: '#ffffff',
+        hoverBorderWidth: 3
       }]
     },
     options: {
@@ -1076,9 +1077,36 @@ function createCategoryChart() {
       layout: {
         padding: 20
       },
+      onClick: (event, elements) => {
+        if (elements && elements.length > 0) {
+          const index = elements[0].index;
+          const category = categoryData[index].category;
+          
+          // Set the corresponding pill as active
+          const pill = document.querySelector(`.category-pill[data-filter="${category}"]`);
+          if (pill) {
+            categoryPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            
+            // Filter by this category
+            filterTransactionsByCategory(category);
+          } else if (category !== 'all') {
+            // If pill doesn't exist (because it's in "More" dropdown)
+            const morePill = document.querySelector('.category-pill[data-filter="more"]');
+            if (morePill) {
+              categoryPills.forEach(p => p.classList.remove('active'));
+              morePill.classList.add('active');
+              
+              // Filter by this category
+              filterTransactionsByCategory(category);
+            }
+          }
+        }
+      },
       plugins: {
         legend: {
           position: 'right',
+          align: 'center',
           labels: {
             usePointStyle: true,
             padding: 20,
@@ -1144,6 +1172,10 @@ function createCategoryChart() {
               const total = context.chart.getDatasetMeta(0).total;
               const percentage = Math.round((value / total) * 100);
               return ` ${formatCurrency(value)} (${percentage}%)`;
+            },
+            afterLabel: function(context) {
+              // Add click hint
+              return ' Click to filter by this category';
             }
           }
         }
@@ -1168,7 +1200,7 @@ function createCategoryChart() {
         const totalAmount = chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0);
         const text = formatCurrency(totalAmount);
         const textX = Math.round((width - ctx.measureText(text).width) / 2);
-        const textY = height / 2;
+        const textY = height / 2 - 10;
         
         ctx.fillStyle = '#333';
         ctx.fillText(text, textX, textY);
@@ -1182,6 +1214,16 @@ function createCategoryChart() {
         const subTextX = Math.round((width - ctx.measureText(subText).width) / 2);
         const subTextY = height / 2 + 20;
         ctx.fillText(subText, subTextX, subTextY);
+        
+        // Add interactive hint
+        const hintFontSize = (height / 350).toFixed(2);
+        ctx.font = hintFontSize + 'em Inter, sans-serif';
+        ctx.fillStyle = '#999';
+        
+        const hintText = 'Click on a segment to filter';
+        const hintX = Math.round((width - ctx.measureText(hintText).width) / 2);
+        const hintY = height / 2 + 45;
+        ctx.fillText(hintText, hintX, hintY);
         
         ctx.save();
       }
@@ -1286,6 +1328,10 @@ function updateCategoryList() {
   const categoryData = calculateCategoryData();
   const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0);
   
+  // Get the active filter
+  const activeFilter = document.querySelector('.category-pill.active');
+  const currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
+  
   if (categoryData.length === 0) {
     // Show empty state
     const emptyState = document.createElement('div');
@@ -1304,6 +1350,29 @@ function updateCategoryList() {
     
     const categoryItem = document.createElement('div');
     categoryItem.classList.add('category-item');
+    
+    // Highlight the active category
+    if (currentFilter === item.category || (currentFilter === 'all' && item === categoryData[0])) {
+      categoryItem.classList.add('active-category');
+    }
+    
+    // Make category items clickable
+    categoryItem.addEventListener('click', () => {
+      // Find the matching pill and click it
+      const matchingPill = document.querySelector(`.category-pill[data-filter="${item.category}"]`);
+      if (matchingPill) {
+        matchingPill.click();
+      } else {
+        // Handle categories in the "more" dropdown
+        categoryPills.forEach(p => p.classList.remove('active'));
+        const morePill = document.querySelector('.category-pill[data-filter="more"]');
+        if (morePill) {
+          morePill.classList.add('active');
+        }
+        filterTransactionsByCategory(item.category);
+      }
+    });
+    
     categoryItem.innerHTML = `
       <div class="category-label">
         <div class="category-icon-small category-${item.category}">
@@ -1316,6 +1385,26 @@ function updateCategoryList() {
     
     categoryList.appendChild(categoryItem);
   });
+  
+  // Add a "View All" button if there are more than 5 categories
+  if (categoryData.length > 5) {
+    const viewAllItem = document.createElement('div');
+    viewAllItem.classList.add('category-view-all');
+    viewAllItem.innerHTML = `
+      <span>View All Categories</span>
+      <i class="fas fa-chevron-right"></i>
+    `;
+    
+    // Reset to "All Categories" when clicking View All
+    viewAllItem.addEventListener('click', () => {
+      const allPill = document.querySelector('.category-pill[data-filter="all"]');
+      if (allPill) {
+        allPill.click();
+      }
+    });
+    
+    categoryList.appendChild(viewAllItem);
+  }
 }
 
 function capitalizeFirstLetter(string) {
