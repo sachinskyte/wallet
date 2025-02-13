@@ -1549,6 +1549,15 @@
   width: 20px;
 }
 
+/* Active dropdown item */
+.category-dropdown-item.active {
+  background-color: var(--gray-100);
+  font-weight: 600;
+  color: var(--gray-900);
+  border-left: 4px solid var(--primary-black);
+  padding-left: 12px;
+}
+
 /* Spending Analysis Layout */
 .spending-analysis-container {
   display: grid;
@@ -1774,4 +1783,17 @@
 
 .category-view-all:hover i {
   transform: translateX(3px);
+}
+
+/* Highlighted transaction when filtered by category */
+.transaction-item.highlighted {
+  background-color: var(--gray-50);
+  border-left-width: 5px;
+  transform: translateX(5px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Add transition for smooth filtering effect */
+.transaction-item {
+  transition: all 0.3s ease;
 } 
