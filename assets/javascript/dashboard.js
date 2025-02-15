@@ -75,7 +75,7 @@ const categoryIcons = {
 // Initialize the app
 function init() {
   // Set welcome name
-  welcomeName.textContent = userName;
+  if (welcomeName) welcomeName.textContent = userName;
   
   // Load data from localStorage
   loadTransactions();
@@ -87,9 +87,11 @@ function init() {
   updateCashFlowBars();
   updateSavingsGoal();
   
-  // Create category visualizations
-  createCategoryChart();
-  updateCategoryList();
+  // Initialize charts with a small delay for smooth animation
+  setTimeout(() => {
+    createCategoryChart();
+    updateCategoryList();
+  }, 100);
   
   // Setup event listeners
   setupEventListeners();
@@ -195,10 +197,19 @@ function animateCounter(element, targetValue) {
 function updateStatistics(totalIncomeAmount, totalExpensesAmount) {
   const netSavingsAmount = totalIncomeAmount - totalExpensesAmount;
   
-  // Update with animation
+  // Update with animation and format properly
   animateCounter(totalIncome, totalIncomeAmount);
   animateCounter(totalExpenses, totalExpensesAmount);
   animateCounter(netSavings, netSavingsAmount);
+  
+  // Apply appropriate color to net savings
+  if (netSavingsAmount > 0) {
+    netSavings.style.color = 'var(--success)';
+  } else if (netSavingsAmount < 0) {
+    netSavings.style.color = 'var(--error)';
+  } else {
+    netSavings.style.color = '';
+  }
   
   // Update cash flow section
   updateCashFlowSection(totalIncomeAmount, totalExpensesAmount);
@@ -1030,21 +1041,18 @@ function addToastStyles() {
   }
 }
 
-// Update the createCategoryChart function for a better visualization
+// Update the createCategoryChart function for a better, cleaner visualization
 function createCategoryChart() {
   if (!categoryChart) return;
   
   const categoryData = calculateCategoryData();
   
-  // If no data, show empty state
   if (categoryData.length === 0) {
-    // Clear any existing chart
     if (chart) {
       chart.destroy();
       chart = null;
     }
     
-    // Show empty state message in chart container
     const chartContainer = categoryChart.parentElement;
     const emptyState = document.createElement('div');
     emptyState.className = 'chart-empty-state';
@@ -1059,7 +1067,6 @@ function createCategoryChart() {
     return;
   }
   
-  // Remove any empty state if it exists
   const chartContainer = categoryChart.parentElement;
   const emptyState = chartContainer.querySelector('.chart-empty-state');
   if (emptyState) {
@@ -1070,13 +1077,12 @@ function createCategoryChart() {
   const labels = categoryData.map(item => item.name);
   const data = categoryData.map(item => item.amount);
   const backgroundColor = categoryData.map(item => item.color);
-  const borderColor = backgroundColor.map(color => adjustColorBrightness(color, -15));
+  const borderColor = backgroundColor.map(color => adjustColorBrightness(color, -10));
   
   if (chart) {
     chart.destroy();
   }
   
-  // Get the context from the recreated canvas
   const ctx = document.getElementById('categoryChart').getContext('2d');
   
   chart = new Chart(ctx, {
@@ -1087,49 +1093,45 @@ function createCategoryChart() {
         data: data,
         backgroundColor: backgroundColor,
         borderColor: borderColor,
-        borderWidth: 2,
-        hoverOffset: 15,
-        borderRadius: 4,
-        spacing: 3,
+        borderWidth: 1,
+        hoverOffset: 12,
+        borderRadius: 2,
+        spacing: 2,
         hoverBorderColor: '#ffffff',
-        hoverBorderWidth: 3
+        hoverBorderWidth: 2
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '65%',
+      cutout: '70%',
       radius: '90%',
       animation: {
         animateRotate: true,
         animateScale: true,
-        duration: 1000,
-        easing: 'easeOutQuart'
+        duration: 800,
+        easing: 'easeOutCirc'
       },
       layout: {
-        padding: 20
+        padding: 15
       },
       onClick: (event, elements) => {
         if (elements && elements.length > 0) {
           const index = elements[0].index;
           const category = categoryData[index].category;
           
-          // Set the corresponding pill as active
           const pill = document.querySelector(`.category-pill[data-filter="${category}"]`);
           if (pill) {
             categoryPills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             
-            // Filter by this category
             filterTransactionsByCategory(category);
           } else if (category !== 'all') {
-            // If pill doesn't exist (because it's in "More" dropdown)
             const morePill = document.querySelector('.category-pill[data-filter="more"]');
             if (morePill) {
               categoryPills.forEach(p => p.classList.remove('active'));
               morePill.classList.add('active');
               
-              // Filter by this category
               filterTransactionsByCategory(category);
             }
           }
@@ -1137,46 +1139,12 @@ function createCategoryChart() {
       },
       plugins: {
         legend: {
-          position: 'right',
-          align: 'center',
-          labels: {
-            usePointStyle: true,
-            padding: 20,
-            font: {
-              size: 13,
-              family: 'Inter, sans-serif',
-              weight: '500'
-            },
-            generateLabels: function(chart) {
-              const data = chart.data;
-              if (data.labels.length && data.datasets.length) {
-                return data.labels.map((label, i) => {
-                  const meta = chart.getDatasetMeta(0);
-                  const style = meta.controller.getStyle(i);
-                  
-                  const total = meta.total;
-                  const value = data.datasets[0].data[i];
-                  const percentage = Math.round((value / total) * 100);
-                  
-                  return {
-                    text: `${label} (${percentage}%)`,
-                    fillStyle: data.datasets[0].backgroundColor[i],
-                    strokeStyle: data.datasets[0].borderColor[i],
-                    lineWidth: 0,
-                    pointStyle: 'circle',
-                    hidden: !chart.getDataVisibility(i),
-                    index: i
-                  };
-                });
-              }
-              return [];
-            }
-          }
+          display: false
         },
         tooltip: {
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           titleColor: '#333',
-          bodyColor: '#666',
+          bodyColor: '#555',
           bodyFont: {
             size: 13,
             weight: '500',
@@ -1187,13 +1155,11 @@ function createCategoryChart() {
             weight: '600',
             family: 'Inter, sans-serif'
           },
-          borderColor: 'rgba(0, 0, 0, 0.1)',
-          borderWidth: 1,
-          boxPadding: 8,
-          cornerRadius: 10,
+          padding: 12,
+          cornerRadius: 8,
           displayColors: true,
-          boxWidth: 12,
-          boxHeight: 12,
+          boxWidth: 10,
+          boxHeight: 10,
           usePointStyle: true,
           callbacks: {
             title: function(tooltipItems) {
@@ -1204,10 +1170,6 @@ function createCategoryChart() {
               const total = context.chart.getDatasetMeta(0).total;
               const percentage = Math.round((value / total) * 100);
               return ` ${formatCurrency(value)} (${percentage}%)`;
-            },
-            afterLabel: function(context) {
-              // Add click hint
-              return ' Click to filter by this category';
             }
           }
         }
@@ -1215,7 +1177,6 @@ function createCategoryChart() {
     }
   });
   
-  // Add a center text plugin if available
   if (Chart.registry.plugins.get('doughnutCenterText') === undefined) {
     Chart.register({
       id: 'doughnutCenterText',
@@ -1225,38 +1186,22 @@ function createCategoryChart() {
         const ctx = chart.ctx;
         
         ctx.restore();
-        const fontSize = (height / 160).toFixed(2);
-        ctx.font = fontSize + 'em Inter, sans-serif';
+        const fontSize = (height / 150).toFixed(2);
+        ctx.font = `600 ${fontSize}em Inter, sans-serif`;
         ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
         
         const totalAmount = chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0);
         const text = formatCurrency(totalAmount);
-        const textX = Math.round((width - ctx.measureText(text).width) / 2);
-        const textY = height / 2 - 10;
         
         ctx.fillStyle = '#333';
-        ctx.fillText(text, textX, textY);
+        ctx.fillText(text, width/2, height/2 - 10);
         
-        // Add "Total Expenses" text below
-        const subTextFontSize = (height / 280).toFixed(2);
-        ctx.font = subTextFontSize + 'em Inter, sans-serif';
+        const subTextFontSize = (height / 300).toFixed(2);
+        ctx.font = `500 ${subTextFontSize}em Inter, sans-serif`;
         ctx.fillStyle = '#666';
         
-        const subText = 'Total Expenses';
-        const subTextX = Math.round((width - ctx.measureText(subText).width) / 2);
-        const subTextY = height / 2 + 20;
-        ctx.fillText(subText, subTextX, subTextY);
-        
-        // Add interactive hint
-        const hintFontSize = (height / 350).toFixed(2);
-        ctx.font = hintFontSize + 'em Inter, sans-serif';
-        ctx.fillStyle = '#999';
-        
-        const hintText = 'Click on a segment to filter';
-        const hintX = Math.round((width - ctx.measureText(hintText).width) / 2);
-        const hintY = height / 2 + 45;
-        ctx.fillText(hintText, hintX, hintY);
-        
+        ctx.fillText('Total Expenses', width/2, height/2 + 15);
         ctx.save();
       }
     });
