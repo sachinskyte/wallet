@@ -1077,13 +1077,59 @@ function createCategoryChart() {
   const labels = categoryData.map(item => item.name);
   const data = categoryData.map(item => item.amount);
   const backgroundColor = categoryData.map(item => item.color);
-  const borderColor = backgroundColor.map(color => adjustColorBrightness(color, -10));
+  const hoverBackgroundColor = backgroundColor.map(color => adjustColorBrightness(color, 15));
   
   if (chart) {
     chart.destroy();
   }
   
   const ctx = document.getElementById('categoryChart').getContext('2d');
+  
+  Chart.register({
+    id: 'doughnutLabelsLine',
+    beforeDraw: function(chart) {
+      if (chart.config.type === 'doughnut') {
+        const data = chart.data.datasets[0].data;
+        const meta = chart.getDatasetMeta(0);
+        const total = data.reduce((a, b) => a + b, 0);
+        
+        const width = chart.width;
+        const height = chart.height;
+        const ctx = chart.ctx;
+        
+        // Clear the canvas where we'll draw our labels
+        ctx.save();
+        
+        // Draw innermost circle for center text background
+        ctx.beginPath();
+        ctx.fillStyle = '#ffffff';
+        ctx.arc(width / 2, height / 2, chart.innerRadius * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw center text
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        // Total amount
+        const totalAmount = data.reduce((a, b) => a + b, 0);
+        const formattedAmount = formatCurrency(totalAmount);
+        
+        // Draw amount
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `600 ${Math.min(width, height) / 16}px 'Inter', sans-serif`;
+        ctx.fillStyle = '#333333';
+        ctx.fillText(formattedAmount, centerX, centerY - 10);
+        
+        // Draw "Total Expenses" text
+        ctx.font = `500 ${Math.min(width, height) / 30}px 'Inter', sans-serif`;
+        ctx.fillStyle = '#666666';
+        ctx.fillText('Total Expenses', centerX, centerY + 15);
+        
+        ctx.restore();
+      }
+    }
+  });
   
   chart = new Chart(ctx, {
     type: 'doughnut',
@@ -1092,30 +1138,81 @@ function createCategoryChart() {
       datasets: [{
         data: data,
         backgroundColor: backgroundColor,
-        borderColor: borderColor,
-        borderWidth: 1,
-        hoverOffset: 12,
-        borderRadius: 2,
-        spacing: 2,
-        hoverBorderColor: '#ffffff',
-        hoverBorderWidth: 2
+        hoverBackgroundColor: hoverBackgroundColor,
+        borderColor: 'white',
+        borderWidth: 2,
+        hoverBorderWidth: 0,
+        hoverOffset: 7,
+        borderRadius: 4
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '70%',
-      radius: '90%',
-      animation: {
-        animateRotate: true,
-        animateScale: true,
-        duration: 800,
-        easing: 'easeOutCirc'
-      },
+      cutout: '60%',
       layout: {
         padding: 15
       },
-      onClick: (event, elements) => {
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            padding: 15,
+            usePointStyle: true,
+            boxWidth: 10,
+            boxHeight: 10,
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+              weight: '500'
+            },
+            generateLabels: function(chart) {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label, i) => {
+                  const value = data.datasets[0].data[i];
+                  const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  
+                  return {
+                    text: `${label} - ${percentage}%`,
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    strokeStyle: 'white',
+                    lineWidth: 2,
+                    hidden: !chart.getDataVisibility(i),
+                    index: i
+                  };
+                });
+              }
+              return [];
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.raw;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return ` ${formatCurrency(value)} (${percentage}%)`;
+            }
+          },
+          padding: 12,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: '#333',
+          bodyColor: '#555',
+          titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+          bodyFont: { size: 13, family: "'Inter', sans-serif" },
+          borderColor: 'rgba(0,0,0,0.1)',
+          borderWidth: 1,
+          displayColors: true,
+          boxWidth: 8,
+          boxHeight: 8,
+          usePointStyle: true,
+          cornerRadius: 8
+        }
+      },
+      onClick: (e, elements) => {
         if (elements && elements.length > 0) {
           const index = elements[0].index;
           const category = categoryData[index].category;
@@ -1124,88 +1221,26 @@ function createCategoryChart() {
           if (pill) {
             categoryPills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
-            
             filterTransactionsByCategory(category);
           } else if (category !== 'all') {
             const morePill = document.querySelector('.category-pill[data-filter="more"]');
             if (morePill) {
               categoryPills.forEach(p => p.classList.remove('active'));
               morePill.classList.add('active');
-              
+              window.currentSelectedCategory = category;
               filterTransactionsByCategory(category);
             }
           }
         }
       },
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          titleColor: '#333',
-          bodyColor: '#555',
-          bodyFont: {
-            size: 13,
-            weight: '500',
-            family: 'Inter, sans-serif'
-          },
-          titleFont: {
-            size: 15,
-            weight: '600',
-            family: 'Inter, sans-serif'
-          },
-          padding: 12,
-          cornerRadius: 8,
-          displayColors: true,
-          boxWidth: 10,
-          boxHeight: 10,
-          usePointStyle: true,
-          callbacks: {
-            title: function(tooltipItems) {
-              return tooltipItems[0].label.split(' (')[0];
-            },
-            label: function(context) {
-              const value = context.raw;
-              const total = context.chart.getDatasetMeta(0).total;
-              const percentage = Math.round((value / total) * 100);
-              return ` ${formatCurrency(value)} (${percentage}%)`;
-            }
-          }
-        }
+      animation: {
+        animateRotate: true,
+        animateScale: true,
+        duration: 800,
+        easing: 'easeOutCirc'
       }
     }
   });
-  
-  if (Chart.registry.plugins.get('doughnutCenterText') === undefined) {
-    Chart.register({
-      id: 'doughnutCenterText',
-      beforeDraw: function(chart) {
-        const width = chart.width;
-        const height = chart.height;
-        const ctx = chart.ctx;
-        
-        ctx.restore();
-        const fontSize = (height / 150).toFixed(2);
-        ctx.font = `600 ${fontSize}em Inter, sans-serif`;
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = 'center';
-        
-        const totalAmount = chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0);
-        const text = formatCurrency(totalAmount);
-        
-        ctx.fillStyle = '#333';
-        ctx.fillText(text, width/2, height/2 - 10);
-        
-        const subTextFontSize = (height / 300).toFixed(2);
-        ctx.font = `500 ${subTextFontSize}em Inter, sans-serif`;
-        ctx.fillStyle = '#666';
-        
-        ctx.fillText('Total Expenses', width/2, height/2 + 15);
-        ctx.save();
-      }
-    });
-  }
 }
 
 // Helper function to adjust color brightness
