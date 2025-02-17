@@ -1488,4 +1488,50 @@
   color: #333;
   border-left: 3px solid #333;
   padding-left: 11px;
-} 
+}
+
+.category-chart-container {
+  height: 380px;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-wrapper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chart-wrapper:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+}
+
+/* Category Icons by Type */
+.category-food .category-icon-small { background-color: rgba(255, 152, 0, 0.15); color: #ff9800; }
+.category-shopping .category-icon-small { background-color: rgba(156, 39, 176, 0.15); color: #9c27b0; }
+.category-housing .category-icon-small { background-color: rgba(3, 169, 244, 0.15); color: #03a9f4; }
+.category-transportation .category-icon-small { background-color: rgba(33, 150, 243, 0.15); color: #2196f3; }
+.category-entertainment .category-icon-small { background-color: rgba(233, 30, 99, 0.15); color: #e91e63; }
+.category-education .category-icon-small { background-color: rgba(0, 150, 136, 0.15); color: #009688; }
+.category-healthcare .category-icon-small { background-color: rgba(244, 67, 54, 0.15); color: #f44336; }
+.category-travel .category-icon-small { background-color: rgba(255, 193, 7, 0.15); color: #ffc107; }
+.category-others .category-icon-small { background-color: rgba(158, 158, 158, 0.15); color: #9e9e9e; }
+
+/* Category label colors */
+.category-food { color: #ff9800; }
+.category-shopping { color: #9c27b0; }
+.category-housing { color: #03a9f4; }
+.category-transportation { color: #2196f3; }
+.category-entertainment { color: #e91e63; }
+.category-education { color: #009688; }
+.category-healthcare { color: #f44336; }
+.category-travel { color: #ffc107; }
+.category-others { color: #9e9e9e; } 
