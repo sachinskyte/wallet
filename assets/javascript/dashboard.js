@@ -1265,38 +1265,55 @@ function adjustColorBrightness(color, percent) {
 }
 
 function calculateCategoryData() {
-  // Create a map to store totals for each category
   const categoryTotals = new Map();
   
-  // Get the active filter from the category pills
   const activeFilter = document.querySelector('.category-pill.active');
   const filter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
   
-  // Filter transactions based on type and potentially category
   let filteredTransactions = transactions.filter(t => t.type === 'expense');
   
-  // Apply additional category filter if needed
   if (filter !== 'all' && filter !== 'more') {
     filteredTransactions = filteredTransactions.filter(t => t.category === filter);
   } else if (filter === 'more') {
-    // For "more" filter, get the specific category from local state or use all
     if (window.currentSelectedCategory && window.currentSelectedCategory !== 'all' && window.currentSelectedCategory !== 'more') {
       filteredTransactions = filteredTransactions.filter(t => t.category === window.currentSelectedCategory);
     }
   }
   
-  // Calculate totals for each category
   filteredTransactions.forEach(transaction => {
     const category = transaction.category || 'others';
     const currentTotal = categoryTotals.get(category) || 0;
     categoryTotals.set(category, currentTotal + transaction.amount);
   });
   
-  // Convert the map to an array of objects with name, amount, and color
+  const colors = {
+    food: '#ff9800',
+    shopping: '#9c27b0',
+    housing: '#03a9f4',
+    transportation: '#2196f3',
+    vehicle: '#424242',
+    entertainment: '#e91e63',
+    communication: '#673ab7',
+    technology: '#4caf50',
+    healthcare: '#f44336',
+    education: '#009688',
+    travel: '#ffc107',
+    gifts: '#8bc34a',
+    salary: '#4caf50',
+    investments: '#00bcd4',
+    freelance: '#3f51b5',
+    gifts_received: '#9c27b0',
+    refunds: '#8bc34a',
+    other_income: '#ffc107',
+    others: '#9e9e9e'
+  };
+  
   const categoryData = Array.from(categoryTotals.entries())
     .map(([category, amount]) => {
-      const { icon, color } = categoryIcons[category] || categoryIcons.others;
+      const { icon } = categoryIcons[category] || categoryIcons.others;
       const displayName = getCategoryDisplayName(category);
+      const color = colors[category] || '#9e9e9e';
+      
       return {
         name: displayName,
         category: category,
@@ -1367,6 +1384,7 @@ function updateCategoryList() {
     
     const categoryItem = document.createElement('div');
     categoryItem.classList.add('category-item');
+    categoryItem.classList.add(`category-${item.category}`);
     
     // Highlight the active category
     if (currentFilter === item.category || (currentFilter === 'all' && item === categoryData[0])) {
@@ -1386,18 +1404,25 @@ function updateCategoryList() {
         if (morePill) {
           morePill.classList.add('active');
         }
+        window.currentSelectedCategory = item.category;
         filterTransactionsByCategory(item.category);
       }
     });
+    
+    // Set category-specific border color
+    categoryItem.style.borderLeftColor = item.color;
     
     categoryItem.innerHTML = `
       <div class="category-label">
         <div class="category-icon-small category-${item.category}">
           <i class="${item.icon}"></i>
         </div>
-        ${item.name}
+        <span>${item.name}</span>
       </div>
-      <div class="category-percentage">${percentage}%</div>
+      <div class="category-percentage">
+        <span>${percentage}%</span>
+        <div class="amount-detail">${formatCurrency(item.amount)}</div>
+      </div>
     `;
     
     categoryList.appendChild(categoryItem);
@@ -1408,7 +1433,7 @@ function updateCategoryList() {
     const viewAllItem = document.createElement('div');
     viewAllItem.classList.add('category-view-all');
     viewAllItem.innerHTML = `
-      <span>View All Categories</span>
+      <span>View All Categories (${categoryData.length})</span>
       <i class="fas fa-chevron-right"></i>
     `;
     

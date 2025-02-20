@@ -1202,11 +1202,21 @@
 }
 
 .category-percentage {
-  font-weight: 600;
-  font-size: 0.95rem;
-  min-width: 45px;
-  text-align: right;
-  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.category-percentage span {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.amount-detail {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  font-weight: 500;
 }
 
 .category-icon-small {
