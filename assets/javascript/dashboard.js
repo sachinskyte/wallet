@@ -12,7 +12,7 @@ const calculatorPanel = document.querySelector('#calculatorPanel');
 const calculatorInput = document.querySelector('#calculatorInput');
 const calculatorButtons = document.querySelectorAll('.calc-btn');
 const useCalculatorResult = document.querySelector('#useCalculatorResult');
-const transactionAmount = document.querySelector('#transactionAmount');
+const transactionAmountInput = document.getElementById('transactionAmount');
 const totalIncome = document.querySelector('#totalIncome');
 const totalExpenses = document.querySelector('#totalExpenses');
 const netSavings = document.querySelector('#netSavings');
@@ -35,8 +35,10 @@ const goalDisplay = document.querySelector('#goalDisplay');
 const noGoalMessage = document.querySelector('#noGoalMessage');
 const setGoalBtn = document.querySelector('#setGoalBtn');
 const categoryChart = document.querySelector('#categoryChart');
-const categoryList = document.querySelector('#categoryList');
+const categoryFilter = document.querySelector('.category-filter');
 const categoryPills = document.querySelectorAll('.category-pill');
+const spendingChartCanvas = document.getElementById('spending-chart');
+const categoryContainer = document.getElementById('category-list');
 
 // App state
 let transactions = [];
@@ -45,6 +47,9 @@ let selectedType = 'income';
 let userName = localStorage.getItem('userName') || 'Investor';
 let savingsGoal = null;
 let chart = null;
+let calculationResult = '';
+let spendingChart = null;
+let currentFilter = 'all';
 
 // Category data
 const categoryIcons = {
@@ -340,7 +345,7 @@ function updateGoalETA(saved, target) {
 }
 
 // Render transactions
-function renderTransactions() {
+function renderTransactions(transactions = []) {
   if (!transactionsList) return;
   
   // Clear the transactions list
@@ -878,7 +883,7 @@ function setupEventListeners() {
       e.stopPropagation();
       calculatorPanel.classList.toggle('active');
       if (calculatorPanel.classList.contains('active')) {
-        calculatorInput.value = transactionAmount.value || '0';
+        calculatorInput.value = transactionAmountInput.value || '0';
       }
     });
   }
@@ -892,7 +897,7 @@ function setupEventListeners() {
   if (useCalculatorResult) {
     useCalculatorResult.addEventListener('click', () => {
       if (calculatorInput.value !== 'Error') {
-        transactionAmount.value = calculatorInput.value;
+        transactionAmountInput.value = calculatorInput.value;
         calculatorPanel.classList.remove('active');
       }
     });
@@ -946,19 +951,46 @@ function setupEventListeners() {
     }
   });
   
-  // Category filter pills
-  categoryPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      categoryPills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      
-      const filter = pill.getAttribute('data-filter');
-      filterTransactionsByCategory(filter);
+  // Add event listeners for category pills
+  if (categoryPills) {
+    categoryPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        // Remove active class from all pills
+        categoryPills.forEach(p => p.classList.remove('active'));
+        
+        // Add active class to clicked pill
+        pill.classList.add('active');
+        
+        // Get category filter
+        const filter = pill.getAttribute('data-filter');
+        
+        // Filter transactions
+        currentFilter = filter;
+        filterTransactionsByCategory(filter);
+        
+        // Update the spending chart
+        updateSpendingByCategory();
+      });
     });
-  });
+  }
   
-  // Function to handle the "More" category pill click
-  handleMoreCategoriesClick();
+  // Filter transactions by category
+  function filterTransactionsByCategory(category) {
+    if (category === 'all') {
+      // Show all transactions
+      renderTransactions();
+    } else if (category === 'more') {
+      // Show a menu of additional categories
+      console.log('Show more categories menu');
+    } else {
+      // Filter transactions by category
+      const filteredTransactions = transactions.filter(transaction => 
+        transaction.category === category
+      );
+      
+      renderTransactions(filteredTransactions);
+    }
+  }
 }
 
 // Animate dashboard elements on load
@@ -1243,7 +1275,7 @@ function createCategoryChart() {
   });
 }
 
-// Helper function to adjust color brightness
+// Utility function to adjust color brightness for hover effects
 function adjustColorBrightness(color, percent) {
   let R = parseInt(color.substring(1, 3), 16);
   let G = parseInt(color.substring(3, 5), 16);
@@ -1355,97 +1387,53 @@ function getCategoryDisplayName(category) {
 }
 
 function updateCategoryList() {
-  if (!categoryList) return;
+  if (!categoryContainer) return;
   
-  categoryList.innerHTML = '';
+  categoryContainer.innerHTML = '';
   
   const categoryData = calculateCategoryData();
-  const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0);
   
-  // Get the active filter
-  const activeFilter = document.querySelector('.category-pill.active');
-  const currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
-  
+  // No transactions
   if (categoryData.length === 0) {
-    // Show empty state
     const emptyState = document.createElement('div');
-    emptyState.className = 'category-empty-state';
+    emptyState.className = 'empty-category-state';
     emptyState.innerHTML = `
-      <i class="fas fa-filter"></i>
       <p>No transactions in this category</p>
     `;
-    categoryList.appendChild(emptyState);
+    categoryContainer.appendChild(emptyState);
     return;
   }
   
-  // Only show top 5 categories
-  categoryData.slice(0, 5).forEach(item => {
-    const percentage = totalAmount > 0 ? Math.round((item.amount / totalAmount) * 100) : 0;
-    
+  // Show categories
+  categoryData.forEach(category => {
     const categoryItem = document.createElement('div');
-    categoryItem.classList.add('category-item');
-    categoryItem.classList.add(`category-${item.category}`);
-    
-    // Highlight the active category
-    if (currentFilter === item.category || (currentFilter === 'all' && item === categoryData[0])) {
-      categoryItem.classList.add('active-category');
-    }
-    
-    // Make category items clickable
-    categoryItem.addEventListener('click', () => {
-      // Find the matching pill and click it
-      const matchingPill = document.querySelector(`.category-pill[data-filter="${item.category}"]`);
-      if (matchingPill) {
-        matchingPill.click();
-      } else {
-        // Handle categories in the "more" dropdown
-        categoryPills.forEach(p => p.classList.remove('active'));
-        const morePill = document.querySelector('.category-pill[data-filter="more"]');
-        if (morePill) {
-          morePill.classList.add('active');
-        }
-        window.currentSelectedCategory = item.category;
-        filterTransactionsByCategory(item.category);
-      }
-    });
-    
-    // Set category-specific border color
-    categoryItem.style.borderLeftColor = item.color;
-    
+    categoryItem.className = 'category-item';
     categoryItem.innerHTML = `
-      <div class="category-label">
-        <div class="category-icon-small category-${item.category}">
-          <i class="${item.icon}"></i>
-        </div>
-        <span>${item.name}</span>
+      <div class="category-name">
+        <div class="color-indicator" style="background-color: ${category.color};"></div>
+        <span>${category.name}</span>
       </div>
-      <div class="category-percentage">
-        <span>${percentage}%</span>
-        <div class="amount-detail">${formatCurrency(item.amount)}</div>
-      </div>
+      <div class="percentage">${category.percentage}%</div>
     `;
     
-    categoryList.appendChild(categoryItem);
+    categoryContainer.appendChild(categoryItem);
   });
   
-  // Add a "View All" button if there are more than 5 categories
+  // Show "View All" if there are a lot of categories
   if (categoryData.length > 5) {
     const viewAllItem = document.createElement('div');
-    viewAllItem.classList.add('category-view-all');
+    viewAllItem.className = 'view-all-categories';
     viewAllItem.innerHTML = `
-      <span>View All Categories (${categoryData.length})</span>
+      <span>View All Categories</span>
       <i class="fas fa-chevron-right"></i>
     `;
     
-    // Reset to "All Categories" when clicking View All
     viewAllItem.addEventListener('click', () => {
-      const allPill = document.querySelector('.category-pill[data-filter="all"]');
-      if (allPill) {
-        allPill.click();
-      }
+      // Implement view all logic here
+      console.log('View all categories clicked');
     });
     
-    categoryList.appendChild(viewAllItem);
+    categoryContainer.appendChild(viewAllItem);
   }
 }
 
@@ -1634,4 +1622,184 @@ function handleMoreCategoriesClick() {
 document.addEventListener('DOMContentLoaded', () => {
   init();
   addToastStyles();
-}); 
+});
+
+// Update spending by category
+function updateSpendingByCategory() {
+  if (!spendingChartCanvas || !categoryContainer) {
+    console.log('Spending chart elements not found');
+    return;
+  }
+  
+  // Clear previous data
+  categoryContainer.innerHTML = '';
+  
+  // Get category data
+  const categoryData = calculateCategoryData();
+  const totalExpenses = categoryData.reduce((total, item) => total + item.amount, 0);
+  
+  // Get colors for chart
+  const chartColors = {
+    'food': '#ff9800',
+    'shopping': '#9c27b0',
+    'housing': '#03a9f4',
+    'entertainment': '#e91e63',
+    'transportation': '#4caf50',
+    'utilities': '#795548',
+    'healthcare': '#f44336',
+    'other': '#9e9e9e'
+  };
+  
+  // Data for chart
+  const chartData = {
+    labels: [],
+    datasets: [{
+      data: [],
+      backgroundColor: [],
+      hoverOffset: 4
+    }]
+  };
+  
+  // No transactions
+  if (categoryData.length === 0) {
+    categoryContainer.innerHTML = '<div class="no-data">No expense data available</div>';
+    
+    // Create empty chart
+    if (spendingChart) {
+      spendingChart.destroy();
+      spendingChart = null;
+    }
+    return;
+  }
+  
+  // Add spending by category
+  categoryData.forEach(category => {
+    const percentage = totalExpenses ? ((category.amount / totalExpenses) * 100).toFixed(1) : 0;
+    
+    // Skip categories with 0%
+    if (percentage == 0) return;
+    
+    // Add category to chart data
+    chartData.labels.push(category.name);
+    chartData.datasets[0].data.push(percentage);
+    
+    // Add color to chart data
+    const color = chartColors[category.category] || category.color || '#9e9e9e';
+    chartData.datasets[0].backgroundColor.push(color);
+    
+    // Create category item
+    const categoryItem = document.createElement('div');
+    categoryItem.className = 'category-item';
+    
+    // HTML for category item
+    categoryItem.innerHTML = `
+      <div class="category-name">
+        <div class="color-indicator" style="background-color: ${color};"></div>
+        <span>${category.name}</span>
+      </div>
+      <div class="category-percentage">
+        <span>${percentage}%</span>
+        <div class="amount-detail">₹${formatCurrency(category.amount)}</div>
+      </div>
+    `;
+    
+    categoryContainer.appendChild(categoryItem);
+  });
+  
+  // Create or update chart
+  if (spendingChart) {
+    spendingChart.data = chartData;
+    spendingChart.update();
+  } else {
+    spendingChart = new Chart(spendingChartCanvas, {
+      type: 'doughnut',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.formattedValue;
+                return `${label}: ${value}%`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+// Functions to run when dashboard loads or transactions change
+function updateDashboard() {
+  calculateTotalBalance();
+  updateBalanceDisplay();
+  updateStatistics();
+  renderTransactions();
+  updateSpendingByCategory();
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+  // Load transactions from localStorage
+  loadTransactions();
+  
+  // Initialize the dashboard
+  updateDashboard();
+  
+  // ... existing code ...
+});
+
+// Update transactions after adding, editing or deleting
+function updateTransactions() {
+  // Save transactions to localStorage
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  
+  // Update dashboard
+  updateDashboard();
+  
+  // Close modal
+  closeModal(transactionModal);
+}
+
+// Get category icon and color
+function getCategoryIcon(category, type = 'expense') {
+  const categoryIcons = {
+    // Income categories
+    'salary': { icon: 'fas fa-briefcase', color: '#4caf50', name: 'Salary & Wages' },
+    'investments': { icon: 'fas fa-chart-line', color: '#2196f3', name: 'Investments' },
+    'freelance': { icon: 'fas fa-laptop', color: '#673ab7', name: 'Freelance' },
+    'gifts_received': { icon: 'fas fa-gift', color: '#e91e63', name: 'Gifts Received' },
+    'refunds': { icon: 'fas fa-undo', color: '#009688', name: 'Refunds' },
+    'other_income': { icon: 'fas fa-money-bill-wave', color: '#8bc34a', name: 'Other Income' },
+    
+    // Expense categories
+    'food': { icon: 'fas fa-utensils', color: '#ff9800', name: 'Food & Dining' },
+    'shopping': { icon: 'fas fa-shopping-bag', color: '#9c27b0', name: 'Shopping' },
+    'housing': { icon: 'fas fa-home', color: '#03a9f4', name: 'Housing & Rent' },
+    'transportation': { icon: 'fas fa-bus', color: '#4caf50', name: 'Transportation' },
+    'vehicle': { icon: 'fas fa-car', color: '#795548', name: 'Vehicle' },
+    'entertainment': { icon: 'fas fa-film', color: '#e91e63', name: 'Entertainment' },
+    'communication': { icon: 'fas fa-phone', color: '#9e9e9e', name: 'Communication' },
+    'technology': { icon: 'fas fa-laptop', color: '#607d8b', name: 'Technology' },
+    'healthcare': { icon: 'fas fa-heartbeat', color: '#f44336', name: 'Healthcare' },
+    'education': { icon: 'fas fa-graduation-cap', color: '#ff5722', name: 'Education' },
+    'travel': { icon: 'fas fa-plane', color: '#3f51b5', name: 'Travel' },
+    'gifts': { icon: 'fas fa-gift', color: '#e91e63', name: 'Gifts & Donations' },
+    'others': { icon: 'fas fa-ellipsis-h', color: '#9e9e9e', name: 'Others' }
+  };
+  
+  // Default icon if category not found
+  const defaultIcon = type === 'income' 
+    ? { icon: 'fas fa-money-bill-wave', color: '#4caf50', name: 'Income' }
+    : { icon: 'fas fa-shopping-cart', color: '#f44336', name: 'Expense' };
+  
+  return categoryIcons[category] || defaultIcon;
+} 
