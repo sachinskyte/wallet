@@ -344,67 +344,67 @@ function updateGoalETA(saved, target) {
   etaElement.textContent = futureDate.toLocaleDateString('en-US', options);
 }
 
-// Render transactions
-function renderTransactions(transactions = []) {
+// Render transactions with optional filtering
+function renderTransactions(filteredTransactions = null) {
   if (!transactionsList) return;
   
-  // Clear the transactions list
+  // Clear transactions list
   transactionsList.innerHTML = '';
   
-  if (transactions.length === 0) {
-    // Show empty state
-    if (noTransactions) {
-      noTransactions.style.display = 'flex';
+  // Determine which transactions to show
+  const transactionsToShow = filteredTransactions || transactions;
+  
+  // Handle empty state
+  if (transactionsToShow.length === 0) {
+    // No transactions to show
+    if (filteredTransactions) {
+      // No transactions match filter
+      transactionsList.innerHTML = `
+        <div class="no-transactions filtered">
+          <i class="fas fa-filter"></i>
+          <p>No transactions match this filter</p>
+        </div>`;
+    } else {
+      // No transactions at all
+      document.getElementById('noTransactions').style.display = 'flex';
+      transactionsList.style.display = 'none';
     }
     return;
   }
   
-  // Hide empty state
-  if (noTransactions) {
-    noTransactions.style.display = 'none';
-  }
+  // Show transactions
+  document.getElementById('noTransactions').style.display = 'none';
+  transactionsList.style.display = 'block';
   
-  // Sort transactions by date (newest first)
-  const sortedTransactions = [...transactions].sort((a, b) => {
-    return new Date(b.date || b.timestamp) - new Date(a.date || a.timestamp);
-  });
+  // Sort transactions (newest first)
+  const sortedTransactions = [...transactionsToShow].sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  // Add each transaction to the list
-  sortedTransactions.slice(0, 10).forEach((transaction, index) => {
+  // Create transaction items
+  sortedTransactions.forEach(transaction => {
+    const { icon, color, name: categoryName } = getCategoryIcon(transaction.category, transaction.type);
     const transactionItem = document.createElement('div');
-    transactionItem.classList.add('transaction-item');
-    transactionItem.classList.add(transaction.type); // Add class based on type
-    transactionItem.setAttribute('data-id', transaction.id);
-    transactionItem.setAttribute('data-category', transaction.category || 'others');
     
-    // Format date
-    const dateObj = new Date(transaction.date || transaction.timestamp);
-    const formattedDate = dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-    
-    // Get category icon info
-    const category = transaction.category || 'others';
-    const { icon, color } = categoryIcons[category] || categoryIcons.others;
-    const displayName = getCategoryDisplayName(category);
+    transactionItem.className = 'transaction-item';
+    transactionItem.dataset.id = transaction.id;
+    transactionItem.dataset.category = transaction.category;
     
     transactionItem.innerHTML = `
       <div class="transaction-left">
-        <div class="transaction-icon ${transaction.type}-icon">
-          <i class="fas ${transaction.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+        <div class="transaction-icon ${transaction.type === 'income' ? 'income-icon' : 'expense-icon'}">
+          <i class="fas fa-arrow-${transaction.type === 'income' ? 'down' : 'up'}"></i>
         </div>
         <div class="transaction-details">
-          <h3>${transaction.description || transaction.name}</h3>
-          <div class="transaction-date">${formattedDate}</div>
+          <h3>${transaction.name}</h3>
+          <div class="transaction-date">${formatDate(transaction.date)}</div>
           <div class="transaction-category">
             <i class="${icon}" style="color: ${color}"></i>
-            ${displayName}
+            ${categoryName}
           </div>
         </div>
       </div>
-      <div class="transaction-amount ${transaction.type}-amount">${formatCurrency(transaction.amount)}</div>
+      <div class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
+        ${transaction.type === 'income' ? '' : '-'}₹${formatCurrency(transaction.amount)}
+      </div>
       <div class="transaction-actions">
         <button class="transaction-edit" data-id="${transaction.id}">
           <i class="fas fa-edit"></i>
@@ -415,21 +415,46 @@ function renderTransactions(transactions = []) {
       </div>
     `;
     
-    // Add animation delay
-    transactionItem.style.animation = `fadeIn 0.4s ease forwards ${index * 0.05}s`;
-    transactionItem.style.opacity = '0';
-    
     transactionsList.appendChild(transactionItem);
   });
   
-  // Add event listeners to edit and delete buttons
+  // Add event listeners for edit/delete
+  attachTransactionEventListeners();
+}
+
+// Attach event listeners to transaction items
+function attachTransactionEventListeners() {
+  // Edit buttons
   document.querySelectorAll('.transaction-edit').forEach(button => {
     button.addEventListener('click', editTransaction);
   });
   
+  // Delete buttons
   document.querySelectorAll('.transaction-delete').forEach(button => {
     button.addEventListener('click', deleteTransaction);
   });
+}
+
+// Filter transactions by category
+function filterTransactionsByCategory(category) {
+  if (category === 'all') {
+    renderTransactions();
+  } else if (category === 'more') {
+    // "More" is handled by the dropdown
+    return;
+  } else {
+    // Filter by selected category
+    const filteredTransactions = transactions.filter(t => t.category === category);
+    renderTransactions(filteredTransactions);
+  }
+  
+  // Get category display name for toast
+  const categoryDisplayName = category === 'all' ? 'All Categories' : getCategoryDisplayName(category);
+  
+  // Show toast notification
+  if (category !== 'all') {
+    showToast(`Filtered by ${categoryDisplayName}`, 'info');
+  }
 }
 
 // Edit transaction
@@ -973,24 +998,6 @@ function setupEventListeners() {
       });
     });
   }
-  
-  // Filter transactions by category
-  function filterTransactionsByCategory(category) {
-    if (category === 'all') {
-      // Show all transactions
-      renderTransactions();
-    } else if (category === 'more') {
-      // Show a menu of additional categories
-      console.log('Show more categories menu');
-    } else {
-      // Filter transactions by category
-      const filteredTransactions = transactions.filter(transaction => 
-        transaction.category === category
-      );
-      
-      renderTransactions(filteredTransactions);
-    }
-  }
 }
 
 // Animate dashboard elements on load
@@ -1079,6 +1086,7 @@ function createCategoryChart() {
   
   const categoryData = calculateCategoryData();
   
+  // Handle empty data case
   if (categoryData.length === 0) {
     if (chart) {
       chart.destroy();
@@ -1086,192 +1094,173 @@ function createCategoryChart() {
     }
     
     const chartContainer = categoryChart.parentElement;
-    const emptyState = document.createElement('div');
-    emptyState.className = 'chart-empty-state';
-    emptyState.innerHTML = `
-      <i class="fas fa-chart-pie"></i>
-      <h4>No expense data yet</h4>
-      <p>Start adding expenses to see your spending breakdown by category.</p>
-    `;
-    
-    chartContainer.innerHTML = '';
-    chartContainer.appendChild(emptyState);
+    chartContainer.innerHTML = `
+      <div class="chart-empty-state">
+        <i class="fas fa-chart-pie"></i>
+        <h4>No expense data yet</h4>
+        <p>Start adding expenses to see your spending breakdown by category.</p>
+      </div>`;
     return;
   }
   
+  // Clear any empty state and restore canvas
   const chartContainer = categoryChart.parentElement;
-  const emptyState = chartContainer.querySelector('.chart-empty-state');
-  if (emptyState) {
-    emptyState.remove();
+  if (chartContainer.querySelector('.chart-empty-state')) {
     chartContainer.innerHTML = '<canvas id="categoryChart"></canvas>';
   }
   
-  const labels = categoryData.map(item => item.name);
-  const data = categoryData.map(item => item.amount);
-  const backgroundColor = categoryData.map(item => item.color);
-  const hoverBackgroundColor = backgroundColor.map(color => adjustColorBrightness(color, 15));
+  // Prepare chart data
+  const data = {
+    labels: categoryData.map(item => item.name),
+    datasets: [{
+      data: categoryData.map(item => item.amount),
+      backgroundColor: categoryData.map(item => item.color),
+      hoverBackgroundColor: categoryData.map(item => adjustColorBrightness(item.color, 15)),
+      borderColor: 'white',
+      borderWidth: 2,
+      hoverOffset: 7,
+      borderRadius: 4
+    }]
+  };
   
-  if (chart) {
-    chart.destroy();
-  }
+  // Chart.js options
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '60%',
+    layout: {
+      padding: 15
+    },
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: {
+          padding: 15,
+          usePointStyle: true,
+          boxWidth: 10,
+          font: {
+            family: "'Inter', sans-serif",
+            size: 12,
+            weight: '500'
+          },
+          generateLabels: chart => {
+            const data = chart.data;
+            if (data.labels.length && data.datasets.length) {
+              const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+              return data.labels.map((label, i) => {
+                const value = data.datasets[0].data[i];
+                const percentage = Math.round((value / total) * 100);
+                return {
+                  text: `${label} - ${percentage}%`,
+                  fillStyle: data.datasets[0].backgroundColor[i],
+                  strokeStyle: 'white',
+                  lineWidth: 2,
+                  hidden: !chart.getDataVisibility(i),
+                  index: i
+                };
+              });
+            }
+            return [];
+          }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: context => {
+            const value = context.raw;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = Math.round((value / total) * 100);
+            return ` ${formatCurrency(value)} (${percentage}%)`;
+          }
+        },
+        padding: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        titleColor: '#333',
+        bodyColor: '#555',
+        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        borderColor: 'rgba(0,0,0,0.1)',
+        borderWidth: 1,
+        displayColors: true,
+        boxWidth: 8,
+        boxHeight: 8,
+        usePointStyle: true,
+        cornerRadius: 8
+      },
+      doughnutCenterText: {
+        display: true,
+        text: formatCurrency(categoryData.reduce((sum, item) => sum + item.amount, 0)),
+        subText: 'Total Expenses'
+      }
+    },
+    onClick: (e, elements) => {
+      if (elements && elements.length > 0) {
+        const index = elements[0].index;
+        const category = categoryData[index].category;
+        
+        const pill = document.querySelector(`.category-pill[data-filter="${category}"]`);
+        if (pill) {
+          categoryPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          filterTransactionsByCategory(category);
+        } else if (category !== 'all') {
+          const morePill = document.querySelector('.category-pill[data-filter="more"]');
+          if (morePill) {
+            categoryPills.forEach(p => p.classList.remove('active'));
+            morePill.classList.add('active');
+            window.currentSelectedCategory = category;
+            filterTransactionsByCategory(category);
+          }
+        }
+      }
+    },
+    animation: {
+      animateRotate: true,
+      animateScale: true,
+      duration: 800,
+      easing: 'easeOutCirc'
+    }
+  };
   
-  const ctx = document.getElementById('categoryChart').getContext('2d');
-  
+  // Register plugin for center text
   Chart.register({
-    id: 'doughnutLabelsLine',
-    beforeDraw: function(chart) {
-      if (chart.config.type === 'doughnut') {
-        const data = chart.data.datasets[0].data;
-        const meta = chart.getDatasetMeta(0);
-        const total = data.reduce((a, b) => a + b, 0);
-        
-        const width = chart.width;
-        const height = chart.height;
-        const ctx = chart.ctx;
-        
-        // Clear the canvas where we'll draw our labels
+    id: 'doughnutCenterText',
+    beforeDraw: chart => {
+      if (chart.config.type === 'doughnut' && chart.config.options.plugins.doughnutCenterText?.display) {
+        const {ctx, width, height} = chart;
         ctx.save();
         
-        // Draw innermost circle for center text background
+        // Draw white inner circle
         ctx.beginPath();
         ctx.fillStyle = '#ffffff';
-        ctx.arc(width / 2, height / 2, chart.innerRadius * 0.9, 0, Math.PI * 2);
+        ctx.arc(width/2, height/2, chart.innerRadius * 0.9, 0, Math.PI * 2);
         ctx.fill();
         
-        // Draw center text
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        // Total amount
-        const totalAmount = data.reduce((a, b) => a + b, 0);
-        const formattedAmount = formatCurrency(totalAmount);
-        
-        // Draw amount
+        // Draw main text
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `600 ${Math.min(width, height) / 16}px 'Inter', sans-serif`;
         ctx.fillStyle = '#333333';
-        ctx.fillText(formattedAmount, centerX, centerY - 10);
+        ctx.fillText(chart.config.options.plugins.doughnutCenterText.text, width/2, height/2 - 10);
         
-        // Draw "Total Expenses" text
+        // Draw subtext
         ctx.font = `500 ${Math.min(width, height) / 30}px 'Inter', sans-serif`;
         ctx.fillStyle = '#666666';
-        ctx.fillText('Total Expenses', centerX, centerY + 15);
+        ctx.fillText(chart.config.options.plugins.doughnutCenterText.subText, width/2, height/2 + 15);
         
         ctx.restore();
       }
     }
   });
   
-  chart = new Chart(ctx, {
+  // Create or update chart
+  if (chart) {
+    chart.destroy();
+  }
+  chart = new Chart(categoryChart.getContext('2d'), {
     type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: backgroundColor,
-        hoverBackgroundColor: hoverBackgroundColor,
-        borderColor: 'white',
-        borderWidth: 2,
-        hoverBorderWidth: 0,
-        hoverOffset: 7,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '60%',
-      layout: {
-        padding: 15
-      },
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            padding: 15,
-            usePointStyle: true,
-            boxWidth: 10,
-            boxHeight: 10,
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-              weight: '500'
-            },
-            generateLabels: function(chart) {
-              const data = chart.data;
-              if (data.labels.length && data.datasets.length) {
-                return data.labels.map((label, i) => {
-                  const value = data.datasets[0].data[i];
-                  const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                  const percentage = Math.round((value / total) * 100);
-                  
-                  return {
-                    text: `${label} - ${percentage}%`,
-                    fillStyle: data.datasets[0].backgroundColor[i],
-                    strokeStyle: 'white',
-                    lineWidth: 2,
-                    hidden: !chart.getDataVisibility(i),
-                    index: i
-                  };
-                });
-              }
-              return [];
-            }
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const value = context.raw;
-              const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              const percentage = Math.round((value / total) * 100);
-              return ` ${formatCurrency(value)} (${percentage}%)`;
-            }
-          },
-          padding: 12,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          titleColor: '#333',
-          bodyColor: '#555',
-          titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
-          bodyFont: { size: 13, family: "'Inter', sans-serif" },
-          borderColor: 'rgba(0,0,0,0.1)',
-          borderWidth: 1,
-          displayColors: true,
-          boxWidth: 8,
-          boxHeight: 8,
-          usePointStyle: true,
-          cornerRadius: 8
-        }
-      },
-      onClick: (e, elements) => {
-        if (elements && elements.length > 0) {
-          const index = elements[0].index;
-          const category = categoryData[index].category;
-          
-          const pill = document.querySelector(`.category-pill[data-filter="${category}"]`);
-          if (pill) {
-            categoryPills.forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
-            filterTransactionsByCategory(category);
-          } else if (category !== 'all') {
-            const morePill = document.querySelector('.category-pill[data-filter="more"]');
-            if (morePill) {
-              categoryPills.forEach(p => p.classList.remove('active'));
-              morePill.classList.add('active');
-              window.currentSelectedCategory = category;
-              filterTransactionsByCategory(category);
-            }
-          }
-        }
-      },
-      animation: {
-        animateRotate: true,
-        animateScale: true,
-        duration: 800,
-        easing: 'easeOutCirc'
-      }
-    }
+    data: data,
+    options: options
   });
 }
 
@@ -1297,90 +1286,87 @@ function adjustColorBrightness(color, percent) {
 }
 
 function calculateCategoryData() {
-  const categoryTotals = new Map();
-  
+  // Get active filter
   const activeFilter = document.querySelector('.category-pill.active');
   const filter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
   
+  // Filter transactions to expenses only
   let filteredTransactions = transactions.filter(t => t.type === 'expense');
   
+  // Apply category filter if not showing all
   if (filter !== 'all' && filter !== 'more') {
     filteredTransactions = filteredTransactions.filter(t => t.category === filter);
-  } else if (filter === 'more') {
-    if (window.currentSelectedCategory && window.currentSelectedCategory !== 'all' && window.currentSelectedCategory !== 'more') {
+  } else if (filter === 'more' && window.currentSelectedCategory) {
+    if (window.currentSelectedCategory !== 'all' && window.currentSelectedCategory !== 'more') {
       filteredTransactions = filteredTransactions.filter(t => t.category === window.currentSelectedCategory);
     }
   }
   
+  // Calculate total for each category
+  const categoryTotals = new Map();
   filteredTransactions.forEach(transaction => {
     const category = transaction.category || 'others';
     const currentTotal = categoryTotals.get(category) || 0;
     categoryTotals.set(category, currentTotal + transaction.amount);
   });
   
+  // Category colors
   const colors = {
-    food: '#ff9800',
-    shopping: '#9c27b0',
-    housing: '#03a9f4',
-    transportation: '#2196f3',
-    vehicle: '#424242',
-    entertainment: '#e91e63',
-    communication: '#673ab7',
-    technology: '#4caf50',
-    healthcare: '#f44336',
-    education: '#009688',
-    travel: '#ffc107',
-    gifts: '#8bc34a',
-    salary: '#4caf50',
-    investments: '#00bcd4',
-    freelance: '#3f51b5',
-    gifts_received: '#9c27b0',
-    refunds: '#8bc34a',
-    other_income: '#ffc107',
-    others: '#9e9e9e'
+    food: '#ff9800',         // Orange
+    shopping: '#9c27b0',     // Purple
+    housing: '#03a9f4',      // Light Blue
+    transportation: '#2196f3',// Blue
+    vehicle: '#424242',      // Dark Gray
+    entertainment: '#e91e63', // Pink
+    communication: '#673ab7', // Deep Purple
+    technology: '#4caf50',   // Green
+    healthcare: '#f44336',   // Red
+    education: '#009688',    // Teal
+    travel: '#ffc107',       // Amber
+    gifts: '#8bc34a',        // Light Green
+    others: '#9e9e9e'        // Gray
   };
   
-  const categoryData = Array.from(categoryTotals.entries())
+  // Convert to array and sort by amount (descending)
+  return Array.from(categoryTotals.entries())
     .map(([category, amount]) => {
-      const { icon } = categoryIcons[category] || categoryIcons.others;
-      const displayName = getCategoryDisplayName(category);
-      const color = colors[category] || '#9e9e9e';
-      
+      const { icon } = getCategoryIcon(category);
       return {
-        name: displayName,
-        category: category,
-        amount: amount,
-        color: color,
-        icon: icon
+        name: getCategoryDisplayName(category),
+        category,
+        amount,
+        color: colors[category] || '#9e9e9e',
+        icon
       };
     })
     .sort((a, b) => b.amount - a.amount);
-  
-  return categoryData;
 }
 
 // Get a user-friendly display name for a category
 function getCategoryDisplayName(category) {
   const displayNames = {
-    'food': 'Food & Dining',
-    'shopping': 'Shopping',
-    'housing': 'Housing & Rent',
-    'transportation': 'Transportation',
-    'vehicle': 'Vehicle & Maintenance',
-    'entertainment': 'Entertainment',
-    'communication': 'Communication',
-    'technology': 'Technology & Software',
-    'healthcare': 'Healthcare',
-    'education': 'Education',
-    'travel': 'Travel',
-    'gifts': 'Gifts & Donations',
-    'salary': 'Salary & Wages',
-    'investments': 'Investments',
-    'freelance': 'Freelance Work',
-    'gifts_received': 'Gifts Received',
-    'refunds': 'Refunds',
-    'other_income': 'Other Income',
-    'others': 'Others'
+    // Income categories
+    salary: 'Salary & Wages',
+    investments: 'Investments',
+    freelance: 'Freelance',
+    gifts_received: 'Gifts Received',
+    refunds: 'Refunds',
+    other_income: 'Other Income',
+    
+    // Expense categories
+    food: 'Food & Dining',
+    shopping: 'Shopping',
+    housing: 'Housing & Rent',
+    transportation: 'Transportation',
+    vehicle: 'Vehicle',
+    entertainment: 'Entertainment',
+    communication: 'Communication',
+    technology: 'Technology',
+    healthcare: 'Healthcare',
+    education: 'Education',
+    travel: 'Travel',
+    gifts: 'Gifts & Donations',
+    others: 'Others'
   };
   
   return displayNames[category] || capitalizeFirstLetter(category.replace('_', ' '));
@@ -1389,147 +1375,92 @@ function getCategoryDisplayName(category) {
 function updateCategoryList() {
   if (!categoryContainer) return;
   
+  // Clear previous list
   categoryContainer.innerHTML = '';
   
+  // Get category data
   const categoryData = calculateCategoryData();
   
-  // No transactions
+  // Show empty state if no data
   if (categoryData.length === 0) {
-    const emptyState = document.createElement('div');
-    emptyState.className = 'empty-category-state';
-    emptyState.innerHTML = `
-      <p>No transactions in this category</p>
-    `;
-    categoryContainer.appendChild(emptyState);
+    categoryContainer.innerHTML = `
+      <div class="category-empty-state">
+        <i class="fas fa-filter"></i>
+        <p>No transactions in this category</p>
+      </div>`;
     return;
   }
   
-  // Show categories
-  categoryData.forEach(category => {
+  // Get current filter
+  const activeFilter = document.querySelector('.category-pill.active');
+  const currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
+  
+  // Add top 5 categories
+  categoryData.slice(0, 5).forEach(item => {
+    const totalAmount = categoryData.reduce((sum, c) => sum + c.amount, 0);
+    const percentage = totalAmount > 0 ? Math.round((item.amount / totalAmount) * 100) : 0;
+    
     const categoryItem = document.createElement('div');
-    categoryItem.className = 'category-item';
+    categoryItem.className = `category-item category-${item.category}`;
+    
+    // Highlight active category
+    if (currentFilter === item.category || (currentFilter === 'all' && item === categoryData[0])) {
+      categoryItem.classList.add('active-category');
+    }
+    
+    // Make item clickable for filtering
+    categoryItem.addEventListener('click', () => selectCategory(item.category));
+    
+    // Set color
+    categoryItem.style.borderLeftColor = item.color;
+    
+    // Add content
     categoryItem.innerHTML = `
-      <div class="category-name">
-        <div class="color-indicator" style="background-color: ${category.color};"></div>
-        <span>${category.name}</span>
+      <div class="category-label">
+        <div class="category-icon-small category-${item.category}">
+          <i class="${item.icon}"></i>
+        </div>
+        <span>${item.name}</span>
       </div>
-      <div class="percentage">${category.percentage}%</div>
-    `;
+      <div class="category-percentage">
+        <span>${percentage}%</span>
+        <div class="amount-detail">${formatCurrency(item.amount)}</div>
+      </div>`;
     
     categoryContainer.appendChild(categoryItem);
   });
   
-  // Show "View All" if there are a lot of categories
+  // Add "View All" button if needed
   if (categoryData.length > 5) {
     const viewAllItem = document.createElement('div');
-    viewAllItem.className = 'view-all-categories';
+    viewAllItem.className = 'category-view-all';
     viewAllItem.innerHTML = `
-      <span>View All Categories</span>
-      <i class="fas fa-chevron-right"></i>
-    `;
+      <span>View All Categories (${categoryData.length})</span>
+      <i class="fas fa-chevron-right"></i>`;
     
-    viewAllItem.addEventListener('click', () => {
-      // Implement view all logic here
-      console.log('View all categories clicked');
-    });
-    
+    viewAllItem.addEventListener('click', () => selectCategory('all'));
     categoryContainer.appendChild(viewAllItem);
+  }
+}
+
+// Helper function to select category
+function selectCategory(category) {
+  const pill = document.querySelector(`.category-pill[data-filter="${category}"]`);
+  if (pill) {
+    pill.click();
+  } else if (category !== 'all') {
+    const morePill = document.querySelector('.category-pill[data-filter="more"]');
+    if (morePill) {
+      categoryPills.forEach(p => p.classList.remove('active'));
+      morePill.classList.add('active');
+      window.currentSelectedCategory = category;
+      filterTransactionsByCategory(category);
+    }
   }
 }
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function filterTransactionsByCategory(category) {
-  // Get the display name for the category
-  let categoryDisplayName = category === 'all' ? 'All Categories' : 
-    getCategoryDisplayName(category);
-  
-  if (category === 'more') {
-    // Don't actually filter for the "more" option
-    return;
-  }
-  
-  // Update active pill visually if it's not already done
-  const activePill = document.querySelector(`.category-pill[data-filter="${category}"]`);
-  if (activePill && !activePill.classList.contains('active')) {
-    categoryPills.forEach(p => p.classList.remove('active'));
-    activePill.classList.add('active');
-  }
-  
-  // Create or refresh the chart with the filtered data
-  createCategoryChart();
-  updateCategoryList();
-  
-  // Update UI to show which transactions match the selected category
-  if (category !== 'all') {
-    // Highlight matching transactions in the list
-    const transactionItems = document.querySelectorAll('.transaction-item');
-    transactionItems.forEach(item => {
-      if (item.getAttribute('data-category') === category) {
-        item.classList.add('highlighted');
-      } else {
-        item.classList.remove('highlighted');
-      }
-    });
-    
-    // Show notification
-    const { color } = categoryIcons[category] || categoryIcons.others;
-    showToast(`Filtered by ${categoryDisplayName}`, 'info');
-  } else {
-    // Remove highlighting from all transactions
-    const transactionItems = document.querySelectorAll('.transaction-item');
-    transactionItems.forEach(item => {
-      item.classList.remove('highlighted');
-    });
-  }
-}
-
-// Function to update category selector based on transaction type
-function updateCategorySelector(type) {
-  const categorySelect = document.querySelector('#transactionCategory');
-  if (!categorySelect) return;
-  
-  const incomeOptgroup = categorySelect.querySelector('optgroup.income-categories');
-  const expenseOptgroup = categorySelect.querySelector('optgroup.expense-categories');
-  
-  if (!incomeOptgroup || !expenseOptgroup) return;
-  
-  // Reset selection and show correct optgroup
-  categorySelect.selectedIndex = 0;
-  
-  if (type === 'income') {
-    incomeOptgroup.style.display = '';
-    expenseOptgroup.style.display = 'none';
-    
-    // Make only income options selectable
-    for (let i = 0; i < categorySelect.options.length; i++) {
-      const option = categorySelect.options[i];
-      const parent = option.parentNode;
-      
-      if (parent === incomeOptgroup) {
-        option.disabled = false;
-      } else if (parent === expenseOptgroup) {
-        option.disabled = true;
-      }
-    }
-  } else {
-    incomeOptgroup.style.display = 'none';
-    expenseOptgroup.style.display = '';
-    
-    // Make only expense options selectable
-    for (let i = 0; i < categorySelect.options.length; i++) {
-      const option = categorySelect.options[i];
-      const parent = option.parentNode;
-      
-      if (parent === expenseOptgroup) {
-        option.disabled = false;
-      } else if (parent === incomeOptgroup) {
-        option.disabled = true;
-      }
-    }
-  }
 }
 
 // Function to handle the "More" category pill click
@@ -1626,45 +1557,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Update spending by category
 function updateSpendingByCategory() {
-  if (!spendingChartCanvas || !categoryContainer) {
-    console.log('Spending chart elements not found');
-    return;
-  }
-  
-  // Clear previous data
-  categoryContainer.innerHTML = '';
+  if (!spendingChartCanvas || !categoryContainer) return;
   
   // Get category data
   const categoryData = calculateCategoryData();
   const totalExpenses = categoryData.reduce((total, item) => total + item.amount, 0);
   
-  // Get colors for chart
-  const chartColors = {
-    'food': '#ff9800',
-    'shopping': '#9c27b0',
-    'housing': '#03a9f4',
-    'entertainment': '#e91e63',
-    'transportation': '#4caf50',
-    'utilities': '#795548',
-    'healthcare': '#f44336',
-    'other': '#9e9e9e'
-  };
+  // Clear container
+  categoryContainer.innerHTML = '';
   
-  // Data for chart
-  const chartData = {
-    labels: [],
-    datasets: [{
-      data: [],
-      backgroundColor: [],
-      hoverOffset: 4
-    }]
-  };
-  
-  // No transactions
+  // Show empty state if no data
   if (categoryData.length === 0) {
     categoryContainer.innerHTML = '<div class="no-data">No expense data available</div>';
     
-    // Create empty chart
     if (spendingChart) {
       spendingChart.destroy();
       spendingChart = null;
@@ -1672,29 +1577,34 @@ function updateSpendingByCategory() {
     return;
   }
   
-  // Add spending by category
-  categoryData.forEach(category => {
+  // Prepare chart data
+  const chartData = {
+    labels: [],
+    datasets: [{
+      data: [],
+      backgroundColor: [],
+      borderColor: 'white',
+      borderWidth: 1,
+      hoverOffset: 5
+    }]
+  };
+  
+  // Get top categories (limited to 5 for display)
+  categoryData.slice(0, 5).forEach(category => {
     const percentage = totalExpenses ? ((category.amount / totalExpenses) * 100).toFixed(1) : 0;
+    if (parseFloat(percentage) === 0) return;
     
-    // Skip categories with 0%
-    if (percentage == 0) return;
-    
-    // Add category to chart data
+    // Add to chart data
     chartData.labels.push(category.name);
     chartData.datasets[0].data.push(percentage);
-    
-    // Add color to chart data
-    const color = chartColors[category.category] || category.color || '#9e9e9e';
-    chartData.datasets[0].backgroundColor.push(color);
+    chartData.datasets[0].backgroundColor.push(category.color);
     
     // Create category item
     const categoryItem = document.createElement('div');
     categoryItem.className = 'category-item';
-    
-    // HTML for category item
     categoryItem.innerHTML = `
       <div class="category-name">
-        <div class="color-indicator" style="background-color: ${color};"></div>
+        <div class="color-indicator" style="background-color: ${category.color};"></div>
         <span>${category.name}</span>
       </div>
       <div class="category-percentage">
@@ -1706,7 +1616,46 @@ function updateSpendingByCategory() {
     categoryContainer.appendChild(categoryItem);
   });
   
+  // Add "View All" if we have more categories
+  if (categoryData.length > 5) {
+    const viewAll = document.createElement('div');
+    viewAll.className = 'category-view-all';
+    viewAll.innerHTML = `<span>View All Categories (${categoryData.length})</span><i class="fas fa-chevron-right"></i>`;
+    viewAll.addEventListener('click', () => {
+      const allPill = document.querySelector('.category-pill[data-filter="all"]');
+      if (allPill) allPill.click();
+    });
+    categoryContainer.appendChild(viewAll);
+  }
+  
   // Create or update chart
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '70%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.label || '';
+            const value = context.raw;
+            return `${label}: ${value}%`;
+          }
+        },
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        titleColor: '#333',
+        bodyColor: '#555',
+        padding: 10,
+        cornerRadius: 6
+      }
+    },
+    animation: {
+      animateRotate: true,
+      duration: 800
+    }
+  };
+  
   if (spendingChart) {
     spendingChart.data = chartData;
     spendingChart.update();
@@ -1714,25 +1663,7 @@ function updateSpendingByCategory() {
     spendingChart = new Chart(spendingChartCanvas, {
       type: 'doughnut',
       data: chartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '70%',
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.formattedValue;
-                return `${label}: ${value}%`;
-              }
-            }
-          }
-        }
-      }
+      options: chartOptions
     });
   }
 }
@@ -1769,6 +1700,16 @@ function updateTransactions() {
   closeModal(transactionModal);
 }
 
+// Format date nicely
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
 // Get category icon and color
 function getCategoryIcon(category, type = 'expense') {
   const categoryIcons = {
@@ -1802,4 +1743,5 @@ function getCategoryIcon(category, type = 'expense') {
     : { icon: 'fas fa-shopping-cart', color: '#f44336', name: 'Expense' };
   
   return categoryIcons[category] || defaultIcon;
+} 
 } 
