@@ -1744,4 +1744,3 @@ function getCategoryIcon(category, type = 'expense') {
   
   return categoryIcons[category] || defaultIcon;
 } 
-} 
