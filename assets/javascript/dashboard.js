@@ -174,28 +174,66 @@ function calculateTotalBalance() {
   return totalBalanceAmount;
 }
 
-// Animate number counter
+// Animate number counter with easing
 function animateCounter(element, targetValue) {
-  const duration = 1000; // ms
-  const stepTime = 20; // ms
+  if (!element) return;
+  
+  // Clear any existing animation on this element
+  const existingAnimation = element.dataset.animationId;
+  if (existingAnimation) {
+    clearInterval(parseInt(existingAnimation));
+  }
+  
+  const duration = 1200; // ms
+  const stepTime = 16; // for smooth 60fps animation
   const startValue = parseFloat(element.textContent.replace(/[^0-9.-]+/g, "")) || 0;
   const difference = targetValue - startValue;
-  const steps = Math.floor(duration / stepTime);
-  const increment = difference / steps;
   
-  let currentValue = startValue;
-  let step = 0;
+  // Don't animate if no change or element not visible
+  if (difference === 0 || !element.offsetParent) {
+    element.textContent = formatCurrency(targetValue);
+    return;
+  }
+  
+  const steps = Math.floor(duration / stepTime);
+  let currentStep = 0;
+  
+  // Use easeOutQuart easing function for a nice deceleration effect
+  const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
   
   const timer = setInterval(() => {
-    step++;
-    currentValue += increment;
+    currentStep++;
+    
+    // Calculate progress with easing
+    const progress = easeOutQuart(currentStep / steps);
+    const currentValue = startValue + (difference * progress);
+    
+    // Format and update text
     element.textContent = formatCurrency(currentValue);
     
-    if (step >= steps) {
+    // Add visual effects for significant changes
+    if (Math.abs(difference) > 1000 && element.id === 'netSavings') {
+      const intensity = Math.min(100, Math.abs(difference) / 100);
+      element.style.textShadow = `0 0 ${intensity * progress}px ${difference > 0 ? 'rgba(76, 175, 80, 0.5)' : 'rgba(244, 67, 54, 0.5)'}`;
+      
+      // Remove shadow at end of animation
+      if (currentStep >= steps) {
+        setTimeout(() => {
+          element.style.textShadow = 'none';
+        }, 300);
+      }
+    }
+    
+    // Complete the animation
+    if (currentStep >= steps) {
       clearInterval(timer);
       element.textContent = formatCurrency(targetValue);
+      delete element.dataset.animationId;
     }
   }, stepTime);
+  
+  // Store the timer ID on the element
+  element.dataset.animationId = timer.toString();
 }
 
 // Update statistics for income, expenses, and savings
@@ -207,13 +245,59 @@ function updateStatistics(totalIncomeAmount, totalExpensesAmount) {
   animateCounter(totalExpenses, totalExpensesAmount);
   animateCounter(netSavings, netSavingsAmount);
   
-  // Apply appropriate color to net savings
+  // Apply appropriate styling to net savings card
+  const savingsCard = netSavings.closest('.stat-card');
+  
+  // Remove previous classes
+  savingsCard.classList.remove('positive', 'negative', 'zero');
+  netSavings.classList.remove('savings-positive', 'savings-negative', 'savings-zero');
+  
+  // Check if icon exists, if not create it
+  let savingsIcon = netSavings.querySelector('.savings-stat-icon');
+  if (!savingsIcon) {
+    savingsIcon = document.createElement('i');
+    savingsIcon.className = 'savings-stat-icon fas';
+    netSavings.prepend(savingsIcon);
+  }
+  
+  // Add appropriate icon and class based on value
   if (netSavingsAmount > 0) {
-    netSavings.style.color = 'var(--success)';
+    savingsCard.classList.add('positive');
+    netSavings.classList.add('savings-positive');
+    savingsIcon.className = 'savings-stat-icon fas fa-arrow-up';
   } else if (netSavingsAmount < 0) {
-    netSavings.style.color = 'var(--error)';
+    savingsCard.classList.add('negative');
+    netSavings.classList.add('savings-negative');
+    savingsIcon.className = 'savings-stat-icon fas fa-arrow-down';
   } else {
-    netSavings.style.color = '';
+    savingsCard.classList.add('zero');
+    netSavings.classList.add('savings-zero');
+    savingsIcon.className = 'savings-stat-icon fas fa-equals';
+  }
+  
+  // Add trend indicator if not exists
+  let trendElement = savingsCard.querySelector('.stat-card-trend');
+  if (!trendElement) {
+    trendElement = document.createElement('div');
+    trendElement.className = 'stat-card-trend';
+    savingsCard.appendChild(trendElement);
+  }
+  
+  // Calculate percent of income
+  const savingsPercent = totalIncomeAmount > 0 
+    ? Math.round((netSavingsAmount / totalIncomeAmount) * 100) 
+    : 0;
+  
+  // Update trend text
+  if (netSavingsAmount > 0) {
+    trendElement.innerHTML = `<i class="fas fa-piggy-bank"></i> ${savingsPercent}% of income saved`;
+    trendElement.style.color = 'var(--success)';
+  } else if (netSavingsAmount < 0) {
+    trendElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${Math.abs(savingsPercent)}% over income`;
+    trendElement.style.color = 'var(--error)';
+  } else {
+    trendElement.innerHTML = `<i class="fas fa-balance-scale"></i> Balanced budget`;
+    trendElement.style.color = 'var(--gray-600)';
   }
   
   // Update cash flow section
