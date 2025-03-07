@@ -564,46 +564,27 @@
   </div>
 
   <!-- Goal Setting Modal -->
-  <div class="modal-overlay" id="goalModal">
-    <div class="modal">
-      <button class="modal-close" id="goalModalClose"><i class="fas fa-times"></i></button>
-      <div class="modal-header">
-        <h3>Set Savings Goal</h3>
-        <p>Track your progress towards a financial target</p>
-      </div>
-      <div class="modal-body">
-        <form id="goalForm">
-          <div class="form-group">
-            <label for="goalNameInput">Goal Name</label>
-            <input 
-              type="text" 
-              id="goalNameInput" 
-              name="goalNameInput" 
-              placeholder="e.g. New Laptop, Vacation, Emergency Fund"
-              required
-            >
-            <div class="error-message" id="goalNameError">Please enter a goal name</div>
-          </div>
-          
-          <div class="form-group">
-            <label for="goalAmountInput">Target Amount</label>
-            <div class="amount-input-wrapper">
-              <input 
-                type="text" 
-                id="goalAmountInput" 
-                name="goalAmountInput" 
-                placeholder="Enter amount in ₹"
-                required
-              >
-            </div>
-            <div class="error-message" id="goalAmountError">Please enter a valid amount</div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-submit" id="submitGoal">Save Goal</button>
-        <button type="button" class="btn-delete" id="deleteGoal" style="display: none;">Delete Goal</button>
-      </div>
+  <div id="goalModal" class="goal-modal">
+    <div class="goal-modal-content">
+      <h3>Set Savings Goal</h3>
+      <form id="goalForm">
+        <div class="goal-form-group">
+          <label for="goalNameInput">Goal Name</label>
+          <input type="text" id="goalNameInput" placeholder="e.g., New Laptop" required>
+        </div>
+        <div class="goal-form-group">
+          <label for="goalAmountInput">Target Amount (₹)</label>
+          <input type="number" id="goalAmountInput" placeholder="e.g., 50000" min="1" required>
+        </div>
+        <div class="goal-form-group">
+          <label for="goalDateInput">Target Date (Optional)</label>
+          <input type="date" id="goalDateInput">
+        </div>
+        <div class="goal-modal-actions">
+          <button type="button" class="goal-modal-btn cancel" id="cancelGoalBtn">Cancel</button>
+          <button type="submit" class="goal-modal-btn save">Save Goal</button>
+        </div>
+      </form>
     </div>
   </div>
 

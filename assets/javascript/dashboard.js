@@ -77,6 +77,27 @@ const categoryIcons = {
   'others': { icon: 'fas fa-ellipsis-h', color: '#9e9e9e' }
 };
 
+// Goal Tracking Functionality
+const goalModal = document.getElementById('goalModal');
+const editGoalBtn = document.getElementById('editGoalBtn');
+const setGoalBtn = document.getElementById('setGoalBtn');
+const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+const goalForm = document.getElementById('goalForm');
+const goalNameInput = document.getElementById('goalNameInput');
+const goalAmountInput = document.getElementById('goalAmountInput');
+const goalDateInput = document.getElementById('goalDateInput');
+
+// Goal display elements
+const noGoalMessage = document.getElementById('noGoalMessage');
+const goalDisplay = document.getElementById('goalDisplay');
+const goalNameElement = document.getElementById('goalName');
+const goalAmountElement = document.getElementById('goalAmount');
+const goalTotalElement = document.getElementById('goalTotal');
+const goalSavedElement = document.getElementById('goalSaved');
+const goalPercentageElement = document.getElementById('goalPercentage');
+const goalProgressBar = document.getElementById('goalProgressBar');
+const goalEtaElement = document.getElementById('goalEta');
+
 // Initialize the app
 function init() {
   // Set welcome name
