@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theaters - MovieGo</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/theaters.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Movie<span>Go</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="movies.html">Movies</a></li>
+                    <li><a href="theaters.html" class="active">Theaters</a></li>
+                </ul>
+            </nav>
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="container">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search for theaters in Bangalore...">
+                        <button>Search</button>
+                    </div>
+                </div>
+            </section>
+            <div class="auth-buttons">
+                <button class="btn btn-outline">Sign In</button>
+                <button class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Theater Banner -->
+    <div class="page-banner">
+        <div class="container">
+            <h1>Bangalore Theaters</h1>
+            <div class="filter-options">
+                <select name="location" id="location-filter">
+                    <option value="">All Areas</option>
+                    <option value="koramangala">Koramangala</option>
+                    <option value="indiranagar">Indiranagar</option>
+                    <option value="whitefield">Whitefield</option>
+                    <option value="electronic-city">Electronic City</option>
+                    <option value="marathahalli">Marathahalli</option>
+                </select>
+                <select name="experience" id="experience-filter">
+                    <option value="">All Experiences</option>
+                    <option value="imax">IMAX</option>
+                    <option value="4dx">4DX</option>
+                    <option value="screenx">ScreenX</option>
+                    <option value="dolby">Dolby Atmos</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theater Listings -->
+    <section class="theaters-section">
+        <div class="container">
+            <!-- Loading animation -->
+            <div id="loading-animation" class="loading-animation">
+                <div class="spinner"></div>
+            </div>
+            
+            <!-- Theater navigation -->
+            <div class="theater-navigation">
+                <button id="prev-theater" class="nav-button" disabled>Previous</button>
+                <div class="theater-counter">
+                    <span id="current-theater">1</span> / <span id="total-theaters">20</span>
+                </div>
+                <button id="next-theater" class="nav-button">Next</button>
+            </div>
+            
+            <div class="theaters-grid">
+                <!-- Theater 1 -->
+                <div id="theater-1" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR IMAX">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR IMAX - Phoenix MarketCity</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Whitefield Main Road, Whitefield, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.8</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">IMAX</span>
+                            <span class="feature">Dolby Atmos</span>
+                            <span class="feature">Recliner Seats</span>
+                            <span class="feature">Food Court</span>
+                            <span class="feature">Valet Parking</span>
+                        </div>
+                        <p class="theater-description">
+                            Experience movies on the largest IMAX screen in Bangalore with state-of-the-art sound technology. 
+                            This premium theater offers luxurious recliner seats, a well-stocked food court, and valet parking service for an unparalleled movie-watching experience.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 2 -->
+                <div id="theater-2" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="INOX Garuda">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>INOX Garuda - Magrath Road</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Magrath Road, Ashok Nagar, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.6</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">ScreenX</span>
+                            <span class="feature">Dolby Atmos</span>
+                            <span class="feature">Premium Seating</span>
+                            <span class="feature">Gourmet Food</span>
+                        </div>
+                        <p class="theater-description">
+                            Luxury cinema experience with premium seating and immersive sound technology. INOX Garuda offers the revolutionary ScreenX format with 270-degree panoramic viewing and gourmet dining options for an elevated movie experience.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 3 -->
+                <div id="theater-3" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="Cinepolis Royal Meenakshi">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>Cinepolis Royal Meenakshi</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Bannerghatta Main Road, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.5</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">4DX</span>
+                            <span class="feature">Luxury Recliners</span>
+                            <span class="feature">Dine-In</span>
+                            <span class="feature">Kids Zone</span>
+                        </div>
+                        <p class="theater-description">
+                            Premium theater experience with 4DX technology and in-seat dining service. Cinepolis Royal Meenakshi offers an immersive experience where your seat moves and environmental effects are synchronized with the action on screen. The dedicated kids zone makes it ideal for family outings.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 4 -->
+                <div id="theater-4" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="SPI Palazzo">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>SPI Palazzo - VV Puram</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> VV Puram, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.2</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Standard Screens</span>
+                            <span class="feature">Budget-Friendly</span>
+                            <span class="feature">Family-Friendly</span>
+                            <span class="feature">Accessible</span>
+                        </div>
+                        <p class="theater-description">
+                            Affordable movie experience with multiple screens showing all the latest releases. SPI Palazzo offers comfortable seating, good audiovisual quality, and budget-friendly pricing, making it ideal for regular movie-goers. The theater is fully accessible with wheelchair ramps and facilities.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 5 -->
+                <div id="theater-5" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR VR Mall">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR VR Mall - Whitefield</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Whitefield, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.7</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">IMAX</span>
+                            <span class="feature">Dolby Atmos</span>
+                            <span class="feature">Premium Seating</span>
+                            <span class="feature">Gold Class</span>
+                        </div>
+                        <p class="theater-description">
+                            State-of-the-art cinema with premium seating and immersive sound technology. The Gold Class experience offers plush recliners, personalized service, and gourmet dining options. Located in VR Mall with ample parking and shopping options.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 6 -->
+                <div id="theater-6" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="INOX CMR">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>INOX CMR - Jaya Nagar</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Jaya Nagar, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.3</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Standard Screens</span>
+                            <span class="feature">Budget-Friendly</span>
+                            <span class="feature">Family-Friendly</span>
+                            <span class="feature">Arcade</span>
+                        </div>
+                        <p class="theater-description">
+                            Comfortable seating and the latest projection technology in a family-friendly environment. INOX CMR offers a game arcade, a variety of snack options, and regular discount offers, making it a popular choice for movie enthusiasts in the Jaya Nagar area.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theater 7 -->
+                <div id="theater-7" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Cinemas Forum Mall">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR Cinemas - Forum Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Hosur Road, 5th Block, Koramangala, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">8.2</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Gold Class</span>
+                            <span class="feature">Dolby Atmos</span>
+                            <span class="feature">Gourmet Food</span>
+                            <span class="feature">Premium Seating</span>
+                        </div>
+                        <p class="theater-description">
+                            Renowned for its premium movie-watching experience and comfortable seating. Located on the 3rd and 4th floors of The Forum Mall, this theater offers high-quality visuals and sound, along with diverse food options for an enhanced cinema experience.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 8 -->
+                <div id="theater-8" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Cinemas Orion Mall">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR Cinemas - Orion Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Brigade Gateway, Dr. Rajkumar Road, Rajajinagar, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">8.3</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Classy Interiors</span>
+                            <span class="feature">Premium Sound</span>
+                            <span class="feature">Luxury Seating</span>
+                            <span class="feature">Fine Dining</span>
+                        </div>
+                        <p class="theater-description">
+                            Offers a luxurious ambiance with top-notch facilities. This theater is known for its classy interiors, excellent sound effects, and premium movie-watching experience in the heart of Rajajinagar.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 9 -->
+                <div id="theater-9" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR IMAX">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR IMAX - Forum Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Forum Mall, Koramangala, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">8.4</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">IMAX 3D</span>
+                            <span class="feature">Advanced Sound</span>
+                            <span class="feature">Immersive Experience</span>
+                            <span class="feature">Premium Seating</span>
+                        </div>
+                        <p class="theater-description">
+                            Known for its immersive IMAX screenings, providing a superior visual experience. The theater features advanced sound systems and state-of-the-art projection technology for an unmatched cinematic experience.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 10 -->
+                <div id="theater-10" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="Urvashi Cinemas">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>Urvashi Cinemas</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Lalbagh Main Road, Doddamavalli, Sudhama Nagar, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">7.3</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Affordable</span>
+                            <span class="feature">Large Screen</span>
+                            <span class="feature">Historic Venue</span>
+                            <span class="feature">Family-Friendly</span>
+                        </div>
+                        <p class="theater-description">
+                            One of the oldest theaters in Bangalore, offering a nostalgic cinematic experience. Urvashi Cinemas is known for its affordable ticket prices, large screen, and historical significance in the local cinema culture.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 11 -->
+                <div id="theater-11" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Koramangala Gold">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR Koramangala - Gold Cinemas</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Koramangala, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Premium Seating</span>
+                            <span class="feature">High-Quality Visuals</span>
+                            <span class="feature">Gourmet Food</span>
+                            <span class="feature">Personalized Service</span>
+                        </div>
+                        <p class="theater-description">
+                            Provides an upscale movie experience with comfortable seating arrangements. The Gold class experience offers plush recliners, gourmet dining options, and attentive service for a premium cinema experience.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 12 -->
+                <div id="theater-12" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="INOX Leisure">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>INOX Leisure Ltd</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Malleswaram/Sadashivnagar, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.5</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Excellent Screen</span>
+                            <span class="feature">Superior Sound</span>
+                            <span class="feature">Premium Environment</span>
+                            <span class="feature">Comfortable Seating</span>
+                        </div>
+                        <p class="theater-description">
+                            Offers a premium environment for movie enthusiasts. INOX Leisure is known for its excellent screen quality, superior sound systems, and comfortable viewing experience in the upscale neighborhoods of Malleswaram and Sadashivnagar.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 13 -->
+                <div id="theater-13" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Vega City">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR: Vega City Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Vega City Mall, Bannerghatta Road, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">IMAX</span>
+                            <span class="feature">Modern Amenities</span>
+                            <span class="feature">Diverse Movies</span>
+                            <span class="feature">State-of-the-art</span>
+                        </div>
+                        <p class="theater-description">
+                            Known for its state-of-the-art facilities and diverse movie selections. PVR Vega City Mall offers IMAX screenings, modern amenities, and a wide selection of international and regional films for cinema enthusiasts.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 14 -->
+                <div id="theater-14" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR VR Bengaluru">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR: VR Bengaluru</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> VR Bengaluru, Whitefield Road, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">IMAX</span>
+                            <span class="feature">Gold Class</span>
+                            <span class="feature">Luxury Experience</span>
+                            <span class="feature">Advanced Technology</span>
+                        </div>
+                        <p class="theater-description">
+                            Offers a luxurious movie-watching experience with advanced screening technologies. The theater features both IMAX and Gold Class screens, providing premium viewing options for discerning movie-goers in the Whitefield area.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 15 -->
+                <div id="theater-15" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Orion Uptown">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR: Orion Uptown Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Old Madras Road, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Comfortable Seating</span>
+                            <span class="feature">Diverse Food</span>
+                            <span class="feature">Pleasant Ambiance</span>
+                            <span class="feature">Modern Technology</span>
+                        </div>
+                        <p class="theater-description">
+                            Provides a pleasant ambiance for moviegoers. PVR Orion Uptown Mall features comfortable seating, diverse food options, and modern screening technology for an enjoyable cinema experience on Old Madras Road.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 16 -->
+                <div id="theater-16" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Soul Spirit">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR: Soul Spirit Central Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Bellandur, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Modern Facilities</span>
+                            <span class="feature">Convenient Location</span>
+                            <span class="feature">Diverse Genres</span>
+                            <span class="feature">Quality Service</span>
+                        </div>
+                        <p class="theater-description">
+                            Caters to a diverse audience with a variety of movie genres. Located in the IT hub of Bellandur, this theater offers modern facilities, convenient location, and quality service for tech professionals and residents alike.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 17 -->
+                <div id="theater-17" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="PVR Global Mall">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>PVR: Global Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Mysore Road, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Spacious Auditoriums</span>
+                            <span class="feature">Advanced Sound</span>
+                            <span class="feature">Clean Environment</span>
+                            <span class="feature">Quality Service</span>
+                        </div>
+                        <p class="theater-description">
+                            Known for its clean environment and quality service. PVR Global Mall features spacious auditoriums, advanced sound systems, and a well-maintained environment for a pleasant movie-watching experience.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 18 -->
+                <div id="theater-18" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="Cinepolis Nexus">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>Cinepolis: Nexus Mall Koramangala</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Nexus Mall, Koramangala, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.0</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Comfortable Seating</span>
+                            <span class="feature">Diverse Snacks</span>
+                            <span class="feature">Pleasant Environment</span>
+                            <span class="feature">Modern Facilities</span>
+                        </div>
+                        <p class="theater-description">
+                            Offers a pleasant movie-watching environment. Cinepolis at Nexus Mall Koramangala features comfortable seating, diverse snack options, and a family-friendly atmosphere for all types of audiences.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 19 -->
+                <div id="theater-19" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="Balaji Theatre">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>Balaji Theatre</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> SG Palya, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">3.8</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Affordable</span>
+                            <span class="feature">Regional Films</span>
+                            <span class="feature">Traditional Cinema</span>
+                            <span class="feature">Local Favorite</span>
+                        </div>
+                        <p class="theater-description">
+                            Known for showcasing regional films and providing a traditional cinema experience. Balaji Theatre offers affordable ticket prices and is a local favorite, especially for viewers interested in regional language cinema.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Theater 20 -->
+                <div id="theater-20" class="theater-card">
+                    <div class="theater-image-container">
+                        <div class="theater-image">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1300&h=600&q=80" alt="Cinepolis Nexus Shantiniketan">
+                        </div>
+                        <div class="theater-image-overlay">
+                            <h2>Cinepolis: Nexus Shantiniketan Mall</h2>
+                            <div class="theater-address">
+                                <i class="fas fa-map-marker-alt"></i> Whitefield, Bangalore
+                            </div>
+                        </div>
+                        <div class="theater-rating-badge">4.2</div>
+                    </div>
+                    <div class="theater-details">
+                        <div class="theater-features">
+                            <span class="feature">Modern Multiplex</span>
+                            <span class="feature">Diverse Food</span>
+                            <span class="feature">Comfortable Seating</span>
+                            <span class="feature">Advanced Sound</span>
+                        </div>
+                        <p class="theater-description">
+                            Offers a variety of films with comfortable seating and advanced sound systems. This modern multiplex in Whitefield provides a diverse range of food options and a premium movie-watching experience for the IT crowd.
+                        </p>
+                        <div class="theater-buttons">
+                            <a href="#" class="btn btn-outline">View Showtimes</a>
+                            <a href="#" class="btn btn-primary">Theater Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="theater-thumbnails">
+                <div class="theater-thumb active" data-theater="1">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR IMAX">
+                </div>
+                <div class="theater-thumb" data-theater="2">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="INOX Garuda">
+                </div>
+                <div class="theater-thumb" data-theater="3">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Cinepolis Royal Meenakshi">
+                </div>
+                <div class="theater-thumb" data-theater="4">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="SPI Palazzo">
+                </div>
+                <div class="theater-thumb" data-theater="5">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR VR Mall">
+                </div>
+                <div class="theater-thumb" data-theater="6">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="INOX CMR">
+                </div>
+                <div class="theater-thumb" data-theater="7">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Forum Mall">
+                </div>
+                <div class="theater-thumb" data-theater="8">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Orion Mall">
+                </div>
+                <div class="theater-thumb" data-theater="9">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR IMAX Forum">
+                </div>
+                <div class="theater-thumb" data-theater="10">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Urvashi Cinemas">
+                </div>
+                <div class="theater-thumb" data-theater="11">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Gold Koramangala">
+                </div>
+                <div class="theater-thumb" data-theater="12">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="INOX Leisure">
+                </div>
+                <div class="theater-thumb" data-theater="13">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Vega City">
+                </div>
+                <div class="theater-thumb" data-theater="14">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR VR Bengaluru">
+                </div>
+                <div class="theater-thumb" data-theater="15">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Orion Uptown">
+                </div>
+                <div class="theater-thumb" data-theater="16">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Soul Spirit">
+                </div>
+                <div class="theater-thumb" data-theater="17">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="PVR Global Mall">
+                </div>
+                <div class="theater-thumb" data-theater="18">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Cinepolis Nexus">
+                </div>
+                <div class="theater-thumb" data-theater="19">
+                    <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Balaji Theatre">
+                </div>
+                <div class="theater-thumb" data-theater="20">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Cinepolis Nexus Shantiniketan">
+                </div>
+            </div>
+
+            <!-- Add error message for no results after the loading animation -->
+            <div id="no-results-error" class="no-results-error">
+                <h3>No Theaters Found</h3>
+                <p>No theaters match your selected filters. Please try different filter options.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section">
+        <div class="container">
+            <h2 class="section-title">Find a Theater in Bangalore</h2>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <!-- In a real implementation, this would be an embedded Google Map -->
+                    <img src="https://maps.googleapis.com/maps/api/staticmap?center=Bangalore,Karnataka,India&zoom=12&size=1200x400&key=YOUR_API_KEY" alt="Bangalore Theater Map" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Amenities Section -->
+    <section class="amenities-section">
+        <div class="container">
+            <h2 class="section-title">Theater Amenities</h2>
+            <div class="amenities-grid">
+                <div class="amenity-card">
+                    <div class="amenity-icon">🍿</div>
+                    <h3>Concessions</h3>
+                    <p>Freshly popped popcorn, cold drinks, and all your favorite movie snacks.</p>
+                </div>
+                
+                <div class="amenity-card">
+                    <div class="amenity-icon">🎮</div>
+                    <h3>Arcade</h3>
+                    <p>Fun games for all ages in our entertainment area.</p>
+                </div>
+                
+                <div class="amenity-card">
+                    <div class="amenity-icon">🍽️</div>
+                    <h3>Dine-In</h3>
+                    <p>Enjoy restaurant-quality food delivered right to your seat in select theaters.</p>
+                </div>
+                
+                <div class="amenity-card">
+                    <div class="amenity-icon">🎁</div>
+                    <h3>Birthday Parties</h3>
+                    <p>Special packages for celebrating birthdays with friends and family.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>MovieGo</h3>
+                    <p>Your one-stop destination for booking movie tickets online. Experience the magic of cinema with the best seats and latest releases.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">f</a>
+                        <a href="#" class="social-icon">t</a>
+                        <a href="#" class="social-icon">in</a>
+                        <a href="#" class="social-icon">ig</a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="movies.html">Movies</a></li>
+                        <li><a href="theaters.html">Theaters</a></li>
+                        <li><a href="#">Offers</a></li>
+                        <li><a href="#">Gift Cards</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">My Account</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Download Our App</h3>
+                    <p>Get the best movie ticket booking experience on your mobile with our app.</p>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <a href="#" style="display: block; width: 120px; height: 40px; background-color: #1a1b24; border-radius: 5px;"></a>
+                        <a href="#" style="display: block; width: 120px; height: 40px; background-color: #1a1b24; border-radius: 5px;"></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 MovieGo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/theaters.js"></script>
+</body>
+</html> 

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies - MovieGo</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/movies.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Movie<span>Go</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="movies.html" class="active">Movies</a></li>
+                    <li><a href="theaters.html">Theaters</a></li>
+                </ul>
+            </nav>
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="container">
+                    <div class="search-bar">
+                        <input type="text" id="movie-search" placeholder="Search for movies...">
+                        <button id="search-button"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </div>
+            </section>
+            <div class="auth-buttons">
+                <button class="btn btn-outline">Sign In</button>
+                <button class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <div class="page-banner">
+        <div class="container">
+            <h1>Latest Movies</h1>
+            <div class="filter-options">
+                <select name="language" id="language-filter">
+                    <option value="all">All Languages</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="te">Telugu</option>
+                    <option value="ml">Malayalam</option>
+                    <option value="kn">Kannada</option>
+                    <option value="bn">Bengali</option>
+                    <option value="en">English</option>
+                </select>
+                <select name="sort" id="sort-filter">
+                    <option value="popularity.desc">Popular</option>
+                    <option value="release_date.desc">Latest</option>
+                    <option value="vote_average.desc">Top Rated</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movies Section -->
+    <section class="now-showing">
+        <div class="container movie-grid-container">
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading movies...
+            </div>
+            <div id="error-container"></div>
+            <div id="movies-grid" class="movies-grid">
+                <!-- Movies will be loaded here via JavaScript -->
+            </div>
+            <div id="pagination" class="pagination">
+                <!-- Pagination buttons will be added here via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>MovieGo</h3>
+                    <p>Your one-stop destination for booking movie tickets online. Experience the magic of cinema with the best seats and latest releases.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="movies.html">Movies</a></li>
+                        <li><a href="theaters.html">Theaters</a></li>
+                        <li><a href="#">Offers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">My Account</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Download Our App</h3>
+                    <p>Get the best movie ticket booking experience on your mobile with our app.</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-button">
+                            <i class="fab fa-apple"></i>
+                            <div class="app-text">
+                                <small>Download on the</small>
+                                <span>App Store</span>
+                            </div>
+                        </a>
+                        <a href="#" class="app-button">
+                            <i class="fab fa-google-play"></i>
+                            <div class="app-text">
+                                <small>Get it on</small>
+                                <span>Google Play</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 MovieGo. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">
+                        <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB Logo" style="width: 120px;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/movies.js"></script>
+</body>
+</html> 

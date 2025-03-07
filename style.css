@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #121212;
+    color: #fff;
+  }
+  
+  header {
+    background-color: #1f1f1f;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f9c74f;
+  }
+  
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+  }
+  
+  nav a:hover {
+    color: #f9c74f;
+  }
+  
+  .hero {
+    background-image: linear-gradient(to right, #000000cc, #000000cc), url('https://via.placeholder.com/1200x400');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 30px;
+    text-align: center;
+  }
+  
+  .hero-content h1 {
+    font-size: 40px;
+    margin-bottom: 15px;
+  }
+  
+  .hero-content p {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+  
+  .btn {
+    background-color: #f9c74f;
+    color: #000;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: 0.3s;
+  }
+  
+  .btn:hover {
+    background-color: #ffd166;
+  }
+  
+  .movies {
+    padding: 50px 30px;
+    text-align: center;
+  }
+  
+  .movies h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+  
+  .movie-grid {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .movie-card {
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+    transition: 0.3s;
+  }
+  
+  .movie-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .movie-card img {
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  
+  footer {
+    background-color: #1f1f1f;
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+  }
+  
