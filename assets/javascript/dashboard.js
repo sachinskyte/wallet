@@ -1848,4 +1848,173 @@ function getCategoryIcon(category, type = 'expense') {
     : { icon: 'fas fa-shopping-cart', color: '#f44336', name: 'Expense' };
   
   return categoryIcons[category] || defaultIcon;
-} 
+}
+
+// Initialize goal display
+function initializeGoalDisplay() {
+  const goal = JSON.parse(localStorage.getItem('goal'));
+  
+  if (goal) {
+    noGoalMessage.style.display = 'none';
+    goalDisplay.style.display = 'block';
+    
+    goalNameElement.textContent = goal.name;
+    goalAmountElement.textContent = formatCurrency(goal.amount);
+    goalTotalElement.textContent = formatCurrency(goal.amount);
+    
+    updateGoalProgress();
+  } else {
+    noGoalMessage.style.display = 'block';
+    goalDisplay.style.display = 'none';
+  }
+}
+
+// Calculate and update goal progress
+function updateGoalProgress() {
+  const goal = JSON.parse(localStorage.getItem('goal'));
+  if (!goal) return;
+  
+  // Calculate total savings (use only income transactions as savings)
+  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  let totalSavings = 0;
+  
+  transactions.forEach(transaction => {
+    if (transaction.type === 'income') {
+      totalSavings += parseFloat(transaction.amount);
+    }
+  });
+  
+  // Calculate percentage saved
+  const savedAmount = Math.min(totalSavings, goal.amount); // Can't save more than the goal
+  const percentage = Math.floor((savedAmount / goal.amount) * 100);
+  
+  // Update UI
+  goalSavedElement.textContent = formatCurrency(savedAmount);
+  goalPercentageElement.textContent = `${percentage}%`;
+  goalProgressBar.style.width = `${percentage}%`;
+  
+  // Calculate ETA if target date exists
+  if (goal.date) {
+    const targetDate = new Date(goal.date);
+    const today = new Date();
+    const daysLeft = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+    
+    if (daysLeft > 0) {
+      goalEtaElement.textContent = `${daysLeft} days left`;
+    } else {
+      goalEtaElement.textContent = 'Goal date passed';
+    }
+  } else if (percentage < 100) {
+    // Estimate completion based on average savings rate
+    const avgSavingsPerDay = calculateAverageSavingsRate();
+    if (avgSavingsPerDay > 0) {
+      const amountLeft = goal.amount - savedAmount;
+      const daysToComplete = Math.ceil(amountLeft / avgSavingsPerDay);
+      
+      if (daysToComplete > 0) {
+        const completionDate = new Date();
+        completionDate.setDate(completionDate.getDate() + daysToComplete);
+        
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        goalEtaElement.textContent = completionDate.toLocaleDateString(undefined, options);
+      } else {
+        goalEtaElement.textContent = 'Today';
+      }
+    } else {
+      goalEtaElement.textContent = 'No savings yet';
+    }
+  } else {
+    goalEtaElement.textContent = 'Goal completed!';
+  }
+}
+
+// Calculate average savings rate (per day)
+function calculateAverageSavingsRate() {
+  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  if (transactions.length === 0) return 0;
+  
+  let totalSavings = 0;
+  let oldestTransactionDate = new Date();
+  
+  transactions.forEach(transaction => {
+    if (transaction.type === 'income') {
+      totalSavings += parseFloat(transaction.amount);
+      
+      const transactionDate = new Date(transaction.date);
+      if (transactionDate < oldestTransactionDate) {
+        oldestTransactionDate = transactionDate;
+      }
+    }
+  });
+  
+  const today = new Date();
+  const daysSinceFirstTransaction = Math.max(1, Math.ceil((today - oldestTransactionDate) / (1000 * 60 * 60 * 24)));
+  
+  return totalSavings / daysSinceFirstTransaction;
+}
+
+// Event Listeners for Goal Modal
+setGoalBtn.addEventListener('click', () => {
+  goalNameInput.value = '';
+  goalAmountInput.value = '';
+  goalDateInput.value = '';
+  goalModal.style.display = 'block';
+});
+
+editGoalBtn.addEventListener('click', () => {
+  const goal = JSON.parse(localStorage.getItem('goal'));
+  if (goal) {
+    goalNameInput.value = goal.name;
+    goalAmountInput.value = goal.amount;
+    if (goal.date) goalDateInput.value = goal.date;
+  }
+  goalModal.style.display = 'block';
+});
+
+cancelGoalBtn.addEventListener('click', () => {
+  goalModal.style.display = 'none';
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (event) => {
+  if (event.target === goalModal) {
+    goalModal.style.display = 'none';
+  }
+});
+
+// Save goal
+goalForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const name = goalNameInput.value.trim();
+  const amount = parseFloat(goalAmountInput.value);
+  const date = goalDateInput.value || null;
+  
+  if (name && amount > 0) {
+    const goal = {
+      name,
+      amount,
+      date
+    };
+    
+    localStorage.setItem('goal', JSON.stringify(goal));
+    initializeGoalDisplay();
+    goalModal.style.display = 'none';
+  }
+});
+
+// Initialize goal display when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  initializeGoalDisplay();
+  
+  // Update goal progress when transactions change
+  const observer = new MutationObserver(() => {
+    updateGoalProgress();
+  });
+  
+  // Observe changes to the transaction list
+  const transactionList = document.getElementById('transactionsList');
+  if (transactionList) {
+    observer.observe(transactionList, { childList: true, subtree: true });
+  }
+}); 
