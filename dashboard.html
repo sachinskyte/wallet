@@ -237,11 +237,13 @@
             <div class="stat-card-amount savings-stat" id="netSavings">₹0.00</div>
           </div>
           
-          <!-- Budget Management Link -->
+          <!-- Budget Planning Card -->
           <div class="stat-card budget-link-card">
             <div class="stat-card-title">Budget Planning</div>
+            <p class="budget-description">Create and manage budgets by category to track your financial goals</p>
             <a href="budget.html" class="budget-link">
-              <i class="fas fa-bullseye"></i> Set Budget Goals
+              <i class="fas fa-chart-pie"></i> Manage Budget
+              <span class="budget-link-arrow"><i class="fas fa-arrow-right"></i></span>
             </a>
           </div>
         </div>
@@ -343,22 +345,30 @@
           <button class="goal-btn" id="editGoalBtn">Edit Goal</button>
         </div>
         <div id="noGoalMessage" style="display: none;">
-          <p>Set a savings goal to track your progress</p>
-          <button class="goal-btn primary" id="setGoalBtn">Set Goal</button>
+          <p>Track your savings progress towards specific financial targets</p>
+          <button class="goal-btn primary" id="setGoalBtn">Set New Goal</button>
         </div>
         <div id="goalDisplay" style="display: none;">
           <div class="goal-details">
-            <div class="goal-amount" id="goalAmount">₹50,000</div>
             <div class="goal-name" id="goalName">New Laptop</div>
+            <div class="goal-amount" id="goalAmount">₹50,000</div>
             <div class="goal-progress-info">
-              <span id="goalSaved">₹0</span> saved of <span id="goalTotal">₹50,000</span>
-              (<span id="goalPercentage">0%</span>)
+              <div class="goal-saved">
+                <i class="fas fa-piggy-bank"></i>
+                <span id="goalSaved">₹0</span> saved of <span id="goalTotal">₹50,000</span>
+              </div>
+              <div class="goal-percentage-wrapper">
+                <span id="goalPercentage">0%</span> complete
+              </div>
             </div>
           </div>
           <div class="goal-progress-bar">
             <div class="goal-progress" id="goalProgressBar" style="width: 0%"></div>
           </div>
-          <div class="goal-eta">Estimated completion: <span id="goalEta">--</span></div>
+          <div class="goal-eta">
+            <i class="fas fa-calendar-alt"></i>
+            Estimated completion: <span id="goalEta">--</span>
+          </div>
         </div>
       </div>
       

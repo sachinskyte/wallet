@@ -240,8 +240,8 @@
 
 /* Budget Link Card */
 .budget-link-card {
-  background: linear-gradient(135deg, rgba(33, 150, 243, 0.06) 0%, rgba(33, 150, 243, 0.12) 100%);
-  border: 1px dashed rgba(33, 150, 243, 0.4);
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(33, 150, 243, 0.15) 100%);
+  border: 1px solid rgba(33, 150, 243, 0.2);
   position: relative;
   overflow: hidden;
   transform-origin: center;
@@ -255,7 +255,7 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background-color: #2196f3;
+  background: linear-gradient(to bottom, #2196f3, #0d47a1);
 }
 
 .budget-link-card::after {
@@ -263,24 +263,31 @@
   position: absolute;
   bottom: -15px;
   right: -15px;
-  width: 80px;
-  height: 80px;
-  background-color: rgba(33, 150, 243, 0.1);
+  width: 100px;
+  height: 100px;
+  background-color: rgba(33, 150, 243, 0.08);
   border-radius: 50%;
   z-index: 0;
 }
 
 .budget-link-card:hover {
   transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
-  border-color: rgba(33, 150, 243, 0.6);
+  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.2);
+  border-color: rgba(33, 150, 243, 0.4);
+}
+
+.budget-description {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 8px 0 12px;
+  line-height: 1.4;
 }
 
 .budget-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #2196f3;
+  color: #1976d2;
   font-weight: 600;
   font-size: 0.95rem;
   margin-top: auto;
@@ -290,17 +297,17 @@
 }
 
 .budget-link:hover {
-  color: #0d6efd;
+  color: #0d47a1;
   transform: translateX(5px);
 }
 
 .budget-link i {
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding: 10px;
   border-radius: 12px;
   background-color: rgba(33, 150, 243, 0.15);
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
 }
 
 .budget-link:hover i {
@@ -308,11 +315,16 @@
   transform: rotate(15deg) scale(1.1);
 }
 
-.budget-description {
+.budget-link-arrow {
+  margin-left: auto;
   font-size: 0.8rem;
-  color: #666;
-  margin-top: 10px;
-  line-height: 1.4;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.budget-link:hover .budget-link-arrow {
+  transform: translateX(4px);
+  opacity: 1;
 }
 
 /* Cashflow Section */
@@ -468,7 +480,7 @@
   left: 0;
   width: 100%;
   height: 5px;
-  background: linear-gradient(90deg, var(--primary-black), #555);
+  background: linear-gradient(90deg, #4a6fa5, #2196f3);
 }
 
 .goal-header {
@@ -483,10 +495,7 @@
 .goal-header h3 {
   font-size: 1.3rem;
   font-weight: 700;
-  background: linear-gradient(90deg, var(--primary-black) 0%, #555 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.5px;
+  color: #333;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -497,8 +506,8 @@
   font-family: 'Font Awesome 5 Free';
   font-weight: 900;
   font-size: 1rem;
-  color: var(--primary-black);
-  background-color: rgba(0, 0, 0, 0.05);
+  color: #4a6fa5;
+  background-color: rgba(74, 111, 165, 0.1);
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -509,8 +518,8 @@
 
 .goal-btn {
   background: none;
-  border: none;
-  color: var(--primary-black);
+  border: 1px solid #e0e0e0;
+  color: #555;
   font-weight: 500;
   cursor: pointer;
   padding: 8px 14px;
@@ -522,7 +531,8 @@
 }
 
 .goal-btn:hover {
-  background-color: var(--gray-100);
+  background-color: #f5f5f5;
+  border-color: #ccc;
 }
 
 .goal-btn::before {
@@ -533,16 +543,17 @@
 }
 
 .goal-btn.primary {
-  background-color: var(--primary-black);
+  background-color: #4a6fa5;
   color: white;
   padding: 10px 18px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(74, 111, 165, 0.2);
+  border: none;
 }
 
 .goal-btn.primary:hover {
-  background-color: #444;
+  background-color: #3a5a8c;
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 15px rgba(74, 111, 165, 0.3);
 }
 
 .goal-btn.primary::before {
@@ -557,20 +568,20 @@
   border: 1px solid var(--gray-100);
 }
 
+.goal-name {
+  font-size: 1.3rem;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
 .goal-amount {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--primary-black);
-}
-
-.goal-name {
-  font-size: 1.1rem;
-  color: var(--gray-700);
-  margin-bottom: 12px;
-  font-weight: 600;
-  border-bottom: 1px dashed var(--gray-200);
+  margin-bottom: 15px;
+  color: #4a6fa5;
   padding-bottom: 10px;
+  border-bottom: 1px dashed #e0e0e0;
 }
 
 .goal-progress-info {
@@ -582,9 +593,28 @@
   align-items: center;
 }
 
+.goal-saved {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.goal-saved i {
+  color: #4a6fa5;
+  background-color: rgba(74, 111, 165, 0.1);
+  padding: 6px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+}
+
+.goal-percentage-wrapper {
+  font-weight: 600;
+  color: #4a6fa5;
+}
+
 .goal-progress-bar {
   height: 12px;
-  background-color: var(--gray-200);
+  background-color: #e9ecef;
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 15px;
@@ -593,7 +623,7 @@
 
 .goal-progress {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-black), #555);
+  background: linear-gradient(90deg, #4a6fa5, #2196f3);
   border-radius: 8px;
   transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
   position: relative;
@@ -630,32 +660,28 @@
   color: var(--gray-600);
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  background-color: var(--gray-100);
-  padding: 10px;
+  background-color: #f5f7fa;
+  padding: 10px 15px;
   border-radius: 8px;
   font-weight: 500;
 }
 
-.goal-eta::before {
-  content: '\f017';
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  color: var(--gray-700);
+.goal-eta i {
+  color: #4a6fa5;
 }
 
 #noGoalMessage {
   text-align: center;
   padding: 30px 20px;
-  border: 2px dashed var(--gray-200);
+  border: 2px dashed #e0e0e0;
   border-radius: 12px;
-  background-color: var(--gray-50);
+  background-color: #f8f9fa;
 }
 
 #noGoalMessage p {
   margin-bottom: 20px;
-  color: var(--gray-600);
+  color: #666;
   font-size: 1.1rem;
 }
 
