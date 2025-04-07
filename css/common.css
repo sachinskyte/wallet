@@ -82,13 +82,18 @@ nav ul li a.active {
 
 .auth-buttons {
     display: flex;
-    gap: 15px;
+    gap: 10px;
+}
+
+.auth-buttons .btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
 }
 
 /* Button Styles */
 .btn {
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 8px 16px;
+    border-radius: 4px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s;

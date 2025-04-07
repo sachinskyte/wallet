@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Events - MovieGo</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/live-events.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Movie<span>Go</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="movies.html">Movies</a></li>
+                    <li><a href="theaters.html">Theaters</a></li>
+                    <li><a href="live-events.html" class="active">Live Events</a></li>
+                </ul>
+            </nav>
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="container">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search for events...">
+                        <button>Search</button>
+                    </div>
+                </div>
+            </section>
+            <div class="auth-buttons">
+                <a href="signin.html" class="btn btn-outline">Sign In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner Section -->
+    <section class="event-banner">
+        <div class="container">
+            <h1>Live Events</h1>
+            <p>Discover exclusive movie premieres, celebrity meet & greets, and special screenings</p>
+            <div class="event-filter">
+                <select id="city-filter">
+                    <option value="">All Cities</option>
+                    <option value="bangalore">Bangalore</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="chennai">Chennai</option>
+                </select>
+                <select id="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="premiere">Premieres</option>
+                    <option value="meetgreet">Meet & Greets</option>
+                    <option value="special">Special Screenings</option>
+                    <option value="festival">Film Festivals</option>
+                </select>
+                <select id="date-filter">
+                    <option value="">Any Date</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                    <option value="weekend">This Weekend</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Events -->
+    <section class="featured-events">
+        <div class="container">
+            <h2 class="section-title">Featured Events</h2>
+            <div class="featured-slider">
+                <div class="featured-event">
+                    <div class="featured-image">
+                        <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Film Festival">
+                        <div class="event-date">
+                            <span class="day">15</span>
+                            <span class="month">JUN</span>
+                        </div>
+                    </div>
+                    <div class="featured-content">
+                        <div class="event-category">Film Festival</div>
+                        <h3>Bangalore International Film Festival 2023</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> PVR Forum Mall, Bangalore</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 10:00 AM - 10:00 PM</div>
+                        </div>
+                        <p>Experience the magic of international cinema with screenings of award-winning films from around the world.</p>
+                        <a href="#" class="btn btn-primary">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Events -->
+    <section class="events-grid">
+        <div class="container">
+            <h2 class="section-title">Upcoming Events</h2>
+            <div class="events-container">
+                <!-- Event Card 1 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Movie Premiere">
+                        <div class="event-date">
+                            <span class="day">20</span>
+                            <span class="month">JUN</span>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-category">Premiere</div>
+                        <h3>Avengers: Secret Wars Premiere</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> INOX Garuda, Bangalore</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 7:00 PM</div>
+                        </div>
+                        <p>Be among the first to watch the most anticipated superhero movie of the year with special guest appearances.</p>
+                        <a href="#" class="btn btn-outline">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Event Card 2 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Celebrity Meet & Greet">
+                        <div class="event-date">
+                            <span class="day">25</span>
+                            <span class="month">JUN</span>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-category">Meet & Greet</div>
+                        <h3>Meet the Cast: The Dune Saga</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> PVR IMAX, Phoenix MarketCity</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 5:30 PM</div>
+                        </div>
+                        <p>Exclusive opportunity to meet the stars of the epic sci-fi saga with autograph and photo sessions.</p>
+                        <a href="#" class="btn btn-outline">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Event Card 3 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Special Screening">
+                        <div class="event-date">
+                            <span class="day">02</span>
+                            <span class="month">JUL</span>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-category">Special Screening</div>
+                        <h3>Classic Cinema Night: Casablanca</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> Urvashi Cinemas, Bangalore</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 8:00 PM</div>
+                        </div>
+                        <p>Experience the magic of classic cinema with a restored 4K screening of this timeless masterpiece.</p>
+                        <a href="#" class="btn btn-outline">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Event Card 4 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Film Workshop">
+                        <div class="event-date">
+                            <span class="day">10</span>
+                            <span class="month">JUL</span>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-category">Workshop</div>
+                        <h3>Filmmaking Workshop: Director's Cut</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> Cinepolis, Nexus Mall</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 11:00 AM - 4:00 PM</div>
+                        </div>
+                        <p>Learn the art of filmmaking from industry professionals with hands-on experience and insider tips.</p>
+                        <a href="#" class="btn btn-outline">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Event Card 5 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Award Ceremony">
+                        <div class="event-date">
+                            <span class="day">15</span>
+                            <span class="month">JUL</span>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-category">Award Show</div>
+                        <h3>South Indian Film Awards 2023</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> Bangalore International Exhibition Centre</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 6:00 PM</div>
+                        </div>
+                        <p>Witness the grandeur of the South Indian film industry as they celebrate excellence in cinema.</p>
+                        <a href="#" class="btn btn-outline">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Event Card 6 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Drive-in Cinema">
+                        <div class="event-date">
+                            <span class="day">22</span>
+                            <span class="month">JUL</span>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-category">Special Screening</div>
+                        <h3>Drive-in Cinema: Jurassic Park Night</h3>
+                        <div class="event-info">
+                            <div class="event-location"><i class="fas fa-map-marker-alt"></i> Manyata Tech Park, Bangalore</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 8:30 PM</div>
+                        </div>
+                        <p>Experience the thrill of Jurassic Park from the comfort of your car with surround sound and giant screen.</p>
+                        <a href="#" class="btn btn-outline">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more">
+                <button class="btn btn-outline">Load More Events</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to our newsletter and never miss exclusive events and special offers.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your email address">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>MovieGo</h3>
+                    <p>Your one-stop destination for booking movie tickets, events, and experiencing the magic of cinema.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="movies.html">Movies</a></li>
+                        <li><a href="theaters.html">Theaters</a></li>
+                        <li><a href="live-events.html">Live Events</a></li>
+                        <li><a href="#">Offers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">My Account</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Download Our App</h3>
+                    <p>Get the best movie ticket booking experience on your mobile with our app.</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-button">
+                            <i class="fab fa-google-play"></i>
+                            <span>Google Play</span>
+                        </a>
+                        <a href="#" class="app-button">
+                            <i class="fab fa-apple"></i>
+                            <span>App Store</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 MovieGo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/live-events.js"></script>
+</body>
+</html> 
