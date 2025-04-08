@@ -58,11 +58,51 @@
             <div class="movies-grid"></div>
         </section>
 
-        <!-- Top Rated -->
-        <section id="top-rated" class="movie-section loading">
-            <h2>Top Rated</h2>
-            <div class="loading-spinner"></div>
-            <div class="movies-grid"></div>
+        <!-- Top Rated Movies -->
+        <section class="movie-section" id="top-rated">
+            <div class="section-header">
+                <h2>Top Rated Movies</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="movies-slider">
+                <div class="movies-container" id="top-rated-movies">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                <button class="slider-arrow prev" data-section="top-rated">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-arrow next" data-section="top-rated">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Upcoming Movies -->
+        <section class="movie-section" id="upcoming">
+            <div class="section-header">
+                <h2>Upcoming Movies</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="movies-slider">
+                <div class="movies-container" id="upcoming-movies">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                <button class="slider-arrow prev" data-section="upcoming">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-arrow next" data-section="upcoming">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Promotions -->
+        <section class="promotions">
+            <!-- ... existing code ... -->
         </section>
     </main>
 

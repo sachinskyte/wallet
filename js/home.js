@@ -1,7 +1,8 @@
-// TMDB API Configuration
-const TMDB_API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your TMDB API key
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
+// Import configuration from config.js
+// TMDB API Configuration - Get from CONFIG object
+const TMDB_API_KEY = CONFIG.TMDB_API_KEY;
+const TMDB_BASE_URL = CONFIG.TMDB_BASE_URL;
+const IMAGE_BASE_URL = CONFIG.TMDB_IMG_BASE_URL.replace('/w500', '/');
 const BACKDROP_SIZE = 'original';
 const POSTER_SIZE = 'w500';
 
@@ -142,6 +143,50 @@ const MOCK_DATA = {
                 overview: "In the continuing saga of the Corleone crime family, a young Vito Corleone grows up in Sicily and in 1910s New York. In the 1950s, Michael Corleone attempts to expand the family business into Las Vegas, Hollywood and Cuba."
             }
         ]
+    },
+    upcoming: {
+        results: [
+            {
+                id: 891699,
+                title: "Dune: Part Two",
+                poster_path: "/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg",
+                backdrop_path: "/zWDMQX0sPaW2u0N2pJaYA8bVVaJ.jpg",
+                vote_average: 8.4,
+                vote_count: 1847,
+                release_date: "2024-02-27",
+                overview: "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen while on a path of revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe, Paul endeavors to prevent a terrible future only he can foresee."
+            },
+            {
+                id: 897087,
+                title: "Furiosa: A Mad Max Saga",
+                poster_path: "/8rpDcsfLJypbO6vRsQOZf8zMjXH.jpg", 
+                backdrop_path: "/yQQOY4R0o0iJCY4d7pEJGF3x7id.jpg",
+                vote_average: 7.3,
+                vote_count: 478,
+                release_date: "2024-05-23",
+                overview: "As the world fell, young Furiosa is snatched from the Green Place of Many Mothers and falls into the hands of a great Biker Horde led by the Warlord Dementus. Sweeping through the Wasteland, they come across the Citadel presided over by The Immortan Joe. While the two Tyrants war for dominance, Furiosa must survive many trials as she puts together the means to find her way home."
+            },
+            {
+                id: 713704,
+                title: "Deadpool & Wolverine",
+                poster_path: "/4yHQYYIM1Vle6oNkOIleKDhjmvH.jpg",
+                backdrop_path: "/aJqOIjsX2e0w10NvV0NaTUj4n4y.jpg",
+                vote_average: 7.6,
+                vote_count: 276,
+                release_date: "2024-07-24",
+                overview: "After a series of questionable career choices and existential crisis, Wade Wilson finds his world turned upside down when the TVA abducts him for an unimaginable mission. With his life on the line, Wade reluctantly enlists the help of a reluctant Logan, who's been hiding in the multiverse, to battle a threat to their world. Deadpool and Wolverine are forced to use teamwork, something they're both not sure will work."
+            },
+            {
+                id: 1072790,
+                title: "Anyone But You",
+                poster_path: "/yRt7MGBElkLQOYUwFLjHbeX8iKa.jpg",
+                backdrop_path: "/oBIQDKcqNxKckjugtmzpIIOgoc4.jpg",
+                vote_average: 6.8,
+                vote_count: 1502,
+                release_date: "2023-12-21",
+                overview: "After an amazing first date, Bea and Ben's fiery attraction turns ice cold — until they find themselves unexpectedly reunited at a destination wedding in Australia. So they do what any two mature adults would do: pretend to be a couple."
+            }
+        ]
     }
 };
 
@@ -149,23 +194,25 @@ const MOCK_DATA = {
 const ENDPOINTS = {
     nowPlaying: '/movie/now_playing',
     popular: '/movie/popular',
-    topRated: '/movie/top_rated'
+    topRated: '/movie/top_rated',
+    upcoming: '/movie/upcoming'
 };
 
 // Fetch data from TMDB
 async function fetchFromTMDB(endpoint) {
     // Use mock data if API key is not set
-    if (TMDB_API_KEY === 'YOUR_API_KEY_HERE') {
+    if (CONFIG.TMDB_API_KEY === 'YOUR_API_KEY_HERE') {
         console.log('Using mock data for', endpoint);
         // Return the corresponding mock data based on endpoint
         if (endpoint === ENDPOINTS.nowPlaying) return MOCK_DATA.nowPlaying;
         if (endpoint === ENDPOINTS.popular) return MOCK_DATA.popular;
         if (endpoint === ENDPOINTS.topRated) return MOCK_DATA.topRated;
+        if (endpoint === ENDPOINTS.upcoming) return MOCK_DATA.upcoming;
         return null;
     }
 
     try {
-        const response = await fetch(`${TMDB_BASE_URL}${endpoint}?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+        const response = await fetch(`${CONFIG.TMDB_BASE_URL}${endpoint}?api_key=${CONFIG.TMDB_API_KEY}&language=en-US&page=1&region=${CONFIG.DEFAULT_REGION}`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {
@@ -177,24 +224,184 @@ async function fetchFromTMDB(endpoint) {
 // Get image URL with fallback
 function getImageUrl(path, size, fallback) {
     if (!path) return fallback;
-    return `${IMAGE_BASE_URL}${size}${path}`;
+    return `${CONFIG.TMDB_IMG_BASE_URL}${size}${path}`;
 }
 
-// Render movie card
+// Render a specific movie section with appropriate data
+async function renderMoviesSection(endpoint, sectionId) {
+    const sectionElement = document.getElementById(sectionId + '-movies');
+    if (!sectionElement) {
+        console.error(`Section element #${sectionId}-movies not found`);
+        return;
+    }
+    
+    const loadingElement = sectionElement.querySelector('.loading-spinner');
+    if (loadingElement) loadingElement.style.display = 'block';
+    
+    try {
+        // In a real app, this would fetch from the API
+        // const response = await fetchFromAPI(endpoint);
+        // const movies = response.results;
+        
+        // For demo purposes, use mock data
+        let movies = [];
+        switch(endpoint) {
+            case ENDPOINTS.nowPlaying:
+                movies = MOCK_DATA.nowPlaying.results;
+                break;
+            case ENDPOINTS.popular:
+                movies = MOCK_DATA.popular.results;
+                break;
+            case ENDPOINTS.topRated:
+                movies = MOCK_DATA.topRated.results;
+                break;
+            case ENDPOINTS.upcoming:
+                movies = MOCK_DATA.upcoming.results;
+                break;
+            default:
+                console.error('Unknown endpoint:', endpoint);
+                return;
+        }
+        
+        const moviesGrid = sectionElement.querySelector('.movies-grid');
+        if (moviesGrid) {
+            moviesGrid.innerHTML = '';
+            movies.forEach(movie => {
+                const movieCard = createMovieCard(movie);
+                moviesGrid.appendChild(movieCard);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading movies for section:', sectionId, error);
+    } finally {
+        if (loadingElement) loadingElement.style.display = 'none';
+    }
+}
+
+// Render hero section with featured movies
+function renderHeroSection() {
+    const heroSlider = document.querySelector('.hero-slider');
+    const loadingElement = document.querySelector('.hero-section .loading-spinner');
+    
+    if (loadingElement) loadingElement.style.display = 'block';
+    
+    try {
+        // For demo purposes, use the first 5 popular movies
+        const featuredMovies = MOCK_DATA.popular.results.slice(0, 5);
+        
+        if (heroSlider) {
+            heroSlider.innerHTML = '';
+            
+            featuredMovies.forEach((movie, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'hero-slide' + (index === 0 ? ' active' : '');
+                
+                const backdropPath = movie.backdrop_path ? 
+                    `${IMAGE_BASE_URL}/original${movie.backdrop_path}` : 
+                    'images/placeholder-backdrop.jpg';
+                
+                slide.innerHTML = `
+                    <div class="hero-backdrop" style="background-image: url('${backdropPath}')">
+                        <div class="hero-content">
+                            <h1>${movie.title}</h1>
+                            <div class="hero-details">
+                                <span class="rating">
+                                    <i class="fas fa-star"></i> ${movie.vote_average.toFixed(1)}
+                                </span>
+                                <span class="year">${movie.release_date.substring(0, 4)}</span>
+                            </div>
+                            <p>${movie.overview.substring(0, 150)}${movie.overview.length > 150 ? '...' : ''}</p>
+                            <div class="hero-actions">
+                                <button class="btn btn-primary" onclick="showMovieDetails(${movie.id})">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-ticket-alt"></i> Book Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                heroSlider.appendChild(slide);
+            });
+            
+            // Set up hero slider navigation
+            const heroNav = document.querySelector('.hero-navigation');
+            if (heroNav) {
+                heroNav.innerHTML = '';
+                featuredMovies.forEach((_, index) => {
+                    const dot = document.createElement('span');
+                    dot.className = 'hero-nav-dot' + (index === 0 ? ' active' : '');
+                    dot.dataset.index = index;
+                    dot.addEventListener('click', (e) => {
+                        const idx = parseInt(e.target.dataset.index);
+                        changeHeroSlide(idx);
+                    });
+                    heroNav.appendChild(dot);
+                });
+            }
+            
+            // Auto-rotate hero slides
+            setInterval(() => {
+                const currentSlide = document.querySelector('.hero-slide.active');
+                const currentIndex = Array.from(heroSlider.children).indexOf(currentSlide);
+                const nextIndex = (currentIndex + 1) % featuredMovies.length;
+                changeHeroSlide(nextIndex);
+            }, 7000);
+        }
+    } catch (error) {
+        console.error('Error rendering hero section:', error);
+    } finally {
+        if (loadingElement) loadingElement.style.display = 'none';
+    }
+}
+
+// Change the active hero slide
+function changeHeroSlide(index) {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.hero-nav-dot');
+    
+    if (!slides.length) return;
+    
+    // Remove active class from all slides and dots
+    slides.forEach(slide => slide.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+    
+    // Add active class to the selected slide and dot
+    const slideIndex = index % slides.length;
+    slides[slideIndex].classList.add('active');
+    if (dots.length) dots[slideIndex].classList.add('active');
+}
+
+// Create a movie card element
 function createMovieCard(movie) {
     const card = document.createElement('div');
     card.className = 'movie-card';
+    card.dataset.id = movie.id;
+    
+    const posterPath = movie.poster_path ? 
+        `${IMAGE_BASE_URL}/w342${movie.poster_path}` : 
+        'images/placeholder-poster.jpg';
+    
     card.innerHTML = `
-        <img src="${getImageUrl(movie.poster_path, POSTER_SIZE, FALLBACK_POSTER)}" 
-             alt="${movie.title}" 
-             class="movie-poster"
-             loading="lazy">
+        <div class="movie-poster">
+            <img src="${posterPath}" alt="${movie.title}" loading="lazy">
+            <div class="movie-rating">
+                <i class="fas fa-star"></i>
+                <span>${movie.vote_average.toFixed(1)}</span>
+            </div>
+        </div>
         <div class="movie-info">
             <h3 class="movie-title">${movie.title}</h3>
-            <div class="movie-rating">★ ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</div>
+            <p class="movie-year">${movie.release_date ? movie.release_date.substring(0, 4) : 'TBA'}</p>
+        </div>
+        <div class="movie-hover">
+            <button class="btn-details" onclick="showMovieDetails(${movie.id})">View Details</button>
+            <button class="btn-book">Book Now</button>
         </div>
     `;
-    card.addEventListener('click', () => showMovieDetails(movie));
+    
     return card;
 }
 
@@ -330,16 +537,44 @@ async function renderHeroSection() {
     }
 }
 
-// Initialize page
-async function initializePage() {
-    // Load hero section
+// Initialize all page elements and event listeners
+function initializePage() {
+    // Render hero section
     renderHeroSection();
     
-    // Load movie sections
+    // Render all movie sections
     renderMoviesSection(ENDPOINTS.nowPlaying, 'now-playing');
     renderMoviesSection(ENDPOINTS.popular, 'popular');
     renderMoviesSection(ENDPOINTS.topRated, 'top-rated');
+    renderMoviesSection(ENDPOINTS.upcoming, 'upcoming');
+    
+    // Set up modal close events
+    const modal = document.getElementById('movie-modal');
+    const closeBtn = document.querySelector('.modal-close');
+    
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('open');
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('open');
+            }
+        });
+    }
+    
+    // Set up movie section navigation
+    document.querySelectorAll('.slider-arrow').forEach(arrow => {
+        arrow.addEventListener('click', function() {
+            const direction = this.classList.contains('right') ? 1 : -1;
+            const grid = this.closest('.movie-section').querySelector('.movies-grid');
+            const scrollAmount = grid.clientWidth * 0.8 * direction;
+            grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+    });
 }
 
-// Start loading when DOM is ready
+// Execute when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializePage); 

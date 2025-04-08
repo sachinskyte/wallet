@@ -5,9 +5,9 @@
 
 // TMDB API Configuration
 const CONFIG = {
-    // TMDB API
-    TMDB_API_KEY: '199daf17ee606d3dcf427b11edc0160f',
-    TMDB_ACCESS_TOKEN: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxOTlkYWYxN2VlNjA2ZDNkY2Y0MjdiMTFlZGMwMTYwZiIsIm5iZiI6MTc0NDA0OTc3My4zMDA5OTk5LCJzdWIiOiI2N2Y0MTY2ZDFiYjA0NzI4OTk5OTczY2MiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.1aCfishepajtvmfYIheQsz7tMTi8VYwT1d7l5hU13Tk',
+    // TMDB API - Replace with your own API credentials from https://www.themoviedb.org/settings/api
+    TMDB_API_KEY: 'YOUR_API_KEY_HERE',
+    TMDB_ACCESS_TOKEN: 'YOUR_ACCESS_TOKEN_HERE',
     TMDB_BASE_URL: 'https://api.themoviedb.org/3',
     TMDB_IMG_BASE_URL: 'https://image.tmdb.org/t/p/w500',
     
