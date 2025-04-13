@@ -1,119 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieGo - Home</title>
-    <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container header-container">
-            <div class="logo">Movie<span>Go</span></div>
-            <nav>
-                <ul>
-                    <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="movies.html">Movies</a></li>
-                    <li><a href="theaters.html">Theaters</a></li>
-                    <li><a href="live-events.html">Events </a></li>
-                </ul>
-            </nav>
-                <!-- Search Section -->
-                <section class="search-section">
-                  <div class="container">
-                      <div class="search-bar">
-                          <input type="text" placeholder="Search for movies, theaters...">
-                          <button>Search</button>
-                      </div>
-                  </div>
-              </section>
-            <div class="auth-buttons">
-                <a href="signin.html" class="btn btn-outline">Sign In</a>
-                <a href="signup.html" class="btn btn-primary">Sign Up</a>
-            </div>
-        </div>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentryl - Vulnerability Management Platform</title>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero" class="loading">
-            <div class="loading-spinner"></div>
-            <div class="hero-content"></div>
-        </section>
+  </head>
 
-        <!-- Now Playing -->
-        <section id="now-playing" class="movie-section loading">
-            <h2>Now Playing</h2>
-            <div class="loading-spinner"></div>
-            <div class="movies-grid"></div>
-        </section>
-
-        <!-- Popular Movies -->
-        <section id="popular" class="movie-section loading">
-            <h2>Popular Movies</h2>
-            <div class="loading-spinner"></div>
-            <div class="movies-grid"></div>
-        </section>
-
-        <!-- Top Rated Movies -->
-        <section class="movie-section" id="top-rated">
-            <div class="section-header">
-                <h2>Top Rated Movies</h2>
-                <a href="#" class="view-all">View All</a>
-            </div>
-            <div class="movies-slider">
-                <div class="movies-container" id="top-rated-movies">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-                <button class="slider-arrow prev" data-section="top-rated">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="slider-arrow next" data-section="top-rated">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- Upcoming Movies -->
-        <section class="movie-section" id="upcoming">
-            <div class="section-header">
-                <h2>Upcoming Movies</h2>
-                <a href="#" class="view-all">View All</a>
-            </div>
-            <div class="movies-slider">
-                <div class="movies-container" id="upcoming-movies">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-                <button class="slider-arrow prev" data-section="upcoming">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="slider-arrow next" data-section="upcoming">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- Promotions -->
-        <section class="promotions">
-            <!-- ... existing code ... -->
-        </section>
-    </main>
-
-    <!-- Movie Details Modal -->
-    <div id="movie-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modal-details"></div>
-        </div>
-    </div>
-
-    <script src="js/home.js"></script>
-</body>
+  <body>
+    <div id="root"></div>
+    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

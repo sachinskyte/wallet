@@ -1,0 +1,144 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 175 84% 32%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 175 84% 32%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 175 84% 32%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 175 84% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 175 84% 32%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border font-mono;
+  }
+  body {
+    @apply bg-cyber-dark text-foreground;
+    background-image: 
+      radial-gradient(circle at 25px 25px, rgba(34, 211, 238, 0.025) 2%, transparent 0%),
+      radial-gradient(circle at 75px 75px, rgba(34, 211, 238, 0.025) 2%, transparent 0%);
+    background-size: 100px 100px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-mono font-bold;
+  }
+}
+
+@layer components {
+  .cyber-card {
+    @apply bg-cyber-light/70 backdrop-blur-sm border border-cyber-teal/20 rounded-md shadow-md hover:shadow-cyber-teal/10 transition-all duration-300;
+  }
+  
+  .cyber-button {
+    @apply bg-cyber-teal hover:bg-cyber-teal/90 text-white px-4 py-2 rounded font-mono
+      transition-all duration-200 flex items-center justify-center gap-2
+      focus:ring-2 focus:ring-cyber-teal/50 outline-none;
+  }
+  
+  .cyber-button-outline {
+    @apply bg-transparent border border-cyber-teal hover:bg-cyber-teal/10 text-cyber-teal px-4 py-2 rounded font-mono
+      transition-all duration-200 flex items-center justify-center gap-2
+      focus:ring-2 focus:ring-cyber-teal/50 outline-none;
+  }
+  
+  .cyber-input {
+    @apply bg-cyber-darker border border-cyber-teal/30 rounded px-3 py-2 font-mono text-white
+      focus:ring-2 focus:ring-cyber-teal/50 focus:border-cyber-teal/70 outline-none
+      transition-all duration-200 w-full;
+  }
+  
+  .cyber-link {
+    @apply text-cyber-cyan hover:text-cyber-teal transition-colors underline-offset-4 hover:underline;
+  }
+  
+  .cyber-panel {
+    @apply bg-cyber-light/30 backdrop-blur-sm border border-cyber-teal/10 rounded-md p-4 animate-pulse-glow;
+  }
+  
+  .cyber-grid {
+    @apply border border-cyber-teal/20 rounded-md overflow-hidden;
+  }
+  
+  .cyber-grid-header {
+    @apply bg-cyber-teal/20 text-white font-bold py-2 px-4;
+  }
+  
+  .cyber-grid-row {
+    @apply border-t border-cyber-teal/20 py-2 px-4 hover:bg-cyber-teal/10 transition-colors;
+  }
+  
+  .glass-effect {
+    @apply bg-cyber-light/10 backdrop-blur-sm border border-white/5;
+  }
+  
+  .glow-effect {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Add pulse glow animation */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.1); }
+  50% { box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+  100% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.1); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite;
+}
+
+#root {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}

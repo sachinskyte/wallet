@@ -1,59 +1,77 @@
-# MovieGo
+# Sentryl
 
-MovieGo is a modern movie ticket booking website that allows users to browse movies, find theaters, and book tickets online. The website features a responsive design, interactive UI elements, and a seamless user experience.
+<div align="center">
+  <img src="public/shield-logo.svg" alt="Sentryl Logo" width="180">
+  <p><strong>The premier platform for ethical hackers and security teams to collaborate on vulnerabilities</strong></p>
+</div>
 
-## Features
+## Overview
 
-- **Movie Listings**: Browse current and upcoming movies with detailed information
-- **Theater Locator**: Find theaters near you with amenities and showtimes
-- **User Authentication**: Sign up and sign in functionality
-- **Search Functionality**: Search for movies and theaters
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
-- **TMDB Integration**: Fetches latest movie data from The Movie Database API
+Sentryl is a comprehensive vulnerability management platform that connects security researchers with companies seeking to secure their digital assets. Our platform streamlines the process of reporting, tracking, and resolving security vulnerabilities while offering bounty opportunities for ethical hackers.
 
-## Technologies Used
+## Key Features
 
-- HTML5
-- CSS3
-- JavaScript
-- Font Awesome for icons
-- TMDB API for movie data
+- **Vulnerability Reporting**: Submit detailed vulnerability reports with supporting evidence and severity ratings
+- **Bug Bounty Program**: Participate in bug bounty programs from leading organizations and earn rewards
+- **Security Dashboard**: Track vulnerabilities, monitor patch status, and analyze security metrics
+- **Admin Controls**: Comprehensive management tools for security teams and program administrators
 
-## Project Structure
+## Tech Stack
 
-- `index.html` - Home page with latest movies from TMDB
-- `movies.html` - Movies listing page
-- `theaters.html` - Theaters listing page with 19 theaters in Bangalore
-- `signin.html` - Sign in page
-- `signup.html` - Sign up page
-- `css/` - Stylesheets for different pages
-  - `home.css` - Styles for the home page
-  - `theaters.css` - Styles for the theaters page
-  - `style.css` - Main stylesheet
-- `js/` - JavaScript functionality
-  - `home.js` - Home page functionality with TMDB integration
-  - `theaters.js` - Theaters page functionality
-  - `config.js` - Configuration file for API keys
-- `images/` - Image assets
-
-## TMDB API Integration
-
-This project uses The Movie Database (TMDB) API to fetch movie data. To use this feature:
-
-1. Get an API key from [TMDB](https://www.themoviedb.org/documentation/api)
-2. Open `js/config.js` and replace the placeholder values with your API credentials:
-   ```javascript
-   const API_KEY = 'YOUR_API_KEY_HERE';
-   const ACCESS_TOKEN = 'YOUR_ACCESS_TOKEN_HERE';
-   ```
+- React & TypeScript
+- Vite for development and building
+- TailwindCSS with shadcn/ui components
+- React Router for navigation
+- React Query for data fetching
+- Supabase for backend services
 
 ## Getting Started
 
-1. Clone the repository
-2. Set up your TMDB API credentials in `js/config.js`
-3. Open `index.html` in your browser
-4. Explore the website
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/sachinskyte/Sentryl.git
+
+# Navigate to project directory
+cd Sentryl
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+## Project Structure
+
+```
+sentryl/
+├── public/              # Static assets
+├── src/                 # Application source code
+│   ├── components/      # Reusable UI components
+│   ├── context/         # React context providers
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utility libraries
+│   ├── pages/           # Application pages/routes
+│   └── integrations/    # Third-party service integrations
+├── App.tsx              # Main application component
+└── main.tsx             # Entry point
+```
+
+## Contributing
+
+If you'd like to contribute to Sentryl, please feel free to submit a pull request or open an issue to discuss proposed changes.
 
 ## License
 
-© 2025 MovieGo. All rights reserved.  
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contact
+
+For questions or support, please reach out to [sachinskyte](https://github.com/sachinskyte).
