@@ -1,77 +1,71 @@
-# Sentryl
+# Sentryl Cybersecurity Platform
 
 <div align="center">
-  <img src="public/shield-logo.svg" alt="Sentryl Logo" width="180">
-  <p><strong>The premier platform for ethical hackers and security teams to collaborate on vulnerabilities</strong></p>
+  <img src="public/shield-logo.svg" alt="Sentryl Logo" width="120" height="120">
+  <h1>Sentryl</h1>
+  <p>Advanced Cybersecurity Vulnerability Management Platform</p>
 </div>
 
-## Overview
+## About Sentryl
 
-Sentryl is a comprehensive vulnerability management platform that connects security researchers with companies seeking to secure their digital assets. Our platform streamlines the process of reporting, tracking, and resolving security vulnerabilities while offering bounty opportunities for ethical hackers.
+Sentryl is a comprehensive cybersecurity platform designed to help organizations manage vulnerabilities, run bug bounty programs, and protect their digital assets from emerging threats.
 
-## Key Features
+## Brand Guidelines
 
-- **Vulnerability Reporting**: Submit detailed vulnerability reports with supporting evidence and severity ratings
-- **Bug Bounty Program**: Participate in bug bounty programs from leading organizations and earn rewards
-- **Security Dashboard**: Track vulnerabilities, monitor patch status, and analyze security metrics
-- **Admin Controls**: Comprehensive management tools for security teams and program administrators
+### Logo Usage
 
-## Tech Stack
+The Sentryl shield logo represents our commitment to security and protection:
 
-- React & TypeScript
-- Vite for development and building
-- TailwindCSS with shadcn/ui components
-- React Router for navigation
-- React Query for data fetching
-- Supabase for backend services
+- **Primary Logo**: Use the SVG shield logo for all digital applications
+- **Favicon**: The shield-shaped favicon should be used for browser tabs and bookmarks
+- **Spacing**: Always maintain adequate spacing around the logo (at least half the logo's height)
+- **Color**: The primary brand color is Cyber Teal (#0ED8C5)
 
-## Getting Started
+### Corporate Identity
 
-### Prerequisites
+When using the Sentryl brand in communications or marketing materials:
 
-- Node.js (v18 or higher)
-- npm or yarn
+- Use the full name "Sentryl Cybersecurity Platform" in formal documents
+- For GitHub and social media, the shorthand "Sentryl" is acceptable
 
-### Installation
+## Development
 
+### Getting Started
+
+1. Clone the repository
 ```bash
-# Clone the repository
-git clone https://github.com/sachinskyte/Sentryl.git
+git clone https://github.com/yourusername/sentryl.git
+cd sentryl
+```
 
-# Navigate to project directory
-cd Sentryl
-
-# Install dependencies
+2. Install dependencies
+```bash
+# For frontend
+cd frontend
 npm install
 
-# Start the development server
+# For backend
+cd ../backend
+pip install -r requirements.txt
+```
+
+3. Run the application
+```bash
+# Start backend server
+cd backend
+python run.py
+
+# Start frontend development server
+cd frontend
 npm run dev
 ```
-
-## Project Structure
-
-```
-sentryl/
-├── public/              # Static assets
-├── src/                 # Application source code
-│   ├── components/      # Reusable UI components
-│   ├── context/         # React context providers
-│   ├── hooks/           # Custom React hooks
-│   ├── lib/             # Utility libraries
-│   ├── pages/           # Application pages/routes
-│   └── integrations/    # Third-party service integrations
-├── App.tsx              # Main application component
-└── main.tsx             # Entry point
-```
-
-## Contributing
-
-If you'd like to contribute to Sentryl, please feel free to submit a pull request or open an issue to discuss proposed changes.
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Contact
+---
 
-For questions or support, please reach out to [sachinskyte](https://github.com/sachinskyte).
+<div align="center">
+  <p>© 2023 Sentryl. All rights reserved.</p>
+</div>

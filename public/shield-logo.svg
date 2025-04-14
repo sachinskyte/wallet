@@ -1,20 +1,33 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g filter="url(#filter0_d)">
-    <path d="M90 20L144 40.5V81C144 115.5 122.5 145.5 90 160C57.5 145.5 36 115.5 36 81V40.5L90 20Z" fill="#0A2235"/>
-    <path d="M90 30L134 46.5V81C134 109.5 116.5 134.5 90 147C63.5 134.5 46 109.5 46 81V46.5L90 30Z" fill="#133040"/>
-    <path d="M90 40L124 53.5V81C124 103.5 110.5 123.5 90 134C69.5 123.5 56 103.5 56 81V53.5L90 40Z" fill="#0D2B38"/>
-    <path d="M90 50L114 60.5V81C114 97.5 104.5 112.5 90 121C75.5 112.5 66 97.5 66 81V60.5L90 50Z" stroke="#05E5E9" stroke-width="2"/>
-    <path d="M75 85L85 95L105 75" stroke="#05E5E9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield background with cyber gradient -->
+  <path d="M64 8L16 28V68C16 90.4 32.4 111.6 64 120C95.6 111.6 112 90.4 112 68V28L64 8Z" fill="url(#cyber-gradient)"/>
+  
+  <!-- Inner shield outline -->
+  <path d="M64 16L26 32V65C26 83.2 39.2 100.4 64 108C88.8 100.4 102 83.2 102 65V32L64 16Z" fill="#111319" stroke="#0ED8C5" stroke-width="2"/>
+  
+  <!-- Lock element -->
+  <rect x="50" y="52" width="28" height="28" rx="4" fill="#0ED8C5" fill-opacity="0.2" stroke="#0ED8C5" stroke-width="2"/>
+  <path d="M64 64L58 70L64 76L70 70L64 64Z" fill="#0ED8C5"/>
+  <path d="M58 52V44C58 38.48 60.48 34 64 34C67.52 34 70 38.48 70 44V52" stroke="#0ED8C5" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Shield scanner effect -->
+  <path d="M32 48H96" stroke="#0ED8C5" stroke-width="1" stroke-dasharray="4 2"/>
+  <path d="M32 88H96" stroke="#0ED8C5" stroke-width="1" stroke-dasharray="4 2"/>
+  
+  <!-- Cyber glow effect -->
+  <circle cx="64" cy="64" r="48" fill="url(#glow-gradient)" fill-opacity="0.15"/>
+  
+  <!-- Gradients -->
   <defs>
-    <filter id="filter0_d" x="0" y="0" width="180" height="180" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
-      <feOffset dy="4"/>
-      <feGaussianBlur stdDeviation="8"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.019 0 0 0 0 0.8981 0 0 0 0 0.9137 0 0 0 0.5 0"/>
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
-    </filter>
+    <linearGradient id="cyber-gradient" x1="16" y1="8" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111319"/>
+      <stop offset="0.5" stop-color="#181923"/>
+      <stop offset="1" stop-color="#2C2E41"/>
+    </linearGradient>
+    <radialGradient id="glow-gradient" cx="64" cy="64" r="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0ED8C5"/>
+      <stop offset="1" stop-color="#0ED8C5" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 </svg> 

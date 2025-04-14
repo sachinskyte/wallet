@@ -107,7 +107,7 @@ const LoginForm: React.FC = () => {
       <div className="w-full max-w-md p-6 cyber-panel animate-fade-in">
         <div className="flex justify-center mb-6">
           <div className="flex items-center">
-            <ShieldAlert className="h-8 w-8 text-cyber-teal mr-2" />
+            <img src="/shield-logo.svg" alt="Sentryl" className="h-10 w-10 mr-2" />
             <h1 className="text-2xl font-bold tracking-tighter">
               <span className="text-cyber-teal">SENTRYL</span>
             </h1>
@@ -139,7 +139,7 @@ const LoginForm: React.FC = () => {
     <div className="w-full max-w-md p-6 cyber-panel animate-fade-in">
       <div className="flex justify-center mb-6">
         <div className="flex items-center">
-          <ShieldAlert className="h-8 w-8 text-cyber-teal mr-2" />
+          <img src="/shield-logo.svg" alt="Sentryl" className="h-10 w-10 mr-2" />
           <h1 className="text-2xl font-bold tracking-tighter">
             <span className="text-cyber-teal">SENTRYL</span>
           </h1>

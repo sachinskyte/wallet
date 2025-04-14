@@ -66,10 +66,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobileMenuOpen, toggleMobileMenu })
       {/* Sidebar header with logo and collapse button */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-cyber-teal/20">
         <div className="flex items-center">
-          <ShieldAlert className="h-8 w-8 text-cyber-teal" />
-          {!isCollapsed && (
-            <span className="ml-2 text-xl font-bold text-white">Sentryl</span>
-          )}
+          <NavLink to="/" className="flex items-center">
+            <img src="/shield-logo.svg" alt="Sentryl" className="h-8 w-8" />
+            {!isCollapsed && (
+              <span className="ml-2 text-xl font-bold text-white">Sentryl</span>
+            )}
+          </NavLink>
         </div>
         
         {/* Desktop collapse button */}
