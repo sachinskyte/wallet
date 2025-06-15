@@ -9,7 +9,7 @@
       <img src="https://img.shields.io/badge/LIVE_DEMO-sentryl.vercel.app-0ED8C5?style=for-the-badge&logo=vercel" alt="Live Demo" width="300">
     </a>
     <p style="margin-top: 8px;">
-      <strong>Demo credentials:</strong><br>
+      <strong>Demo credential:</strong><br>
       Email: <code>demo@example.com</code> | Password: <code>demo123</code>
     </p>
   </div>
